@@ -1,0 +1,9 @@
+{
+  "name": "shared-ui",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./Button.jsx",
+  "peerDependencies": {
+    "react": "^18.3.1"
+  }
+}

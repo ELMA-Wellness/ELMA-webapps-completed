@@ -1,0 +1,9 @@
+{
+  "name": "shared-core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./firebase.js",
+  "dependencies": {
+    "firebase": "^10.8.0"
+  }
+}
