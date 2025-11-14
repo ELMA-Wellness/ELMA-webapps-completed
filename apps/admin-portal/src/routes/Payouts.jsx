@@ -3,7 +3,7 @@ import { useAdminGuard } from "../lib/guards";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 import Section from "shared-ui/Section";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "shared-ui/Table";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@shared-ui/Table.jsx";
 import { inr } from "shared-core/money";
 import { getMonthKey } from "shared-core/dates";
 import { therapistStatsForMonth } from "shared-core/metrics";

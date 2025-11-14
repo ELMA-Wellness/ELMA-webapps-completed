@@ -1,35 +1,69 @@
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AuthSignIn from "./routes/AuthSignIn";
-import Dashboard from "./routes/Dashboard";
-import Bookings from "./routes/Bookings";
-import Earnings from "./routes/Earnings";
-import Profile from "./routes/Profile";
-import Unauthorized from "./routes/Unauthorized";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-});
+import PsychAuthSignIn from "./routes/AuthSignIn.jsx";
+import Dashboard from "./routes/Dashboard.jsx";
+import Bookings from "./routes/Bookings.jsx";
+import Earnings from "./routes/Earnings.jsx";
+
+// Small helper
+function getTherapist() {
+  try {
+    return JSON.parse(localStorage.getItem("therapist") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+// Auth guard
+function RequireTherapist({ children }) {
+  const t = getTherapist();
+  if (!t.id) {
+    return <Navigate to="/auth/sign-in" replace />;
+  }
+  return children;
+}
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/auth/sign-in" element={<AuthSignIn />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/bookings" element={<Bookings />} />
-          <Route path="/earnings" element={<Earnings />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <Routes>
+
+        {/* LOGIN */}
+        <Route path="/auth/sign-in" element={<PsychAuthSignIn />} />
+
+        {/* PROTECTED ROUTES */}
+        <Route
+          path="/"
+          element={
+            <RequireTherapist>
+              <Dashboard />
+            </RequireTherapist>
+          }
+        />
+
+        <Route
+          path="/bookings"
+          element={
+            <RequireTherapist>
+              <Bookings />
+            </RequireTherapist>
+          }
+        />
+
+        <Route
+          path="/earnings"
+          element={
+            <RequireTherapist>
+              <Earnings />
+            </RequireTherapist>
+          }
+        />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+
+      </Routes>
+    </BrowserRouter>
   );
 }

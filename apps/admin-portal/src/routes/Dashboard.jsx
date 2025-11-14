@@ -1,236 +1,175 @@
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useAdminGuard } from "../lib/guards";
-import Sidebar from "../components/layout/Sidebar";
-import Topbar from "../components/layout/Topbar";
-import StatCard from "shared-ui/StatCard";
-import Section from "shared-ui/Section";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "shared-ui/Table";
-import { inr } from "shared-core/money";
-import { getMonthKey } from "shared-core/dates";
 import {
-  countUsers,
-  countDAU,
-  countNewUsersToday,
-  countTherapists,
-  countCompletedSessions,
-  sumSessionsRevenueMonth,
-  countUsersByPlus,
-  topTherapistsBySessions,
-  getSessionCompletionRate,
-  countNewUsers7d,
-  countNewUsers30d,
-  countWAU,
-  countMAU,
-} from "shared-core/metrics";
+  totalUsers, dauToday, newUsersToday, totalTherapists,
+  totalSessionsCompleted, sessionsRevenueThisMonth,
+  usersByPlus, topTherapistsThisMonth, completionRateThisMonth,
+  newUsersLastNDays, wau, mau, payoutsForMonth
+} from "@shared-core/metrics";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@shared-ui/Table.jsx";
+
+function INR(x){ try{ return "₹" + Math.round(x||0).toLocaleString("en-IN"); } catch { return "₹0"; } }
+
+function StatCard({ label, value, hint, color="#fff" }) {
+  return (
+    <div style={{
+      background: color,
+      borderRadius: 16,
+      padding: 22,
+      boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
+      textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      color: "#111",
+      transition: "all 0.2s ease-in-out",
+    }}>
+      <div style={{ fontSize: 14, fontWeight: 500, color: "#555" }}>{label}</div>
+      <div style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>{value ?? "—"}</div>
+      {hint && <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>{hint}</div>}
+    </div>
+  );
+}
 
 export default function Dashboard() {
-  const { loading: authLoading } = useAdminGuard();
+  // --- Queries
+  const qTotalUsers = useQuery({ queryKey: ["totalUsers"], queryFn: totalUsers });
+  const qDAU        = useQuery({ queryKey: ["dau"], queryFn: dauToday });
+  const qNewToday   = useQuery({ queryKey: ["newToday"], queryFn: newUsersToday });
+  const qTher       = useQuery({ queryKey: ["therapists"], queryFn: totalTherapists });
 
-  const { data: totalUsers, isLoading: loadingUsers } = useQuery({
-    queryKey: ["users", "total"],
-    queryFn: countUsers,
-  });
+  const qSessComp   = useQuery({ queryKey: ["sessComp"], queryFn: totalSessionsCompleted });
+  const qRevMonth   = useQuery({ queryKey: ["revMonth"], queryFn: sessionsRevenueThisMonth });
 
-  const { data: dau, isLoading: loadingDAU } = useQuery({
-    queryKey: ["users", "dau"],
-    queryFn: countDAU,
-  });
+  const qWAU        = useQuery({ queryKey: ["wau"], queryFn: wau });
+  const qMAU        = useQuery({ queryKey: ["mau"], queryFn: mau });
 
-  const { data: newUsersToday, isLoading: loadingNewToday } = useQuery({
-    queryKey: ["users", "new-today"],
-    queryFn: countNewUsersToday,
-  });
+  const qCompRate   = useQuery({ queryKey: ["compRate"], queryFn: completionRateThisMonth });
+  const qNew7       = useQuery({ queryKey: ["new7"], queryFn: () => newUsersLastNDays(7) });
+  const qNew30      = useQuery({ queryKey: ["new30"], queryFn: () => newUsersLastNDays(30) });
 
-  const { data: totalTherapists, isLoading: loadingTherapists } = useQuery({
-    queryKey: ["therapists", "total"],
-    queryFn: countTherapists,
-  });
+  const qTopTher    = useQuery({ queryKey: ["topTher"], queryFn: () => topTherapistsThisMonth(5) });
 
-  const { data: completedSessions, isLoading: loadingSessions } = useQuery({
-    queryKey: ["sessions", "completed"],
-    queryFn: countCompletedSessions,
-  });
+  // NEW: Free vs Plus + Payouts
+  const qPlusSplit  = useQuery({ queryKey: ["plusSplit"], queryFn: usersByPlus });
+  const qPayouts    = useQuery({ queryKey: ["payoutsMonth"], queryFn: () => payoutsForMonth() });
 
-  const { data: monthRevenue, isLoading: loadingRevenue } = useQuery({
-    queryKey: ["revenue", "month", getMonthKey()],
-    queryFn: () => sumSessionsRevenueMonth(getMonthKey()),
-  });
-
-  const { data: usersByPlus, isLoading: loadingByPlus } = useQuery({
-    queryKey: ["users", "by-plus"],
-    queryFn: countUsersByPlus,
-  });
-
-  const { data: topTherapists, isLoading: loadingTop } = useQuery({
-    queryKey: ["therapists", "top", getMonthKey()],
-    queryFn: () => topTherapistsBySessions(getMonthKey(), 5),
-  });
-
-  const { data: completionRate, isLoading: loadingCompletionRate } = useQuery({
-    queryKey: ["sessions", "completion-rate"],
-    queryFn: getSessionCompletionRate,
-  });
-
-  const { data: newUsers7d } = useQuery({
-    queryKey: ["users", "new-7d"],
-    queryFn: countNewUsers7d,
-  });
-
-  const { data: newUsers30d } = useQuery({
-    queryKey: ["users", "new-30d"],
-    queryFn: countNewUsers30d,
-  });
-
-  const { data: wau } = useQuery({
-    queryKey: ["users", "wau"],
-    queryFn: countWAU,
-  });
-
-  const { data: mau } = useQuery({
-    queryKey: ["users", "mau"],
-    queryFn: countMAU,
-  });
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-elma-ink/60">Loading...</div>
-      </div>
-    );
-  }
-
-  const subscriptionsRevenue = 0; // Placeholder
+  // Pretty month label for payouts section
+  const monthLabel = new Date().toLocaleString("en-IN", { month: "long", year: "numeric" });
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex-1">
-        <Topbar title="Dashboard" />
-        <main className="p-8">
-          <Section title="Key Metrics">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard
-                title="Total Users"
-                value={totalUsers?.toLocaleString() || "0"}
-                loading={loadingUsers}
-                icon="👥"
-              />
-              <StatCard
-                title="DAU (Today)"
-                value={dau?.toLocaleString() || "0"}
-                loading={loadingDAU}
-                icon="📱"
-              />
-              <StatCard
-                title="New Users Today"
-                value={newUsersToday?.toLocaleString() || "0"}
-                loading={loadingNewToday}
-                icon="✨"
-              />
-              <StatCard
-                title="Psychologists"
-                value={totalTherapists?.toLocaleString() || "0"}
-                loading={loadingTherapists}
-                icon="👨‍⚕️"
-              />
-            </div>
+    <div style={{ padding: "40px 32px", background: "#FAFAFF", minHeight: "100vh", fontFamily: "Inter, system-ui" }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 20, color: "#3A116D" }}>
+        ELMA Admin Dashboard
+      </h1>
+      <div style={{ height: 4, width: 80, background: "#BA92FF", borderRadius: 2, marginBottom: 30 }}></div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard
-                title="Completed Sessions"
-                value={completedSessions?.toLocaleString() || "0"}
-                loading={loadingSessions}
-                icon="✅"
-              />
-              <StatCard
-                title="Monthly Revenue"
-                value={inr(monthRevenue || 0)}
-                loading={loadingRevenue}
-                icon="💰"
-              />
-              <StatCard
-                title="Free Users"
-                value={usersByPlus?.free?.toLocaleString() || "0"}
-                loading={loadingByPlus}
-                icon="🆓"
-              />
-              <StatCard
-                title="Plus Users"
-                value={usersByPlus?.plus?.toLocaleString() || "0"}
-                loading={loadingByPlus}
-                icon="⭐"
-              />
-            </div>
-          </Section>
+      {/* 👥 User Metrics */}
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: "#3A116D", marginBottom: 14 }}>👥 User Overview</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+        <StatCard label="Total Users" value={qTotalUsers.data ?? "—"} color="#EDE4FF" />
+        <StatCard label="DAU (Today)" value={qDAU.data ?? "—"} color="#EDE4FF" />
+        <StatCard label="New Users Today" value={qNewToday.data ?? "—"} color="#EDE4FF" />
+        <StatCard label="Therapists" value={qTher.data ?? "—"} color="#EDE4FF" />
+      </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Section title="Top Therapists (This Month)">
-              <div className="bg-elma-white rounded-xl2 shadow-soft p-6">
-                {loadingTop ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="h-12 bg-elma-ink/5 rounded animate-pulse" />
-                    ))}
-                  </div>
-                ) : topTherapists && topTherapists.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Sessions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topTherapists.map((t) => (
-                        <TableRow key={t.therapistId}>
-                          <TableCell>{t.name}</TableCell>
-                          <TableCell>{t.monthSessions}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <p className="text-elma-ink/60 text-center py-8">No data yet</p>
-                )}
-              </div>
-            </Section>
+      {/* 👤 Free vs ELMA Plus */}
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: "#3A116D", marginTop: 24, marginBottom: 10 }}>🧮 Free vs ELMA Plus</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+        <StatCard label="Free Users" value={qPlusSplit.data?.free ?? "—"} color="#EFE9FF" />
+        <StatCard label="Plus Users" value={qPlusSplit.data?.plus ?? "—"} color="#EFE9FF" />
+      </div>
 
-            <Section title="Additional Stats">
-              <div className="bg-elma-white rounded-xl2 shadow-soft p-6 space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-elma-ink/60">Session Completion Rate</span>
-                  <span className="font-bold text-elma-ink">
-                    {loadingCompletionRate ? "..." : `${completionRate}%`}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-elma-ink/60">New Users (7 days)</span>
-                  <span className="font-bold text-elma-ink">
-                    {newUsers7d?.toLocaleString() || "0"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-elma-ink/60">New Users (30 days)</span>
-                  <span className="font-bold text-elma-ink">
-                    {newUsers30d?.toLocaleString() || "0"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-elma-ink/60">WAU (7 days)</span>
-                  <span className="font-bold text-elma-ink">
-                    {wau?.toLocaleString() || "0"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-elma-ink/60">MAU (30 days)</span>
-                  <span className="font-bold text-elma-ink">
-                    {mau?.toLocaleString() || "0"}
-                  </span>
-                </div>
-              </div>
-            </Section>
-          </div>
-        </main>
+      {/* 💗 Sessions & Revenue */}
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: "#6B007A", marginTop: 40, marginBottom: 14 }}>💗 Sessions & Revenue</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+        <StatCard label="Sessions Completed" value={qSessComp.data ?? "—"} color="#FFBBD8" />
+        <StatCard label="Revenue This Month" value={INR(qRevMonth.data)} color="#FFBBD8" />
+        <StatCard label="Weekly Active Users" value={qWAU.data ?? "—"} color="#FFBBD8" />
+        <StatCard label="Monthly Active Users" value={qMAU.data ?? "—"} color="#FFBBD8" />
+      </div>
+
+      {/* 📈 Engagement */}
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: "#006684", marginTop: 40, marginBottom: 14 }}>📈 Engagement</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+        <StatCard
+          label="Completion Rate"
+          value={(qCompRate.data?.rate ?? 0) + "%"}
+          hint={`✅ ${qCompRate.data?.completed ?? 0}  •  ❌ ${qCompRate.data?.cancelled ?? 0}`}
+          color="#90E0EF"
+        />
+        <StatCard label="New Users (7d)" value={qNew7.data ?? "—"} color="#90E0EF" />
+        <StatCard label="New Users (30d)" value={qNew30.data ?? "—"} color="#90E0EF" />
+      </div>
+
+      {/* 👑 Top Therapists */}
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: "#3A116D", marginTop: 40, marginBottom: 14 }}>👑 Top Therapists (This Month)</h2>
+      <div style={{
+        background: "#fff",
+        borderRadius: 16,
+        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+        overflow: "hidden",
+        marginTop: 10,
+      }}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>Therapist ID</TableHead>
+              <TableHead align="right">Sessions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(qTopTher.data ?? []).length ? (
+              qTopTher.data.map((r, i) => (
+                <TableRow key={r.therapistId}>
+                  <TableCell>{i + 1}</TableCell>
+                  <TableCell>{r.therapistId}</TableCell>
+                  <TableCell align="right">{r.sessions}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow><TableCell colSpan={3}>No data yet.</TableCell></TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* 💸 Therapist Payouts */}
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: "#3A116D", marginTop: 40, marginBottom: 6 }}>
+        💸 Therapist Payouts — {monthLabel}
+      </h2>
+      <div style={{
+        background: "#fff",
+        borderRadius: 16,
+        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+        overflow: "hidden",
+        marginTop: 10,
+      }}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>Therapist ID</TableHead>
+              <TableHead align="right">Sessions</TableHead>
+              <TableHead align="right">Payout (₹)</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(qPayouts.data ?? []).length ? (
+              qPayouts.data.map((r, i) => (
+                <TableRow key={r.therapistId}>
+                  <TableCell>{i + 1}</TableCell>
+                  <TableCell>{r.therapistId}</TableCell>
+                  <TableCell align="right">{r.sessions}</TableCell>
+                  <TableCell align="right">{Math.round(r.payout).toLocaleString("en-IN")}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow><TableCell colSpan={4}>No completed sessions this month.</TableCell></TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

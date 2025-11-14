@@ -6,12 +6,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "shared-core": path.resolve(__dirname, "../../packages/shared-core"),
-      "shared-ui": path.resolve(__dirname, "../../packages/shared-ui"),
+      "@shared-ui": path.resolve(__dirname, "../../packages/shared-ui"),
+      "@shared-core": path.resolve(__dirname, "../../packages/shared-core"),
     },
-  },
-  server: {
-    port: 3000,
   },
 });

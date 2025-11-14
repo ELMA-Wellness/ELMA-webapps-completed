@@ -1,89 +1,123 @@
-import { useState, useEffect } from "react";
+// apps/psych-portal/src/routes/AuthSignIn.jsx
+
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn } from "shared-core/auth";
-import useAuthClient from "../hooks/useAuthClient";
-import Button from "shared-ui/Button";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@shared-core/firebase";
 
-export default function AuthSignIn() {
+export default function PsychAuthSignIn() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [pass, setPass] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useAuthClient();
-  const navigate = useNavigate();
+  const [err, setErr] = useState("");
+  const nav = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
-
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setErr("");
     setLoading(true);
+    try {
+      const res = await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        pass
+      );
 
-    const { user: signedInUser, error: signInError } = await signIn(email, password);
-    
-    if (signInError) {
-      setError(signInError);
+      const user = res.user;
+
+      // Store minimal therapist info for the dashboard
+      localStorage.setItem(
+        "therapist",
+        JSON.stringify({
+          id: user.uid,
+          email: user.email || email.trim(),
+        })
+      );
+
+      // Go to psych dashboard
+      nav("/dashboard");
+    } catch (e) {
+      setErr(e.message?.replace("Firebase: ", "") || "Sign-in failed");
+    } finally {
       setLoading(false);
-    } else if (signedInUser) {
-      navigate("/dashboard");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-elma-sky via-elma-purple to-elma-pink flex items-center justify-center p-4">
-      <div className="bg-elma-white rounded-xl2 shadow-soft p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-elma-ink mb-2">ELMA Psychologist</h1>
-          <p className="text-elma-ink/60">Sign in to access your portal</p>
-        </div>
+    <div
+      style={{
+        padding: 24,
+        maxWidth: 380,
+        margin: "80px auto",
+        fontFamily: "system-ui",
+      }}
+    >
+      <h1 style={{ fontSize: 22, marginBottom: 8, color: "#3A116D" }}>
+        ELMA Psychologist – Sign in
+      </h1>
+      <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>
+        Use your registered ELMA psychologist email & password.
+      </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-elma-ink mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-elma-ink/20 rounded-xl2 focus:outline-none focus:ring-2 focus:ring-elma-sky"
-              required
-            />
-          </div>
+      <form onSubmit={onSubmit}>
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{
+            display: "block",
+            width: "100%",
+            padding: 10,
+            marginTop: 10,
+            border: "1px solid #ddd",
+            borderRadius: 8,
+          }}
+        />
+        <input
+          placeholder="Password"
+          type="password"
+          value={pass}
+          onChange={(e) => setPass(e.target.value)}
+          style={{
+            display: "block",
+            width: "100%",
+            padding: 10,
+            marginTop: 10,
+            border: "1px solid #ddd",
+            borderRadius: 8,
+          }}
+        />
 
-          <div>
-            <label className="block text-sm font-medium text-elma-ink mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-elma-ink/20 rounded-xl2 focus:outline-none focus:ring-2 focus:ring-elma-sky"
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl2 text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            variant="primary"
-            className="w-full"
-            disabled={loading}
+        {err ? (
+          <div
+            style={{
+              color: "#b00020",
+              fontSize: 12,
+              marginTop: 8,
+              lineHeight: 1.4,
+            }}
           >
-            {loading ? "Signing in..." : "Sign In"}
-          </Button>
-        </form>
-      </div>
+            {err}
+          </div>
+        ) : null}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            marginTop: 14,
+            padding: "10px 14px",
+            borderRadius: 8,
+            background: "#BA92FF",
+            color: "#fff",
+            border: 0,
+            fontWeight: 600,
+            cursor: loading ? "default" : "pointer",
+          }}
+        >
+          {loading ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
     </div>
   );
 }

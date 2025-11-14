@@ -1,10 +1,20 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./styles/globals.css";
+import { createRoot } from "react-dom/client";  // <-- this import was missing
+import App from "./App.jsx";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
+
+const rootEl = document.getElementById("root");
+if (!rootEl) {
+  // helpful log if the HTML ever breaks
+  console.error("❌ Root #root not found in index.html");
+}
+
+createRoot(rootEl).render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>
 );
