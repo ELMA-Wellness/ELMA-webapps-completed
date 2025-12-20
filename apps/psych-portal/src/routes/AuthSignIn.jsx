@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@shared-core/firebase";
-
+import { auth } from "../firebase/config";
 export default function PsychAuthSignIn() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
