@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import "./Therapits.css";
 import { doc, getDoc, setDoc, serverTimestamp, addDoc, collection, writeBatch } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { auth, db } from "../firebase/config";
+import { hasOverlap } from "../utils/helper";
+import { useNavigate } from "react-router-dom";
 
 type Slot = {
     startTime: Date;
@@ -14,6 +16,8 @@ export default function TherapistTimeSelector() {
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
     const [slots, setSlots] = useState<Slot[]>([]);
+
+    const navigate=useNavigate()
 
     // 🔥 Firestore-style formatter
     const formatFirestoreStyle = (date: Date) => {
@@ -78,42 +82,50 @@ export default function TherapistTimeSelector() {
             hour12: true,
         }).replace(",", "");
     };
+   
 
+    const handleSubmit = async () => {
+        
+        try {
+            const therapistDataString = localStorage.getItem("therapist");
+            const therapist = therapistDataString
+                ? JSON.parse(therapistDataString)
+                : null;
 
-   const handleSubmit = async () => {
-  try {
-    const therapistDataString = localStorage.getItem("therapist");
-    const therapist = therapistDataString
-      ? JSON.parse(therapistDataString)
-      : null;
+            const uid = therapist?.id || "X2pNVdjtRBpBfEoEKaE3";
 
-    const uid = therapist?.id || "X2pNVdjtRBpBfEoEKaE3";
+            if (!slots || slots.length === 0) {
+                console.warn("No slots to add");
+                return;
+            }
 
-    if (!slots || slots.length === 0) {
-      console.warn("No slots to add");
-      return;
-    }
+            // ❌ STOP if overlapping slots
+           
 
-    const batch = writeBatch(db);
-    const availabilityRef = collection(db, "therapistAvailabilty");
+            const batch = writeBatch(db);
+            const availabilityRef = collection(db, "therapistAvailabilty");
 
-    slots.forEach((slot) => {
-      const docRef = doc(availabilityRef); // auto-generated ID
-      batch.set(docRef, {
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        therapistId: uid,
-        status: "free",
-      });
-    });
+            slots.forEach((slot) => {
+                const docRef = doc(availabilityRef);
+                batch.set(docRef, {
+                    startTime: slot.startTime,
+                    endTime: slot.endTime,
+                    therapistId: uid,
+                    status: "free",
+                    createdAt: new Date(),
+                });
+            });
 
-    await batch.commit();
+            await batch.commit();
+            console.log("✅ Availability updated successfully!");
+            navigate('/')
+            setSlots([])
+            
+        } catch (error) {
+            console.error("❌ Error updating availability:", error);
+        }
+    };
 
-    console.log("✅ Availability updated successfully!");
-  } catch (error) {
-    console.error("❌ Error updating availability:", error);
-  }
-};
 
 
     console.log(slots)

@@ -101,7 +101,7 @@ export default function PsychDashboard() {
 
   const setDashBoardDataByFetching=async()=>{
 
-    const res=await getDashBoardData('X2pNVdjtRBpBfEoEKaE3')
+    const res=await getDashBoardData(tid)
     setDashBoardData({
     todaySessionCount : res.todaysSessions,
     currentMonthEarning: res.currentMonthEarning,
