@@ -12,7 +12,7 @@ import {
   myNewClientsThisMonth,
   myAverageRating,
   myNextSession,
-  myMonthlySummary,           // NEW: per-month sessions + earnings
+  myMonthlySummary, // NEW: per-month sessions + earnings
 } from "@shared-core/therapist-metrics";
 
 import { auth } from "@shared-core/firebase";
@@ -25,6 +25,7 @@ import {
   TableCell,
 } from "@shared-ui/Table.jsx";
 import { getDashBoardData } from "../services/dashboard";
+import LoaderModal from "../components/Loader";
 
 // ---------- helpers ----------
 
@@ -86,47 +87,47 @@ export default function PsychDashboard() {
   const therapist = getTherapist();
   const tid = therapist.id; // stored by AuthSignIn
   const nav = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const[dashBoardData,setDashBoardData]=useState({
-    todaySessionCount : 0,
+  const [dashBoardData, setDashBoardData] = useState({
+    todaySessionCount: 0,
     currentMonthEarning: 0,
-    completionRate : 0,
-    newClients : 0,
-    nextSession :{},
-    upcomingSessions :[],
-    monthToSessionMap :{},
-    monthToPaymentMap:{}
-  })
+    completionRate: 0,
+    newClients: 0,
+    nextSession: {},
+    upcomingSessions: [],
+    monthToSessionMap: {},
+    monthToPaymentMap: {},
+  });
 
+  const setDashBoardDataByFetching = async () => {
+    setLoading(true);
+    try {
+      const res = await getDashBoardData(tid);
+      setDashBoardData({
+        todaySessionCount: res.todaysSessions,
+        currentMonthEarning: res.currentMonthEarning,
+        completionRate: res.completionRate,
+        newClients: 0,
+        nextSession: res.nextSession,
+        upcomingSessions: res.upcommingSessionsForTodayOnly,
+        monthToSessionMap: res.monthToSessionMapYearly,
+        monthToPaymentMap: res.monthToPaymentMapYearly,
+      });
 
-  const setDashBoardDataByFetching=async()=>{
+      console.log(res);
+    } catch (err) {
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const res=await getDashBoardData(tid)
-    setDashBoardData({
-    todaySessionCount : res.todaysSessions,
-    currentMonthEarning: res.currentMonthEarning,
-    completionRate : res.completionRate,
-    newClients : 0,
-    nextSession :res.nextSession,
-    upcomingSessions :res.upcommingSessionsForTodayOnly,
-    monthToSessionMap :res.monthToSessionMapYearly,
-    monthToPaymentMap:res.monthToPaymentMapYearly
-  })
+  useEffect(() => {
+    setDashBoardDataByFetching();
+  }, []);
 
-    console.log(res)
-
-  }
-
-
-  useEffect(()=>{
-    setDashBoardDataByFetching()
-  },[])
-
-  console.log(dashBoardData?.nextSession)
-
-
-
-  
+  console.log(dashBoardData?.nextSession);
 
   // ---- top cards ----
   const qToday = useQuery({
@@ -192,9 +193,9 @@ export default function PsychDashboard() {
     nav("/auth/sign-in");
   };
 
-  const handleSetAvailabilty=()=>{
-    nav('/time-slot')
-  }
+  const handleSetAvailabilty = () => {
+    nav("/time-slot");
+  };
 
   const monthlyRows = qMonthly.data ?? [];
 
@@ -227,39 +228,38 @@ export default function PsychDashboard() {
           Psychologist Dashboard
         </h1>
         <div>
+          <button
+            onClick={handleSetAvailabilty}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 999,
+              border: "none",
+              background: "#BA92FF",
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Set Availabilty
+          </button>
 
-        <button
-          onClick={handleSetAvailabilty}
-          style={{
-            padding: "8px 14px",
-            borderRadius: 999,
-            border: "none",
-            background: "#BA92FF",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Set Availabilty
-        </button>
-
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "8px 14px",
-            borderRadius: 999,
-            border: "none",
-            background: "#BA92FF",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-            marginLeft:"4px"
-          }}
-        >
-          Log out
-        </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 999,
+              border: "none",
+              background: "#BA92FF",
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              marginLeft: "4px",
+            }}
+          >
+            Log out
+          </button>
         </div>
       </div>
 
@@ -296,9 +296,7 @@ export default function PsychDashboard() {
         />
         <Card
           title="Avg Rating"
-          value={`${qRating.data?.avg ?? 0} (${
-            qRating.data?.count ?? 0
-          })`}
+          value={`${qRating.data?.avg ?? 0} (${qRating.data?.count ?? 0})`}
           color="#FFBBD8"
         />
       </div>
@@ -345,9 +343,7 @@ export default function PsychDashboard() {
               </div>
             </div>
           ) : (
-            <div style={{ color: "#777" }}>
-              No upcoming confirmed sessions.
-            </div>
+            <div style={{ color: "#777" }}>No upcoming confirmed sessions.</div>
           )}
         </div>
       </div>
@@ -396,18 +392,13 @@ export default function PsychDashboard() {
                           rel="noreferrer"
                           style={{ color: "#3A116D", fontSize: 13 }}
                         >
-                          {
-                            row?.meetingLink
-
-                          }
+                          {row?.meetingLink}
                         </a>
                       ) : (
                         "—"
                       )}
                     </TableCell>
-                    <TableCell align="right">
-                      {INR(row.amount || 0)}
-                    </TableCell>
+                    <TableCell align="right">{INR(row.amount || 0)}</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -495,9 +486,7 @@ export default function PsychDashboard() {
                 dashBoardData?.monthToPaymentMap?.map((row) => (
                   <TableRow key={row.month}>
                     <TableCell>{row.month}</TableCell>
-                    <TableCell align="right">
-                      {INR(row.payment || 0)}
-                    </TableCell>
+                    <TableCell align="right">{INR(row.payment || 0)}</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -509,6 +498,7 @@ export default function PsychDashboard() {
           </Table>
         </div>
       </div>
+      <LoaderModal visible={loading}/>
     </div>
   );
 }
