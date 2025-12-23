@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@shared-core/firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/config";
 
 console.log("✅ AuthSignIn mounted");
 

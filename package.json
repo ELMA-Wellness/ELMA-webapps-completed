@@ -1,10 +1,16 @@
 {
   "name": "elma-web",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:admin": "npm run dev --workspace=apps/admin-portal",
     "dev:psych": "npm run dev --workspace=apps/psych-portal",
     "seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "firebase": "^12.7.0"
   }
 }
