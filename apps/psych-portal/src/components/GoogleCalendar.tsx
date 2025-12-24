@@ -3,7 +3,7 @@ import React from "react";
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse, useGoogleLogin, useGoogleOAuth } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios'
-import {Calendar,Calendar1Icon}  from  'lucide-react'
+import {Calendar1Icon}  from  'lucide-react'
 
 interface ConnectProps {
 }

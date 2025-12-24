@@ -36,7 +36,6 @@ export const getDashBoardData = async (therapistId: string) => {
   const upcomingTodayQ = query(
     ref,
     where("therapistId", "==", therapistId),
-    where("bookingDate", "==", today),
     where("startTime", ">", now),
     orderBy("startTime", "asc")
   );
