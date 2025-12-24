@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc, serverTimestamp, addDoc, collection, writeBatch } 
 import { auth, db } from "../firebase/config";
 import { hasOverlap } from "../utils/helper";
 import { useNavigate } from "react-router-dom";
+import { ConnectGoogleCalendar } from "./GoogleCalendar";
 
 type Slot = {
     startTime: Date;
@@ -133,6 +134,7 @@ export default function TherapistTimeSelector() {
 
     return (
         <div className="page-container">
+          <ConnectGoogleCalendar/>
             {/* Main Page */}
             {!adding && (
                 <div className="card">
