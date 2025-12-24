@@ -28,202 +28,218 @@ const CustomEvent = ({ event, onConfirm, onCancel }: any) => {
     );
 };
 
-
 const localizer = dateFnsLocalizer({
-    format,
-    startOfWeek,
-    getDay,
-    locales,
+  format,
+  startOfWeek,
+  getDay,
+  locales,
 });
 
 interface Availability {
-    id: string;
-    therapistId: string;
-    startTime: any;
-    endTime: any;
-    status: "free" | "booked" | "cancelled" | "unavailable";
+  id: string;
+  therapistId: string;
+  startTime: any;
+  endTime: any;
+  status: "free" | "booked" | "cancelled" | "unavailable";
 }
 
 interface Props {
+  therapistId: string;
+  availabilities: Availability[];
+  onCreateUnavailable: (payload: {
     therapistId: string;
-    availabilities: Availability[];
-    onCreateUnavailable: (payload: {
-        therapistId: string;
-        startTime: Timestamp;
-        endTime: Timestamp;
-        status: "unavailable";
-        createdAt: any;
-    }) => void;
+    startTime: Timestamp;
+    endTime: Timestamp;
+    status: "unavailable";
+    createdAt: any;
+  }) => void;
 }
 
-// 🔒 SAFE DATE NORMALIZER
+// 🔒 Safe Date Normalizer
 const toDate = (value: any): Date => {
-    if (!value) return new Date();
-    if (typeof value.toDate === "function") return value.toDate();
-    if (value instanceof Date) return value;
-    return new Date(value);
+  if (!value) return new Date();
+  if (typeof value.toDate === "function") return value.toDate();
+  if (value instanceof Date) return value;
+  return new Date(value);
 };
 
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const now = () => new Date();
+
 const TherapistCalendar: React.FC<Props> = ({
-    therapistId,
-    availabilities,
-    onCreateUnavailable,
+  therapistId,
+  availabilities,
+  onCreateUnavailable,
 }) => {
-    // 🔥 Temporary selected range (UI only)
-    const [selectedRange, setSelectedRange] = useState<{
-        start: Date;
-        end: Date;
-    } | null>(null);
+  const [selectedRange, setSelectedRange] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
 
-    // 📌 Existing events
-    const events = useMemo(() => {
-        const baseEvents = availabilities.map((a) => ({
-            id: a.id,
-            title:
-                a.status === "free"
-                    ? "Available"
-                    : a.status === "booked"
-                        ? "Booked"
-                        : a.status === "cancelled"
-                            ? "Cancelled"
-                            : "Unavailable",
-            start: toDate(a.startTime),
-            end: toDate(a.endTime),
-            status: a.status,
-        }));
+  // 📌 EVENTS (HIDE FREE)
+  const events = useMemo(() => {
+    const baseEvents = availabilities
+      .filter((a) => a.status !== "free") // 🚫 hide free
+      .map((a) => ({
+        id: a.id,
+        title:
+          a.status === "booked"
+            ? "Booked"
+            : a.status === "cancelled"
+            ? "Cancelled"
+            : "Unavailable",
+        start: toDate(a.startTime),
+        end: toDate(a.endTime),
+        status: a.status,
+      }));
 
-        // 👇 Add preview selected event
-        if (selectedRange) {
-            baseEvents.push({
-                id: "selected-preview",
-                title: "Selected",
-                start: selectedRange.start,
-                end: selectedRange.end,
-                status: "selected",
-            } as any);
-        }
+    if (selectedRange) {
+      baseEvents.push({
+        id: "selected-preview",
+        title: "Selected",
+        start: selectedRange.start,
+        end: selectedRange.end,
+        status: "selected",
+      } as any);
+    }
 
-        return baseEvents;
-    }, [availabilities, selectedRange]);
+    return baseEvents;
+  }, [availabilities, selectedRange]);
 
-    // 🖱️ Handle interval selection
-    const handleSelectSlot = useCallback(
-        (slotInfo: SlotInfo) => {
-            const start = slotInfo.start as Date;
-            const end = slotInfo.end as Date;
+  // 🧠 OVERLAP CHECK
+  const isOverlapping = (start: Date, end: Date) => {
+    return events.some((e: any) => {
+      if (e.status !== "booked" && e.status !== "unavailable") return false;
+      return start < e.end && end > e.start;
+    });
+  };
 
-            if (end <= start) return;
+  // 🖱️ SLOT SELECTION
+  const handleSelectSlot = useCallback(
+    (slotInfo: SlotInfo) => {
+      const start = slotInfo.start as Date;
+      const end = slotInfo.end as Date;
 
-            if (isOverlapping(start, end, events)) {
-                console.warn("🚫 Slot overlaps unavailable/booked");
-                return;
-            }
+      if (start < now()) return; // 🚫 past time
+      if (start < startOfToday()) return; // 🚫 past day
+      if (end <= start) return;
+      if (isOverlapping(start, end)) return;
 
-            setSelectedRange({ start, end });
+      setSelectedRange({ start, end });
+    },
+    [events]
+  );
+
+  // 💾 SAVE
+  const confirmUnavailable = () => {
+    if (!selectedRange) return;
+
+    onCreateUnavailable({
+      therapistId,
+      startTime: Timestamp.fromDate(selectedRange.start),
+      endTime: Timestamp.fromDate(selectedRange.end),
+      status: "unavailable",
+      createdAt: serverTimestamp(),
+    });
+
+    setSelectedRange(null);
+  };
+
+  // 🎨 EVENT STYLE
+  const eventStyleGetter = (event: any) => {
+    if (event.end < now()) {
+      return {
+        style: {
+          opacity: 0.4,
+          pointerEvents: "none",
         },
-        [events]
-    );
+      };
+    }
 
+    switch (event.status) {
+      case "booked":
+        return {
+          style: {
+            backgroundColor: "#E8F0FE",
+            color: "#1A73E8",
+            borderLeft: "4px solid #1A73E8",
+          },
+        };
+      case "cancelled":
+        return {
+          style: {
+            backgroundColor: "#FCE8E6",
+            color: "#A50E0E",
+            borderLeft: "4px solid #EA4335",
+            textDecoration: "line-through",
+          },
+        };
+      case "unavailable":
+        return {
+          style: {
+            backgroundColor: "#F3F4F6",
+            color: "#374151",
+            borderLeft: "4px solid #9CA3AF",
+          },
+        };
+      case "selected":
+        return {
+          style: {
+            backgroundColor: "#FEF3C7",
+            color: "#92400E",
+            border: "2px dashed #F59E0B",
+          },
+        };
+      default:
+        return {};
+    }
+  };
 
-    // 💾 Save selected interval
-    const confirmUnavailable = () => {
-        if (!selectedRange) return;
+  // 📅 DISABLE PAST DAYS UI
+  const dayPropGetter = (date: Date) => {
+    if (date < startOfToday()) {
+      return {
+        style: {
+          backgroundColor: "#F9FAFB",
+          pointerEvents: "none",
+          opacity: 0.5,
+        },
+      };
+    }
+    return {};
+  };
 
-        onCreateUnavailable({
-            therapistId,
-            startTime: Timestamp.fromDate(selectedRange.start),
-            endTime: Timestamp.fromDate(selectedRange.end),
-            status: "unavailable",
-            createdAt: serverTimestamp(),
-        });
-
-        setSelectedRange(null); // clear preview
-    };
-
-    // 🎨 Event styling
-    const eventStyleGetter = (event: any) => {
-        switch (event.status) {
-            case "free":
-                return {
-                    style: {
-                        backgroundColor: "#E6F4EA",
-                        color: "#137333",
-                        borderLeft: "4px solid #34A853",
-                    },
-                };
-            case "booked":
-                return {
-                    style: {
-                        backgroundColor: "#E8F0FE",
-                        color: "#1A73E8",
-                        borderLeft: "4px solid #1A73E8",
-                    },
-                };
-            case "cancelled":
-                return {
-                    style: {
-                        backgroundColor: "#FCE8E6",
-                        color: "#A50E0E",
-                        borderLeft: "4px solid #EA4335",
-                        textDecoration: "line-through",
-                    },
-                };
-            case "unavailable":
-                return {
-                    style: {
-                        backgroundColor: "#F3F4F6",
-                        color: "#374151",
-                        borderLeft: "4px solid #9CA3AF",
-                    },
-                };
-            case "selected":
-                return {
-                    style: {
-                        backgroundColor: "#FEF3C7",
-                        color: "#92400E",
-                        border: "2px dashed #F59E0B",
-                    },
-                };
-            default:
-                return {};
-        }
-    };
-
-    const isOverlapping = (
-        start: Date,
-        end: Date,
-        events: any[]
-    ): boolean => {
-        return events.some((e) => {
-            if (e.status !== "unavailable" && e.status !== "booked") return false;
-
-            return start < e.end && end > e.start;
-        });
-    };
-
-
-    return (
-        <div className="calendar-container">
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                views={["week", "day"]}
-                defaultView="week"
-                step={30}
-                timeslots={2}
-                selectable={(slotInfo: { start: Date; end: Date; }) => {
-                    return !isOverlapping(
-                        slotInfo.start as Date,
-                        slotInfo.end as Date,
-                        events
-                    );
-                }}
-                onSelectSlot={handleSelectSlot}
-                eventPropGetter={eventStyleGetter}
-                style={{ height: "100%" }}
-                components={{
+  return (
+    <div className="calendar-container">
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        views={["week", "day"]}
+        defaultView="week"
+        defaultDate={new Date()}
+        step={30}
+        timeslots={2}
+        selectable={(slotInfo: { start: Date; end: Date }) => {
+          if (slotInfo.start < startOfToday()) return false;
+          if (slotInfo.start < now()) return false;
+          return !isOverlapping(slotInfo.start, slotInfo.end);
+        }}
+        onSelectSlot={handleSelectSlot}
+        onNavigate={(date) => {
+          if (date < startOfToday()) return; // 🚫 block past navigation
+        }}
+        dayPropGetter={dayPropGetter}
+        eventPropGetter={eventStyleGetter}
+        scrollToTime={new Date()}
+        style={{ height: "100%" }}
+        components={{
                     event: (props) => (
                         <CustomEvent
                             {...props}
@@ -232,17 +248,16 @@ const TherapistCalendar: React.FC<Props> = ({
                         />
                     ),
                 }}
+      />
 
-            />
-
-            {selectedRange && (
-                <div className="confirm-bar">
-                    <button onClick={confirmUnavailable}>Mark Unavailable</button>
-                    <button onClick={() => setSelectedRange(null)}>Cancel</button>
-                </div>
-            )}
+      {selectedRange && (
+        <div className="confirm-bar">
+          <button onClick={confirmUnavailable}>Mark Unavailable</button>
+          <button onClick={() => setSelectedRange(null)}>Cancel</button>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default TherapistCalendar;
