@@ -168,3 +168,83 @@
     font-size: 22px;
   }
 }
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 16px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.calendar-section {
+  margin-bottom: 24px;
+}
+
+.availability-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.slots-list {
+  margin-top: 16px;
+}
+
+.slot-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f1f3f4;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.side-panel {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  width: 300px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.primary-btn {
+  background: #1a73e8;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+

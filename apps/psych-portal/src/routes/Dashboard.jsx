@@ -26,6 +26,9 @@ import {
 } from "@shared-ui/Table.jsx";
 import { getDashBoardData } from "../services/dashboard";
 import LoaderModal from "../components/Loader";
+import { EllipsisVerticalIcon } from "lucide-react";
+import ConfirmationModal from "../components/modals/ConfirmationPopUp";
+import { markSessionAsCompleted } from "../services/bookings";
 
 // ---------- helpers ----------
 
@@ -89,6 +92,25 @@ export default function PsychDashboard() {
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  const [open, setOpen] = useState(false);
+  const[item,setItem]=useState(null)
+
+  console.log("current item",item)
+
+
+  
+
+  const onShowPopup=(item)=>{
+   
+    setOpen(true)
+     setItem(item)
+
+  }
+
+  const onClose=()=>{
+    setOpen(false)
+  }
+
   const [dashBoardData, setDashBoardData] = useState({
     todaySessionCount: 0,
     currentMonthEarning: 0,
@@ -108,7 +130,7 @@ export default function PsychDashboard() {
         todaySessionCount: res.todaysSessions,
         currentMonthEarning: res.currentMonthEarning,
         completionRate: res.completionRate,
-        newClients: 0,
+        newClients: res.newClientsFromUpcomingMonth,
         nextSession: res.nextSession,
         upcomingSessions: res.upcommingSessionsForTodayOnly,
         monthToSessionMap: res.monthToSessionMapYearly,
@@ -127,58 +149,21 @@ export default function PsychDashboard() {
     setDashBoardDataByFetching();
   }, []);
 
+  const onConfirm=async()=>{
+    console.log(item)
+
+       await markSessionAsCompleted(item?.id)
+       await setDashBoardDataByFetching()
+
+        setOpen(false)
+
+
+  }
+
   console.log(dashBoardData?.nextSession);
 
   // ---- top cards ----
-  const qToday = useQuery({
-    queryKey: ["tToday", tid],
-    queryFn: () => myTodaySessionsCount(tid),
-    enabled: !!tid,
-  });
-
-  const qEarn = useQuery({
-    queryKey: ["tEarn", tid],
-    queryFn: () => myEarningsThisMonth(tid),
-    enabled: !!tid,
-  });
-
-  const qCR = useQuery({
-    queryKey: ["tCR", tid],
-    queryFn: () => myCompletionRateThisMonth(tid),
-    enabled: !!tid,
-  });
-
-  const qNew = useQuery({
-    queryKey: ["tNew", tid],
-    queryFn: () => myNewClientsThisMonth(tid),
-    enabled: !!tid,
-  });
-
-  const qRating = useQuery({
-    queryKey: ["tRating", tid],
-    queryFn: () => myAverageRating(tid),
-    enabled: !!tid,
-  });
-
-  // ---- sessions ----
-  const qNext = useQuery({
-    queryKey: ["tNext", tid],
-    queryFn: () => myNextSession(tid),
-    enabled: !!tid,
-  });
-
-  const qUpcoming = useQuery({
-    queryKey: ["tUpcoming", tid],
-    queryFn: () => myUpcomingSessions(tid, 10),
-    enabled: !!tid,
-  });
-
-  // ---- NEW: monthly breakdown for last 12 months ----
-  const qMonthly = useQuery({
-    queryKey: ["tMonthlySummary", tid],
-    queryFn: () => myMonthlySummary(tid, 12),
-    enabled: !!tid,
-  });
+  
 
   // ---- logout ----
   const handleLogout = async () => {
@@ -197,7 +182,6 @@ export default function PsychDashboard() {
     nav("/time-slot");
   };
 
-  const monthlyRows = qMonthly.data ?? [];
 
   return (
     <div
@@ -284,19 +268,19 @@ export default function PsychDashboard() {
         <Card
           title="Completion Rate"
           value={(dashBoardData?.completionRate ?? 0) + "%"}
-          hint={`✅ ${qCR.data?.completed ?? 0} • ❌ ${
-            qCR.data?.cancelled ?? 0
+          hint={`✅ ${dashBoardData?.completionRate ?? 0} • ❌ ${
+            dashBoardData?.completionRate ?? 0
           }`}
           color="#90E0EF"
         />
         <Card
           title="New Clients (This Month)"
-          value={qNew.data ?? "—"}
+          value={dashBoardData?.newClients ?? "—"}
           color="#EDE4FF"
         />
         <Card
           title="Avg Rating"
-          value={`${qRating.data?.avg ?? 0} (${qRating.data?.count ?? 0})`}
+          value={`${0 ?? 0} (${0 ?? 0})`}
           color="#FFBBD8"
         />
       </div>
@@ -375,6 +359,7 @@ export default function PsychDashboard() {
                 <TableHead>Mode</TableHead>
                 <TableHead>Meet Link</TableHead>
                 <TableHead align="right">Payout</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -399,6 +384,17 @@ export default function PsychDashboard() {
                       )}
                     </TableCell>
                     <TableCell align="right">{INR(row.amount || 0)}</TableCell>
+                    <button onClick={()=>{
+                      onShowPopup(row)
+
+                    }}>
+                      <TableCell>
+                      <EllipsisVerticalIcon/>
+
+                    </TableCell>
+
+                    </button>
+                    
                   </TableRow>
                 ))
               ) : (
@@ -498,7 +494,8 @@ export default function PsychDashboard() {
           </Table>
         </div>
       </div>
-      <LoaderModal visible={loading}/>
+      <LoaderModal visible={loading} />
+      <ConfirmationModal onConfirm={onConfirm} onClose={onClose} isOpen={open}/>
     </div>
   );
 }

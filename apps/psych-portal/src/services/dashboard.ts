@@ -62,7 +62,7 @@ export const getDashBoardData = async (therapistId: string) => {
   const completedQ = query(
     ref,
     where("therapistId", "==", therapistId),
-    where("session_completed", "==", true)
+    where("sessionCompleted", "==", true)
   );
 
   // 6️⃣ Yearly sessions
@@ -93,6 +93,12 @@ export const getDashBoardData = async (therapistId: string) => {
 const monthToSessionMapYearly = Array(12).fill(0);
 const monthToPaymentMapYearly = Array(12).fill(0);
 
+const map=currentMonthSnap?.docs?.map((i)=>{
+  return {
+    id : i.data()?.userId
+  }
+})
+console.log("map",map)
 
 
 // 🔹 aggregate yearly data
@@ -150,8 +156,8 @@ const paymentByMonthFormatted = MONTHS.map((month, index) => ({
         : Math.round((completedSnap.size / yearlySnap.size) * 100),
 
     newClientsFromUpcomingMonth: new Set(
-      yearlySnap.docs.map(d => d.data().userId)
-    ).size,
+  currentMonthSnap?.docs?.map(d => d.data()?.userId) ?? []
+).size,
     monthToSessionMapYearly:sessionByMonthFormatted,
     monthToPaymentMapYearly:paymentByMonthFormatted
   };
