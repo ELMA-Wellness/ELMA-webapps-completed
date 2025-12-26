@@ -225,7 +225,7 @@ export default function PsychDashboard() {
               cursor: "pointer",
             }}
           >
-            Set Availabilty
+            Set Unavailabilty
           </button>
 
           <button

@@ -19,11 +19,13 @@ const monthEnd = `${year}-${String(month + 1).padStart(2, "0")}-01`;
 const yearStart = `${year}-01-01`;
 const yearEnd = `${year + 1}-01-01`;
 
-
 export const getDashBoardData = async (therapistId: string) => {
   const ref = collection(db, "bookings");
-  console.log(ref)
+
+  console.log();
   const now = Timestamp.now();
+
+  const allQ = query(ref, where("therapistId", "==", therapistId));
 
   // 1️⃣ Today's sessions
   const todayQ = query(
@@ -80,6 +82,7 @@ export const getDashBoardData = async (therapistId: string) => {
     currentMonthSnap,
     completedSnap,
     yearlySnap,
+    allSnap,
   ] = await Promise.all([
     getDocs(todayQ),
     getDocs(upcomingTodayQ),
@@ -87,56 +90,64 @@ export const getDashBoardData = async (therapistId: string) => {
     getDocs(currentMonthQ),
     getDocs(completedQ),
     getDocs(yearlyQ),
+    getDocs(allQ),
   ]);
 
   // 🔹 initialize fixed 12-size arrays
-const monthToSessionMapYearly = Array(12).fill(0);
-const monthToPaymentMapYearly = Array(12).fill(0);
+  const monthToSessionMapYearly = Array(12).fill(0);
+  const monthToPaymentMapYearly = Array(12).fill(0);
 
-const map=currentMonthSnap?.docs?.map((i)=>{
-  return {
-    id : i.data()?.userId
-  }
-})
-console.log("map",map)
+  const map = currentMonthSnap?.docs?.map((i) => {
+    return {
+      id: i.data()?.userId,
+    };
+  });
+  console.log("map", map);
 
+  // 🔹 aggregate yearly data
+  yearlySnap.docs.forEach((doc) => {
+    const d = doc.data();
 
-// 🔹 aggregate yearly data
-yearlySnap.docs.forEach(doc => {
-  const d = doc.data();
+    if (!d.startTime) return;
 
-  if (!d.startTime) return;
+    const date = d.startTime.toDate();
+    const monthIndex = date.getMonth(); // 0 = Jan, 11 = Dec
 
-  const date = d.startTime.toDate();
-  const monthIndex = date.getMonth(); // 0 = Jan, 11 = Dec
+    // count sessions
+    monthToSessionMapYearly[monthIndex] += 1;
 
-  // count sessions
-  monthToSessionMapYearly[monthIndex] += 1;
-
-  // sum earnings (only completed payments)
-  if (d.paymentStatus === "completed" && typeof d.amount === "number") {
-    monthToPaymentMapYearly[monthIndex] += d.amount;
-  }
-});
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-const sessionByMonthFormatted = MONTHS.map((month, index) => ({
-  month,
-  session: monthToSessionMapYearly[index] || 0,
-}));
-const paymentByMonthFormatted = MONTHS.map((month, index) => ({
-  month,
-  payment: monthToPaymentMapYearly[index] || 0,
-}));
-
-
+    // sum earnings (only completed payments)
+    if (d.paymentStatus === "completed" && typeof d.amount === "number") {
+      monthToPaymentMapYearly[monthIndex] += d.amount;
+    }
+  });
+  const MONTHS = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const sessionByMonthFormatted = MONTHS.map((month, index) => ({
+    month,
+    session: monthToSessionMapYearly[index] || 0,
+  }));
+  const paymentByMonthFormatted = MONTHS.map((month, index) => ({
+    month,
+    payment: monthToPaymentMapYearly[index] || 0,
+  }));
 
   return {
     todaysSessions: todaySnap.size,
 
-    upcommingSessionsForTodayOnly: upcomingTodaySnap.docs.map(d => ({
+    upcommingSessionsForTodayOnly: upcomingTodaySnap.docs.map((d) => ({
       id: d.id,
       ...d.data(),
     })),
@@ -156,9 +167,13 @@ const paymentByMonthFormatted = MONTHS.map((month, index) => ({
         : Math.round((completedSnap.size / yearlySnap.size) * 100),
 
     newClientsFromUpcomingMonth: new Set(
-  currentMonthSnap?.docs?.map(d => d.data()?.userId) ?? []
-).size,
-    monthToSessionMapYearly:sessionByMonthFormatted,
-    monthToPaymentMapYearly:paymentByMonthFormatted
+      currentMonthSnap?.docs?.map((d) => d.data()?.userId) ?? []
+    ).size,
+    monthToSessionMapYearly: sessionByMonthFormatted,
+    monthToPaymentMapYearly: paymentByMonthFormatted,
+    bookings: allSnap?.docs?.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })),
   };
 };
