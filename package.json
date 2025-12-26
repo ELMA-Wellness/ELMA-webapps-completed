@@ -10,7 +10,8 @@
     "dev:psych": "npm run dev --workspace=apps/psych-portal",
     "seed": "node scripts/seed.js"
   },
-  "dependencies": {
-    "firebase": "^12.7.0"
+  
+  "overrides": {
+    "firebase": "12.7.0"
   }
 }
