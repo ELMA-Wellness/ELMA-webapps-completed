@@ -1,15 +1,10 @@
 // src/components/ConnectGoogleCalendar.tsx
-import React from "react";
-import { GoogleOAuthProvider, GoogleLogin, CredentialResponse, useGoogleLogin, useGoogleOAuth } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
+import { useGoogleLogin } from "@react-oauth/google";
 import axios from 'axios'
 import {Calendar1Icon}  from  'lucide-react'
 
-interface ConnectProps {
-}
-const CLIENT_ID = '697733851259-jvdmvpa44v4lmjn0hlae56ubemm56cd4.apps.googleusercontent.com'
 
-const clientId = CLIENT_ID
+
 
 export const ConnectGoogleCalendar = () => {
   const therapist = JSON.parse(localStorage.getItem("therapist") || "{}");
@@ -31,14 +26,7 @@ export const ConnectGoogleCalendar = () => {
     },
   });
 
-  const connectGoogle = async () => {
-  const res = await axios.get(
-    `https://us-central1-elma-react-native-app.cloudfunctions.net/connectGoogle?therapistId=${therapistId}`
-  );
-
-  window.location.href = res.data; // redirect to Google
-};
-
+  
   return (
       <button
       style={{
