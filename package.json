@@ -8,6 +8,7 @@
   "scripts": {
     "dev:admin": "npm run dev --workspace=apps/admin-portal",
     "dev:psych": "npm run dev --workspace=apps/psych-portal",
+    "dev:elma":"npm run dev --workspace=apps/react",
     "seed": "node scripts/seed.js"
   },
   
