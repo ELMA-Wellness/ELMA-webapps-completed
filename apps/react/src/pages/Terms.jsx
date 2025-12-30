@@ -209,7 +209,7 @@ function Terms() {
             {/* Privacy reference */}
             <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
               <h3>Privacy Policy <span className="emoji">🛡️</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Your use of ELMA is also governed by our <a href="/privacy">Privacy Policy</a>. Please review it to understand how we handle your data.</p>
+              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Your use of ELMA is also governed by our Privacy Policy. Please review it to understand how we handle your data.</p>
             </section>
 
             {/* Contact */}
