@@ -228,7 +228,7 @@ function Privacy() {
                 <li>Grievance / Privacy Officer</li>
                 <li>ELMA Emotion Solutions LLP</li>
                 <li>📧 <a href="mailto:privacy@elma.ltd">privacy@elma.ltd</a></li>
-                <li>Address: ELMA motion Solutions LLP, Jaipur, Rajasthan, India</li>
+                <li>Address: ELMA Emotion Solutions LLP, Jaipur, Rajasthan, India</li>
               </ul>
               <p style={{ color: 'rgba(255,255,255,0.8)' }}>We aim to respond within a reasonable timeframe as required by law.</p>
             </section>
