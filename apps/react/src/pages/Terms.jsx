@@ -218,7 +218,7 @@ function Terms() {
               <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
                 <li>Email: <a href="mailto:support@elma.ltd">support@elma.ltd</a></li>
                 <li>Company: ELMA Emotion Solutions LLP</li>
-                <li>Address: ELMA motion Solutions LLP, Jaipur, Rajasthan, India</li>
+                <li>Address: ELMA Emotion Solutions LLP, Jaipur, Rajasthan, India</li>
               </ul>
             </section>
           </div>
