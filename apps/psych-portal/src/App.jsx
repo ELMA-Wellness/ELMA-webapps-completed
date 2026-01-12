@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import PsychAuthSignIn from "./routes/AuthSignIn.jsx";
 import Dashboard from "./routes/Dashboard.jsx";
 import Bookings from "./routes/Bookings.jsx";
 import Earnings from "./routes/Earnings.jsx";
+import TherapistTimeSelector from "./components/TimeSelector.js";
+import { getDashBoardData } from "./services/dashboard.js";
 
 // Small helper
 function getTherapist() {
@@ -25,12 +27,26 @@ function RequireTherapist({ children }) {
 }
 
 export default function App() {
+  const setDashBoardDataByFetching=async()=>{
+  
+      const res=await getDashBoardData('X2pNVdjtRBpBfEoEKaE3')
+  
+      console.log(res.upcommingSessionsForTodayOnly)
+  
+    }
+  
+  
+    useEffect(()=>{
+      setDashBoardDataByFetching()
+    },[])
   return (
     <BrowserRouter>
       <Routes>
 
         {/* LOGIN */}
         <Route path="/auth/sign-in" element={<PsychAuthSignIn />} />
+
+        <Route path="/time-slot" element={<TherapistTimeSelector/>} />
 
         {/* PROTECTED ROUTES */}
         <Route

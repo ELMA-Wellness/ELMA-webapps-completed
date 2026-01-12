@@ -1,0 +1,82 @@
+/* Navigation */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: var(--glass-backdrop);
+  border-bottom: 1px solid var(--glass-border);
+  transition: var(--transition-smooth);
+}
+
+.nav-content { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; }
+.logo { display: flex; align-items: center; gap: 0.75rem; flex-wrap: nowrap; }
+.logo-img { height: 40px; width: auto; border-radius: 8px; }
+.brand-tagline { font-size: 0.9rem; font-weight: 600; background: var(--elma-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+
+.nav-links { display: flex; align-items: center; gap: 2rem; }
+.nav-link { color: rgba(255, 255, 255, 0.8); font-weight: 500; padding: 0.5rem 0; position: relative; transition: var(--transition-smooth); }
+.nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--elma-gradient); transition: width 0.3s ease; }
+.nav-link:hover::after { width: 100%; }
+.nav-link:hover { color: white; transform: translateY(-1px); }
+
+/* Header CTA */
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--elma-gradient);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: var(--shadow-button);
+  transition: var(--transition-smooth);
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.nav-cta:focus-visible { outline: 2px solid rgba(144, 224, 239, 0.85); outline-offset: 2px; }
+
+.mobile-menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: var(--transition-smooth); }
+.mobile-menu-toggle:hover { background: var(--bg-glass); }
+
+/* Footer */
+.footer { background: var(--bg-secondary); padding: 3rem 0 2rem; border-top: 1px solid var(--glass-border); }
+.footer-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 2rem; }
+.footer-logo-img { height: 40px; width: auto; border-radius: 8px; }
+.footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+.footer-links a { color: rgba(255, 255, 255, 0.7); transition: var(--transition-smooth); }
+.footer-links a:hover { color: var(--elma-purple); }
+.footer-social { display: flex; gap: 1rem; }
+.footer-social a { width: 40px; height: 40px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+.footer-social a:hover { background: var(--elma-gradient); transform: translateY(-2px); }
+.footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid var(--glass-border); }
+.footer-bottom p { color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; }
+
+/* Mobile Menu */
+.mobile-menu { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100vh; background: rgba(10, 10, 10, 0.95); backdrop-filter: var(--glass-backdrop); z-index: 2000; transition: right 0.3s ease; display: flex; flex-direction: column; }
+.mobile-menu.active { right: 0; }
+.mobile-menu-content { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; height: 100%; }
+.mobile-menu-close { align-self: flex-end; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; }
+.mobile-link { color: rgba(255, 255, 255, 0.8); font-size: 1.2rem; font-weight: 500; padding: 1rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: var(--transition-smooth); }
+.mobile-link:hover { color: var(--elma-purple); padding-left: 1rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brand-tagline { display: block; font-size: 0.75rem; line-height: 1.2; }
+  .logo { max-width: 70%; }
+  .logo-img { height: 35px; }
+  .nav-links { display: none; }
+  .nav-cta { display: none; }
+  .mobile-menu-toggle { display: block; }
+  .footer-content { flex-direction: column; text-align: center; gap: 1.5rem; }
+  .footer-links { justify-content: center; }
+  section { padding: 3rem 0; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 0.75rem; }
+  .logo { max-width: 80%; }
+  .brand-tagline { font-size: 0.7rem; }
+}

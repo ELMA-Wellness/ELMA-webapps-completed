@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@shared-core/firebase";
-
+import { auth, db } from "../firebase/config";
+import { collection, getDocs, query, where } from "@firebase/firestore";
 export default function PsychAuthSignIn() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -17,19 +17,29 @@ export default function PsychAuthSignIn() {
     setErr("");
     setLoading(true);
     try {
-      const res = await signInWithEmailAndPassword(
-        auth,
-        email.trim(),
-        pass
-      );
+      const res = await signInWithEmailAndPassword(auth, email.trim(), pass);
 
       const user = res.user;
+
+      const therapistRef = collection(db, "therapists");
+
+      const q = query(therapistRef, where("email", "==", email.trim()));
+
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        console.log("❌ No therapist found");
+        return;
+      }
+
+      const therapistDoc = snapshot.docs[0];
+      console.log("therapist", therapistDoc.id);
 
       // Store minimal therapist info for the dashboard
       localStorage.setItem(
         "therapist",
         JSON.stringify({
-          id: user.uid,
+          id: therapistDoc.id,
           email: user.email || email.trim(),
         })
       );

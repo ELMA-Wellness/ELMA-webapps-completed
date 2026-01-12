@@ -8,7 +8,6 @@ import { inr } from "shared-core/money";
 import { getMonthKey } from "shared-core/dates";
 import { sumSessionsRevenueMonth, countCompletedSessions } from "shared-core/metrics";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "shared-core/firebase";
 
 async function getAverageSessionPrice() {
   const q = query(

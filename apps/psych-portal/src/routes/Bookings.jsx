@@ -1,21 +1,5 @@
-function fmt(ts) {
-  if (!ts) return "—";
-  try {
-    return new Date(ts.seconds * 1000).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  } catch {
-    return "—";
-  }
-}
 
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
-
-import { db } from "@shared-core/firebase";
-import { formatDateTimeIST } from "@shared-core/dates";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -24,43 +8,73 @@ import {
   TableHead,
   TableCell,
 } from "@shared-ui/Table.jsx";
+import { getDashBoardData } from "../services/dashboard";
+import { formatDate } from "date-fns";
+import LoaderModal from "../components/Loader";
 
 // --- Fetch all bookings for this therapist (or all, for now) ----------
-async function fetchBookings() {
-  const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((doc) => {
-    const data = doc.data() || {};
-    return {
-      id: doc.id,
-      userName: data.userName || data.clientName || "Unknown",
-      therapistId: data.therapistId || "—",
-      status: data.status || "pending",
-      amount: Number(data.amount || 0),
-      createdAt: data.createdAt || null,
-      // If you later add therapistPayout / period_end etc., we can show them safely
-      therapistPayout: Number(data.therapistPayout || 0),
-    };
-  });
-}
+
 
 export default function Bookings() {
-  const { data = [], isLoading, error } = useQuery({
-    queryKey: ["psychBookings"],
-    queryFn: fetchBookings,
+
+  function getTherapist() {
+  try {
+    return JSON.parse(localStorage.getItem("therapist") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+  const therapist = getTherapist();
+  const tid = therapist.id; // st
+
+
+
+  const [loading, setLoading] = useState(false);
+
+
+  const [dashBoardData, setDashBoardData] = useState({
+    todaySessionCount: 0,
+    currentMonthEarning: 0,
+    completionRate: 0,
+    newClients: 0,
+    nextSession: {},
+    upcomingSessions: [],
+    monthToSessionMap: {},
+    monthToPaymentMap: {},
   });
 
-  if (isLoading) {
-    return <div style={{ padding: 24 }}>Loading bookings…</div>;
-  }
+  const setDashBoardDataByFetching = async () => {
+    setLoading(true);
+    try {
+      const res = await getDashBoardData(tid);
+      setDashBoardData({
+        todaySessionCount: res.todaysSessions,
+        currentMonthEarning: res.currentMonthEarning,
+        completionRate: res.completionRate,
+        newClients: res.newClientsFromUpcomingMonth,
+        nextSession: res.nextSession,
+        upcomingSessions: res?.bookings,
+        monthToSessionMap: res.monthToSessionMapYearly,
+        monthToPaymentMap: res.monthToPaymentMapYearly,
+      });
 
-  if (error) {
-    return (
-      <div style={{ padding: 24, color: "#b00020" }}>
-        Error loading bookings: {String(error.message || error)}
-      </div>
-    );
-  }
+      console.log(res);
+    } catch (err) {
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setDashBoardDataByFetching();
+  }, []);
+
+
+
+
+
 
   return (
     <div style={{ padding: 24, fontFamily: "system-ui" }}>
@@ -85,25 +99,25 @@ export default function Bookings() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {dashBoardData?.upcomingSessions?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5}>No bookings yet.</TableCell>
               </TableRow>
             ) : (
-              data.map((b) => (
-                <TableRow key={b.id}>
-                  <TableCell>{b.userName}</TableCell>
+              dashBoardData?.upcomingSessions?.map((b) => (
+                <TableRow key={b?.id}>
+                  <TableCell>{b?.userId}</TableCell>
                   <TableCell style={{ textTransform: "capitalize" }}>
-                    {b.status}
+                    {b?.status ?? '--'}
                   </TableCell>
                   <TableCell>
-                    {b.createdAt ? formatDate(b.createdAt) : "—"}
+                    {b?.bookingDate ?? "—"}
                   </TableCell>
                   <TableCell align="right">
-                    {b.amount ? `₹${b.amount}` : "—"}
+                    {b?.amount ? `₹${b?.amount}` : "—"}
                   </TableCell>
                   <TableCell align="right">
-                    {b.therapistPayout ? `₹${b.therapistPayout}` : "—"}
+                    {b?.payoutId ? `₹${b?.payoutId}` : "—"}
                   </TableCell>
                 </TableRow>
               ))
@@ -111,6 +125,7 @@ export default function Bookings() {
           </TableBody>
         </Table>
       </div>
+      <LoaderModal visible={loading}/>
     </div>
   );
 }

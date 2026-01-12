@@ -1,6 +1,6 @@
 // apps/psych-portal/src/routes/Dashboard.jsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +12,7 @@ import {
   myNewClientsThisMonth,
   myAverageRating,
   myNextSession,
-  myMonthlySummary,           // NEW: per-month sessions + earnings
+  myMonthlySummary, // NEW: per-month sessions + earnings
 } from "@shared-core/therapist-metrics";
 
 import { auth } from "@shared-core/firebase";
@@ -24,6 +24,11 @@ import {
   TableHead,
   TableCell,
 } from "@shared-ui/Table.jsx";
+import { getDashBoardData } from "../services/dashboard";
+import LoaderModal from "../components/Loader";
+import { EllipsisVerticalIcon } from "lucide-react";
+import ConfirmationModal from "../components/modals/ConfirmationPopUp";
+import { markSessionAsCompleted } from "../services/bookings";
 
 // ---------- helpers ----------
 
@@ -85,57 +90,80 @@ export default function PsychDashboard() {
   const therapist = getTherapist();
   const tid = therapist.id; // stored by AuthSignIn
   const nav = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const[item,setItem]=useState(null)
+
+  console.log("current item",item)
+
+
+  
+
+  const onShowPopup=(item)=>{
+   
+    setOpen(true)
+     setItem(item)
+
+  }
+
+  const onClose=()=>{
+    setOpen(false)
+  }
+
+  const [dashBoardData, setDashBoardData] = useState({
+    todaySessionCount: 0,
+    currentMonthEarning: 0,
+    completionRate: 0,
+    newClients: 0,
+    nextSession: {},
+    upcomingSessions: [],
+    monthToSessionMap: {},
+    monthToPaymentMap: {},
+  });
+
+  const setDashBoardDataByFetching = async () => {
+    setLoading(true);
+    try {
+      const res = await getDashBoardData(tid);
+      setDashBoardData({
+        todaySessionCount: res.todaysSessions,
+        currentMonthEarning: res.currentMonthEarning,
+        completionRate: res.completionRate,
+        newClients: res.newClientsFromUpcomingMonth,
+        nextSession: res.nextSession,
+        upcomingSessions: res.upcommingSessionsForTodayOnly,
+        monthToSessionMap: res.monthToSessionMapYearly,
+        monthToPaymentMap: res.monthToPaymentMapYearly,
+      });
+
+      console.log(res);
+    } catch (err) {
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setDashBoardDataByFetching();
+  }, []);
+
+  const onConfirm=async()=>{
+    console.log(item)
+
+       await markSessionAsCompleted(item?.id)
+       await setDashBoardDataByFetching()
+
+        setOpen(false)
+
+
+  }
+
+  console.log(dashBoardData?.nextSession);
 
   // ---- top cards ----
-  const qToday = useQuery({
-    queryKey: ["tToday", tid],
-    queryFn: () => myTodaySessionsCount(tid),
-    enabled: !!tid,
-  });
-
-  const qEarn = useQuery({
-    queryKey: ["tEarn", tid],
-    queryFn: () => myEarningsThisMonth(tid),
-    enabled: !!tid,
-  });
-
-  const qCR = useQuery({
-    queryKey: ["tCR", tid],
-    queryFn: () => myCompletionRateThisMonth(tid),
-    enabled: !!tid,
-  });
-
-  const qNew = useQuery({
-    queryKey: ["tNew", tid],
-    queryFn: () => myNewClientsThisMonth(tid),
-    enabled: !!tid,
-  });
-
-  const qRating = useQuery({
-    queryKey: ["tRating", tid],
-    queryFn: () => myAverageRating(tid),
-    enabled: !!tid,
-  });
-
-  // ---- sessions ----
-  const qNext = useQuery({
-    queryKey: ["tNext", tid],
-    queryFn: () => myNextSession(tid),
-    enabled: !!tid,
-  });
-
-  const qUpcoming = useQuery({
-    queryKey: ["tUpcoming", tid],
-    queryFn: () => myUpcomingSessions(tid, 10),
-    enabled: !!tid,
-  });
-
-  // ---- NEW: monthly breakdown for last 12 months ----
-  const qMonthly = useQuery({
-    queryKey: ["tMonthlySummary", tid],
-    queryFn: () => myMonthlySummary(tid, 12),
-    enabled: !!tid,
-  });
+  
 
   // ---- logout ----
   const handleLogout = async () => {
@@ -150,7 +178,10 @@ export default function PsychDashboard() {
     nav("/auth/sign-in");
   };
 
-  const monthlyRows = qMonthly.data ?? [];
+  const handleSetAvailabilty = () => {
+    nav("/time-slot");
+  };
+
 
   return (
     <div
@@ -180,22 +211,40 @@ export default function PsychDashboard() {
         >
           Psychologist Dashboard
         </h1>
+        <div>
+          <button
+            onClick={handleSetAvailabilty}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 999,
+              border: "none",
+              background: "#BA92FF",
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Set Unavailabilty
+          </button>
 
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "8px 14px",
-            borderRadius: 999,
-            border: "none",
-            background: "#BA92FF",
-            color: "#fff",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Log out
-        </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: "8px 14px",
+              borderRadius: 999,
+              border: "none",
+              background: "#BA92FF",
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              marginLeft: "4px",
+            }}
+          >
+            Log out
+          </button>
+        </div>
       </div>
 
       {/* top metric cards */}
@@ -208,32 +257,30 @@ export default function PsychDashboard() {
       >
         <Card
           title="Today's Sessions"
-          value={qToday.data ?? "—"}
+          value={dashBoardData?.todaySessionCount}
           color="#EDE4FF"
         />
         <Card
           title="Earnings (This Month)"
-          value={INR(qEarn.data)}
+          value={INR(dashBoardData?.currentMonthEarning)}
           color="#FFBBD8"
         />
         <Card
           title="Completion Rate"
-          value={(qCR.data?.rate ?? 0) + "%"}
-          hint={`✅ ${qCR.data?.completed ?? 0} • ❌ ${
-            qCR.data?.cancelled ?? 0
+          value={(dashBoardData?.completionRate ?? 0) + "%"}
+          hint={`✅ ${dashBoardData?.completionRate ?? 0} • ❌ ${
+            dashBoardData?.completionRate ?? 0
           }`}
           color="#90E0EF"
         />
         <Card
           title="New Clients (This Month)"
-          value={qNew.data ?? "—"}
+          value={dashBoardData?.newClients ?? "—"}
           color="#EDE4FF"
         />
         <Card
           title="Avg Rating"
-          value={`${qRating.data?.avg ?? 0} (${
-            qRating.data?.count ?? 0
-          })`}
+          value={`${0 ?? 0} (${0 ?? 0})`}
           color="#FFBBD8"
         />
       </div>
@@ -258,7 +305,7 @@ export default function PsychDashboard() {
             boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           }}
         >
-          {qNext.data ? (
+          {dashBoardData?.nextSession ? (
             <div
               style={{
                 display: "flex",
@@ -268,21 +315,19 @@ export default function PsychDashboard() {
             >
               <div>
                 <div style={{ fontWeight: 600 }}>
-                  {fmtDateTime(qNext.data.startAt)}
+                  {fmtDateTime(dashBoardData?.nextSession?.startTime)}
                 </div>
                 <div style={{ fontSize: 13, color: "#666" }}>
-                  User: {qNext.data.userId || "—"} • Mode:{" "}
-                  {qNext.data.mode || "—"}
+                  User: {dashBoardData?.nextSession?.userId || "—"} • Mode:{" "}
+                  {"online" || "—"}
                 </div>
               </div>
               <div style={{ fontWeight: 700 }}>
-                {INR(qNext.data.therapistPayout || 0)}
+                {INR(dashBoardData?.nextSession?.amount || 0)}
               </div>
             </div>
           ) : (
-            <div style={{ color: "#777" }}>
-              No upcoming confirmed sessions.
-            </div>
+            <div style={{ color: "#777" }}>No upcoming confirmed sessions.</div>
           )}
         </div>
       </div>
@@ -314,32 +359,42 @@ export default function PsychDashboard() {
                 <TableHead>Mode</TableHead>
                 <TableHead>Meet Link</TableHead>
                 <TableHead align="right">Payout</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(qUpcoming.data ?? []).length ? (
-                qUpcoming.data.map((row) => (
+              {(dashBoardData?.upcomingSessions ?? []).length ? (
+                dashBoardData?.upcomingSessions.map((row) => (
                   <TableRow key={row.id}>
-                    <TableCell>{fmtDateTime(row.startAt)}</TableCell>
-                    <TableCell>{row.userId || "—"}</TableCell>
-                    <TableCell>{row.mode || "—"}</TableCell>
+                    <TableCell>{fmtDateTime(row.startTime)}</TableCell>
+                    <TableCell>{row?.userId || "—"}</TableCell>
+                    <TableCell>{row?.mode || "Online"}</TableCell>
                     <TableCell>
-                      {row.meetLink ? (
+                      {row?.meetingLink ? (
                         <a
-                          href={row.meetLink}
+                          href={row?.meetingLink}
                           target="_blank"
                           rel="noreferrer"
                           style={{ color: "#3A116D", fontSize: 13 }}
                         >
-                          Join
+                          {row?.meetingLink}
                         </a>
                       ) : (
                         "—"
                       )}
                     </TableCell>
-                    <TableCell align="right">
-                      {INR(row.therapistPayout || 0)}
+                    <TableCell align="right">{INR(row.amount || 0)}</TableCell>
+                    <button onClick={()=>{
+                      onShowPopup(row)
+
+                    }}>
+                      <TableCell>
+                      <EllipsisVerticalIcon/>
+
                     </TableCell>
+
+                    </button>
+                    
                   </TableRow>
                 ))
               ) : (
@@ -379,11 +434,11 @@ export default function PsychDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {monthlyRows.length ? (
-                monthlyRows.map((row) => (
-                  <TableRow key={row.monthKey}>
-                    <TableCell>{row.monthKey}</TableCell>
-                    <TableCell align="right">{row.sessions}</TableCell>
+              {dashBoardData?.monthToSessionMap?.length ? (
+                dashBoardData?.monthToSessionMap?.map((row) => (
+                  <TableRow key={row.index}>
+                    <TableCell>{row.month}</TableCell>
+                    <TableCell align="right">{row.session}</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -423,13 +478,11 @@ export default function PsychDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {monthlyRows.length ? (
-                monthlyRows.map((row) => (
-                  <TableRow key={row.monthKey}>
-                    <TableCell>{row.monthKey}</TableCell>
-                    <TableCell align="right">
-                      {INR(row.earnings || 0)}
-                    </TableCell>
+              {dashBoardData?.monthToSessionMap.length ? (
+                dashBoardData?.monthToPaymentMap?.map((row) => (
+                  <TableRow key={row.month}>
+                    <TableCell>{row.month}</TableCell>
+                    <TableCell align="right">{INR(row.payment || 0)}</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -441,6 +494,8 @@ export default function PsychDashboard() {
           </Table>
         </div>
       </div>
+      <LoaderModal visible={loading} />
+      <ConfirmationModal onConfirm={onConfirm} onClose={onClose} isOpen={open}/>
     </div>
   );
 }
