@@ -16,7 +16,6 @@ function Navbar({ onToggleMenu }) {
             <span className="brand-tagline">Emotional Life Management Assistant</span>
           </div>
           <div className="nav-links">
-            <a href="/#app-showcase" className="nav-link">App Preview</a>
             <a href="/#features" className="nav-link">Features</a>
             <a href="/#for-psychologists" className="nav-link">For Psychologists</a>
             <Link to="/contact" className="nav-link">Contact</Link>
