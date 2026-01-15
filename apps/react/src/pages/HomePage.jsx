@@ -596,8 +596,7 @@ function HomePage() {
         <div className="download-left">
           <h2>Download the app now!</h2>
           <p>
-            Experience seamless online ordering <br />
-            only on the Zomato app
+            Share your thoughts and moods with our 24/7 AI Emotional Companion and take a step towards your Emotional Wellness <br />
           </p>
 
           <div className="store-buttons">
