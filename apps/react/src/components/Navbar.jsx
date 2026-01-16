@@ -21,7 +21,7 @@ function Navbar({ onToggleMenu }) {
             <Link to="/contact" className="nav-link">Contact</Link>
           </div>
           {/* Header CTA */}
-          <Link to="/?waitlist=1" className="nav-cta" aria-label="Get Started">Get Started</Link>
+          <a href="/#final-cta" className="nav-cta" aria-label="Get Started">Download</a>
           <button className="mobile-menu-toggle" onClick={onToggleMenu} aria-label="Open Menu">
             <i className="fas fa-bars"></i>
           </button>

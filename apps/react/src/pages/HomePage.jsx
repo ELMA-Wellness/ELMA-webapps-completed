@@ -589,7 +589,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="download-section">
+      <section className="download-section" id="final-cta">
         
       <div className="download-container">
         {/* LEFT CONTENT */}
@@ -606,7 +606,7 @@ function HomePage() {
               className="store-btn"
             />
             <img
-              src="/images/app-store.png"
+              src="/images/apple-download-bottom.png"
               alt="Download on the App Store"
               className="store-btn"
             />
@@ -620,6 +620,13 @@ function HomePage() {
               src="/images/phone-mock.jpeg"
               alt="Phone Mockup"
               className="phone-img"
+            />
+
+            {/* Mobile Image */}
+            <img
+              src="/images/phone-mock-mobile.png"
+              alt="Phone Mockup Mobile"
+              className="phone-img mobile-phone"
             />
             
           </div>
