@@ -152,7 +152,7 @@ export default function PsychDashboard() {
   const onConfirm=async()=>{
     console.log(item)
 
-       await markSessionAsCompleted(item?.id)
+       await markSessionAsCompleted(item?.id,item?.userId,item?.therapistId)
        await setDashBoardDataByFetching()
 
         setOpen(false)
