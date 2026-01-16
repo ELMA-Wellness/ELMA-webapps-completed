@@ -429,7 +429,7 @@
   padding: 4px; /* ✅ border thickness */
   border-radius: 50px;
 
-  background: linear-gradient(90deg, #ff7e8b, #ffb199, #ff7e8b);
+  background: var(--elma-gradient);
 
   /* ✅ makes it look like border, not full background */
   -webkit-mask: 
@@ -506,6 +506,10 @@
   display: block;
 }
 
+.mobile-phone {
+  display: none;
+}
+
 /* QR CARD */
 .qr-card {
   position: absolute;
@@ -534,6 +538,18 @@
   width: 100%;
   max-width: 200px;
 }
+
+@media (max-width: 1100px) {
+  .phone-img {
+    display: none;
+  }
+
+  .mobile-phone {
+    display: block;
+    width: 90%;
+  }
+}
+
 
 /* RESPONSIVE */
 @media (max-width: 900px) {
