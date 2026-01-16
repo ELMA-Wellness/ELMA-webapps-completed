@@ -10,23 +10,39 @@ import "./calendar.css";
 const locales = { "en-US": enUS };
 
 const CustomEvent = ({ event, onConfirm, onCancel }: any) => {
-    if (event.status !== "selected") {
-        return <span>{event.title}</span>;
-    }
+  if (event.status !== "selected") {
+    return <span>{event.title}</span>;
+  }
 
-    return (
-        <div className="selected-event">
-            <div className="selected-label">Selected</div>
+  return (
+    <div className="selected-event">
+      <div className="selected-label">Selected</div>
 
-            <div className="selected-actions">
-                <button className="confirm-btn" onClick={onConfirm}>
-                    Mark Unavailable
-                </button>
-                <button className="cancel-btn" onClick={onCancel}>✕</button>
-            </div>
-        </div>
-    );
+      <div className="selected-actions">
+        <button
+          className="confirm-btn"
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 REQUIRED
+            onConfirm();
+          }}
+        >
+          Mark Unavailable
+        </button>
+
+        <button
+          className="cancel-btn"
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 REQUIRED
+            onCancel();
+          }}
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
 };
+
 
 const localizer = dateFnsLocalizer({
   format,

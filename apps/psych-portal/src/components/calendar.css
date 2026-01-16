@@ -1,4 +1,6 @@
-/* Container */
+/* =========================
+   Base Container (Desktop)
+========================= */
 .calendar-container {
   height: 650px;
   background: #ffffff;
@@ -6,9 +8,12 @@
   padding: 10px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   font-family: "Inter", system-ui, -apple-system;
+  overflow: hidden;
 }
 
-/* Header (Days) */
+/* =========================
+   Header (Days)
+========================= */
 .rbc-header {
   padding: 10px 0;
   font-size: 13px;
@@ -17,29 +22,38 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Time column */
+/* =========================
+   Time column
+========================= */
 .rbc-time-gutter {
   font-size: 12px;
   color: #5f6368;
 }
 
-/* Grid lines */
+/* =========================
+   Grid lines
+========================= */
 .rbc-timeslot-group {
   border-bottom: 1px solid #f1f3f4;
 }
 
-/* Current time indicator */
+/* =========================
+   Current time indicator
+========================= */
 .rbc-current-time-indicator {
   background-color: #ea4335;
   height: 2px;
 }
 
-/* Event */
+/* =========================
+   Events
+========================= */
 .rbc-event {
   box-shadow: none;
+  border-radius: 6px;
+  padding: 4px;
 }
 
-/* Event hover */
 .rbc-event:hover {
   filter: brightness(0.97);
 }
@@ -49,9 +63,13 @@
   background-color: rgba(66, 133, 244, 0.15);
 }
 
-/* Toolbar */
+/* =========================
+   Toolbar
+========================= */
 .rbc-toolbar {
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .rbc-toolbar button {
@@ -73,12 +91,16 @@
   border-color: #1a73e8;
 }
 
-/* Agenda view */
+/* =========================
+   Agenda view
+========================= */
 .rbc-agenda-view table {
   font-size: 13px;
 }
 
-/* Selected preview block */
+/* =========================
+   Selected preview block
+========================= */
 .selected-event {
   height: 100%;
   width: 100%;
@@ -88,14 +110,12 @@
   justify-content: space-between;
 }
 
-/* Small label */
 .selected-label {
   font-size: 11px;
   font-weight: 600;
   color: #92400e;
 }
 
-/* Actions pinned near endTime */
 .selected-actions {
   display: flex;
   justify-content: flex-end;
@@ -103,7 +123,6 @@
   gap: 6px;
 }
 
-/* Confirm button */
 .confirm-btn {
   background: #f59e0b;
   color: #fff;
@@ -118,7 +137,6 @@
   background: #d97706;
 }
 
-/* Cancel icon */
 .cancel-btn {
   background: transparent;
   border: none;
@@ -127,3 +145,122 @@
   cursor: pointer;
 }
 
+/* =========================
+   📱 MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .calendar-container {
+    height: calc(100vh - 110px);
+    padding: 6px;
+    border-radius: 0;
+  }
+
+  /* Smaller headers */
+  .rbc-header {
+    font-size: 11px;
+    padding: 6px 0;
+  }
+
+  /* Time gutter narrower */
+  .rbc-time-gutter {
+    font-size: 11px;
+    width: 46px;
+  }
+
+  /* Taller slots for touch */
+  .rbc-timeslot-group {
+    min-height: 56px;
+  }
+
+  /* Events readable */
+  .rbc-event {
+    font-size: 11px;
+    padding: 4px;
+  }
+
+  /* Toolbar compact */
+  .rbc-toolbar {
+    margin-bottom: 8px;
+  }
+
+  .rbc-toolbar button {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  /* Selected event buttons stack better */
+  .selected-actions {
+    justify-content: space-between;
+  }
+
+  .confirm-btn {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  /* Sticky confirm bar */
+  .confirm-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .confirm-bar button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+}
+/* =========================
+   MOBILE EVENT FIX
+========================= */
+@media (max-width: 768px) {
+  /* Force selected event to be tall enough */
+  .rbc-event {
+    min-height: 56px !important;
+  }
+
+  /* Ensure selected event fills space */
+  .selected-event {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Overlay actions so they are ALWAYS visible */
+  .selected-actions {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    left: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Make button readable */
+  .confirm-btn {
+    font-size: 10px;
+    padding: 4px 6px;
+    min-height: 28px;
+    flex: 1;
+  }
+
+  .cancel-btn {
+    font-size: 16px;
+    padding: 0 6px;
+  }
+}

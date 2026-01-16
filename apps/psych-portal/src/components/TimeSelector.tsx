@@ -120,6 +120,7 @@ export default function TherapistTimeSelector() {
   }) => {
     try {
       await addDoc(collection(db, "therapistAvailabilty"), payload);
+      await setEventsByfetching()
       console.log("✅ Unavailability saved");
     } catch (err) {
       console.error("❌ Failed to save unavailability", err);
