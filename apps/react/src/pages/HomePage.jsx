@@ -267,7 +267,7 @@ function HomePage() {
              </h1>
             <p className="hero-subheadline" data-aos="fade-up" data-aos-delay="300">ELMA helps you understand your moods, reframe your thoughts, and grow stronger every day. Stigma-free, science-backed, and always by your side.</p>
             <div className="hero-cta-buttons" data-aos="fade-up" data-aos-delay="400">
-              <a href={`https://play.google.com/store/apps/details?id=${android_package_name}`} target="_blank" rel="noopener noreferrer" onClick={() => setWaitlistOpen(true)}>
+              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer" onClick={() => setWaitlistOpen(true)}>
                 <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
               <a href={`https://apps.apple.com/us/app/${ios_app_name}/id${ios_app_id}`} target="_blank" rel="noopener noreferrer" onClick={() => setWaitlistOpen(true)}>
