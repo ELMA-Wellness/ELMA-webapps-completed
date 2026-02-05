@@ -261,16 +261,16 @@ function HomePage() {
               <img src="/images/elma-avatar.png" alt="ELMA - Your AI Powered Emotional Companion" loading="eager" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/800x450/BA92FF/FFFFFF?text=ELMA+Avatar' }} />
             </div> */}
             <h1 className="hero-headline" data-aos="fade-up" data-aos-delay="200">
-               <span className="line">Your AI powered</span>{" "}
-               <span className="line">emotional</span>{" "}
-               <span className="line">companion.</span>
-             </h1>
+              <span className="line">Your AI powered</span>{" "}
+              <span className="line">emotional</span>{" "}
+              <span className="line">companion.</span>
+            </h1>
             <p className="hero-subheadline" data-aos="fade-up" data-aos-delay="300">ELMA helps you understand your moods, reframe your thoughts, and grow stronger every day. Stigma-free, science-backed, and always by your side.</p>
             <div className="hero-cta-buttons" data-aos="fade-up" data-aos-delay="400">
-              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer" onClick={() => setWaitlistOpen(true)}>
+              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
                 <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
-              <a href={`https://apps.apple.com/us/app/${ios_app_name}/id${ios_app_id}`} target="_blank" rel="noopener noreferrer" onClick={() => setWaitlistOpen(true)}>
+              <a href={`https://apps.apple.com/us/app/${ios_app_name}/id${ios_app_id}`} target="_blank" rel="noopener noreferrer">
                 <img src="/images/app-store.png" alt="Download on the App Store" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
             </div>
@@ -566,74 +566,84 @@ function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Final CTA Section */}
-      <section className="final-cta-section">
-        <div className="container">
-          <div className="cta-content" data-aos="zoom-in">
-            <div className="confetti-container">
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-            </div>
-            <h2>Life, made easy. One mood, one moment at a time.</h2>
-            <p>"Emotions aren't problems. They're signals. ELMA helps you identify and deal with them."</p>
-            <div className="final-cta-buttons">
-              <button className="cta-button primary large" id="finalUserCTA" onClick={() => setWaitlistOpen(true)}><span>✨</span> Begin your ELMA journey today</button>
-              <button className="cta-button secondary large" id="finalPsychologistCTA" onClick={() => setPsychOpen(true)}><span>👩‍⚕️</span> Be part of ELMA's expert network</button>
-            </div>
-            <p className="tagline">"Designed to make your life easy, powered by science."</p>
-          </div>
-        </div>
-      </section>
+      
 
       <section className="download-section" id="final-cta">
-        
-      <div className="download-container">
-        {/* LEFT CONTENT */}
-        <div className="download-left">
-          <h2>Download the app now!</h2>
-          <p>
-            Share your thoughts and moods with our 24/7 AI Emotional Companion and take a step towards your Emotional Wellness <br />
-          </p>
 
-          <div className="store-buttons">
-            <img
-              src="/images/google-play.png"
-              alt="Get it on Google Play"
-              className="store-btn"
-            />
-            <img
-              src="/images/apple-download-bottom.png"
-              alt="Download on the App Store"
-              className="store-btn"
-            />
+        <div className="download-container">
+          {/* LEFT CONTENT */}
+          <div className="download-left">
+            <h2>Download the app now!</h2>
+            <p>
+              Share your thoughts and moods with our 24/7 AI Emotional Companion and take a step towards your Emotional Wellness <br />
+            </p>
+
+            <div className="store-buttons">
+              {/* <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer"></a>
+              <img
+                src="/images/google-play.png"
+                alt="Get it on Google Play"
+                className="store-btn"
+              />
+              <a /> */}
+
+              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
+                <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <img
+                src="/images/apple-download-bottom.png"
+                alt="Download on the App Store"
+                className="store-btn"
+              />
+            </div>
+          </div>
+
+          {/* RIGHT CONTENT */}
+          <div className="download-right">
+            <div className="phone-wrapper">
+              <img
+                src="/images/phone-mock.jpeg"
+                alt="Phone Mockup"
+                className="phone-img"
+              />
+
+              {/* Mobile Image */}
+              <img
+                src="/images/phone-mock-mobile.png"
+                alt="Phone Mockup Mobile"
+                className="phone-img mobile-phone"
+              />
+
+            </div>
           </div>
         </div>
 
-        {/* RIGHT CONTENT */}
-        <div className="download-right">
-          <div className="phone-wrapper">
-            <img
-              src="/images/phone-mock.jpeg"
-              alt="Phone Mockup"
-              className="phone-img"
-            />
-
-            {/* Mobile Image */}
-            <img
-              src="/images/phone-mock-mobile.png"
-              alt="Phone Mockup Mobile"
-              className="phone-img mobile-phone"
-            />
-            
-          </div>
-        </div>
-        </div>
-      
-    </section>
+      </section>
 
       {/* Modals */}
       <WaitlistModal isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />

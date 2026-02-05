@@ -24,7 +24,7 @@ function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2025 ELMA. All rights reserved. Made with ❤️ in Visionary India for the World 🌍</p>
+          <p>&copy; 2026 ELMA Emotion Solutions LLP. All rights reserved. Made with ❤️ in Visionary India for the World 🌍</p>
         </div>
       </div>
     </footer>
