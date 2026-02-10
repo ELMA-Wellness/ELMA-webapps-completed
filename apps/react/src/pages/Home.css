@@ -7,7 +7,7 @@
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-image: url('/images/hero-section.png'), url('/images/elma-splash.png');
+  background-image: url('/images/hero-section.webp');
   background-size: cover, cover;
   background-position: top, center;
   background-repeat: no-repeat, no-repeat;
