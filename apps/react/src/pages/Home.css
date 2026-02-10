@@ -550,6 +550,13 @@
   }
 }
 
+@media (max-width: 768px) {
+  .hero-section {
+    background-position: 70% top;
+  }
+}  
+
+
 
 /* RESPONSIVE */
 @media (max-width: 900px) {
