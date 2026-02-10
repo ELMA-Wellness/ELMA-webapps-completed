@@ -260,6 +260,13 @@ function HomePage() {
             {/* <div className="hero-elma-wide" data-aos="zoom-in">
               <img src="/images/elma-avatar.png" alt="ELMA - Your AI Powered Emotional Companion" loading="eager" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/800x450/BA92FF/FFFFFF?text=ELMA+Avatar' }} />
             </div> */}
+            <div className='elma-logos'>
+              <img 
+                src="/images/ELMA_logos.png" 
+                alt="ELMA" 
+                className="elma-main-logo"
+              />
+            </div>
             <h1 className="hero-headline" data-aos="fade-up" data-aos-delay="200">
               <span className="line">Your AI powered</span>{" "}
               <span className="line">emotional</span>{" "}
