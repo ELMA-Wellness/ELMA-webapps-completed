@@ -277,7 +277,7 @@ function HomePage() {
               <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
                 <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
-              <a href={`https://apps.apple.com/us/app/${ios_app_name}/id${ios_app_id}`} target="_blank" rel="noopener noreferrer">
+              <a href={`https://apps.apple.com/in/app/elma-emotional-companion/id6756991672`} target="_blank" rel="noopener noreferrer">
                 <img src="/images/app-store.png" alt="Download on the App Store" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
             </div>
@@ -622,11 +622,15 @@ function HomePage() {
 
 
 
-              <img
+              {/* <img
                 src="/images/apple-download-bottom.png"
                 alt="Download on the App Store"
                 className="store-btn"
-              />
+              /> */}
+
+              <a href={`https://apps.apple.com/in/app/elma-emotional-companion/id6756991672`} target="_blank" rel="noopener noreferrer">
+                <img src="/images/apple-download-bottom.png" alt="Get it on Apple App Store" className="store-btn" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </a>
             </div>
           </div>
 
