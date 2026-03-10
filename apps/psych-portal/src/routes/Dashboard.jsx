@@ -207,9 +207,21 @@ export default function PsychDashboard() {
             fontWeight: 800,
             color: "#3A116D",
             margin: 0,
+            
           }}
         >
-          Psychologist Dashboard
+          Psychologist Dashboard<h1
+          style={{
+            fontSize: 26,
+            fontWeight: 800,
+            color: "#3A116D",
+            margin: 0,
+            fontStyle:"italic"
+            
+          }}
+          >
+            {therapist.name}
+          </h1>
         </h1>
         <div>
           <button
