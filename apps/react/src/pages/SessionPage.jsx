@@ -1,69 +1,148 @@
-import { useState } from "react";
-import SessionLobby from "./Sessionlobby";
-import SessionWaiting from "./Sessionwaiting";
+import { useState, useRef } from "react";
+import SessionLobby from "./SessionLobby";
+import SessionWaiting from "./SessionWaiting";
+import SessionLive from "./SessionLive";
 import SessionEnded from "./SessionEnded";
+import { webRTCManager } from "../config/webrtcmanger";
+import { useSearchParams } from "react-router-dom";
 
 /**
- * SessionPage — rendered at /session route in your App.jsx
+ * Session flow:
+ *   lobby → waiting → live → ended
  *
- * Views:
- *   "lobby"   → SessionLobby   (camera/audio setup + join)
- *   "waiting" → SessionWaiting (in-session waiting room)
- *   "ended"   → SessionEnded   (post-session summary, rating & feedback)
+ * Configure these before deployment:
  */
-export default function SessionPage() {
-  const [view, setView]               = useState("lobby");
-  const [sessionData, setSessionData] = useState({});
+
+
+const THERAPIST_INFO = {
+  name: "Dr. Sarah Mitchell",
+  credentials: "PhD",
+  specialties: ["Anxiety", "Relationships"],
+  avatarInitials: "SM",
+};
+
+const SESSION_META = {
+  durationMins: 50,
+  startTime: "10:00 AM",
+};
+
+export default function App() {
+  const [screen, setScreen] = useState("lobby");   // lobby | waiting | live | ended
+  const [remoteStream, setRemoteStream] = useState(null);
   const [sessionDuration, setSessionDuration] = useState(0);
+  const sessionStartRef = useRef(null);
 
-  const handleJoin = ({ camStream, micActive, camActive }) => {
-    setSessionData({ camStream, micActive, camActive, startTime: Date.now() });
-    setView("waiting");
+  const getSessionQueryParams = () => {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+
+    const sessionCode = params.get("sessionCode");
+    const userId = params.get("userId");
+    const role = params.get("role");
+
+    return {
+      sessionCode,
+      userId,
+      role,
+    };
+  }
+
+ 
+  const {
+      sessionCode,
+      userId,
+      role,
+    }= getSessionQueryParams();
+  
+
+  
+
+
+  const SESSION_CONFIG = {
+    sessionCode: sessionCode || "69a54abd29c99c56303ea5f6",
+    userId: userId || "696f408b2ff51b82b1cee0e6",
+    role: role,           // "patient" | "therapist"
   };
 
-  const handleLeave = () => {
-    // Stop all media tracks
-    sessionData.camStream?.getTracks().forEach(t => t.stop());
-
-    // Calculate how many minutes the session lasted
-    const elapsed = sessionData.startTime
-      ? Math.round((Date.now() - sessionData.startTime) / 60000)
-      : 52; // fallback demo value
-
-    setSessionDuration(elapsed || 1); // at least 1 min
-    setSessionData({});
-    setView("ended");
+  // ── Lobby → Waiting ──────────────────────────────────────────────────────
+  const handleLobbyJoined = () => {
+    sessionStartRef.current = Date.now();
+    setScreen("waiting");
   };
 
+  // ── Waiting → Live (remote peer joined) ──────────────────────────────────
+  const handlePeerJoined = (stream) => {
+    setRemoteStream(stream);
+    setScreen("live");
+  };
+
+  // ── Leave from Waiting ────────────────────────────────────────────────────
+  const handleLeaveWaiting = () => {
+    webRTCManager.hangup();
+    setScreen("lobby");
+  };
+
+  // ── Leave from Live ───────────────────────────────────────────────────────
+  const handleLeaveCall = () => {
+    const secs = sessionStartRef.current
+      ? Math.floor((Date.now() - sessionStartRef.current) / 1000)
+      : 0;
+    setSessionDuration(Math.ceil(secs / 60));
+    setRemoteStream(null);
+    // hangup already called inside SessionLive before this fires
+    setScreen("ended");
+  };
+
+  // ── Ended → Lobby ─────────────────────────────────────────────────────────
   const handleDone = () => {
-    // Navigate back to lobby (or you can route elsewhere e.g. navigate("/"))
-    setView("lobby");
+    setScreen("lobby");
   };
 
   const handleBookAgain = () => {
-    setView("lobby");
+    // Navigate to booking page in your app
+    console.log("[App] Book again clicked");
+    setScreen("lobby");
   };
 
-  if (view === "waiting") {
-    return (
-      <SessionWaiting
-        onLeave={handleLeave}
-        camStream={sessionData.camStream}
-        micActiveInit={sessionData.micActive}
-        camActiveInit={sessionData.camActive}
-      />
-    );
-  }
+  return (
+    <>
+      {screen === "lobby" && (
+        <SessionLobby
+          sessionCode={SESSION_CONFIG.sessionCode}
+          userId={SESSION_CONFIG.userId}
+          role={SESSION_CONFIG.role}
+          therapist={THERAPIST_INFO}
+          sessionMeta={SESSION_META}
+          onJoined={handleLobbyJoined}
+        />
+      )}
 
-  if (view === "ended") {
-    return (
-      <SessionEnded
-        duration={sessionDuration}
-        onDone={handleDone}
-        onBookAgain={handleBookAgain}
-      />
-    );
-  }
+      {screen === "waiting" && (
+        <SessionWaiting
+          therapist={THERAPIST_INFO}
+          sessionMeta={SESSION_META}
+          onLeave={handleLeaveWaiting}
+          onPeerJoined={handlePeerJoined}
+        />
+      )}
 
-  return <SessionLobby onJoin={handleJoin} />;
+      {screen === "live" && (
+        <SessionLive
+          therapist={THERAPIST_INFO}
+          sessionMeta={SESSION_META}
+          remoteStream={remoteStream}
+          onLeave={handleLeaveCall}
+        />
+      )}
+
+      {screen === "ended" && (
+        <SessionEnded
+          therapist={THERAPIST_INFO}
+          duration={sessionDuration || 52}
+          onDone={handleDone}
+          onBookAgain={handleBookAgain}
+        />
+      )}
+    </>
+  );
 }

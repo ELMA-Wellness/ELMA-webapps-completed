@@ -88,7 +88,7 @@ class WebRTCManager {
 
   // ─── Public API ───────────────────────────────────────────────────────────
 
-  async initialize(sessionCode: string, userId: string, role: Role): Promise<void> {
+  async initialize(sessionCode: string='69a54abd29c99c56303ea5f6', userId: string='696f408b2ff51b82b1cee0e6', role: Role='patient'): Promise<void> {
     // Prevent double-initialization
     if (this.localStream) {
       console.warn('[WebRTC] Already initialized. Call hangup() first.');
