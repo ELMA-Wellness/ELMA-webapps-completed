@@ -14,6 +14,7 @@ import Terms from './pages/Terms.jsx'
 import Cancellation from './pages/Cancellation.jsx'
 import AppLanding from './pages/LandingPage.tsx'
 import AnalyticsDashboard from './pages/DashBoard.tsx'
+import SessionPage from './pages/SessionPage.jsx'
 
 // Home now imported from pages/Home.jsx
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/cancellation" element={<Cancellation />} />
         <Route path="/qr" element={<AppLanding />} />
         <Route path="/dashboard" element={<AnalyticsDashboard/>} />
+        <Route path="/session" element={<SessionPage/>} />
       </Routes>
       <Footer />
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />

@@ -82,8 +82,6 @@ const AppLanding = () => {
         setStatus("");
 
         try {
-
-
             await addData('qrScans', {
                 email: contact,
                 createdAt: new Date(),
