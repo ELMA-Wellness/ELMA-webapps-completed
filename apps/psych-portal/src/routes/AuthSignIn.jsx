@@ -42,6 +42,7 @@ export default function PsychAuthSignIn() {
         JSON.stringify({
           id: therapistDoc.id,
           email: user.email || email.trim(),
+          name :therapistDoc.data().name
         })
       );
 
