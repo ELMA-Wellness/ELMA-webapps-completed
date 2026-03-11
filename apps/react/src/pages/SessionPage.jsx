@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import SessionLobby from "./SessionLobby";
-import SessionWaiting from "./SessionWaiting";
+import SessionLobby from "./Sessionlobby";
+import SessionWaiting from "./Sessionwaiting";
 import SessionLive from "./SessionLive";
-import SessionEnded from "./SessionEnded";
+import SessionEnded from "./Sessionended";
 import { webRTCManager } from "../config/webrtcmanger";
 import { useSearchParams } from "react-router-dom";
 
