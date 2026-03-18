@@ -10,4 +10,8 @@ export default defineConfig({
       "@shared-core": path.resolve(__dirname, "../../packages/shared-core"),
     },
   },
+  server: {
+    middlewareMode: false, 
+    historyApiFallback: true, 
+  },
 });
