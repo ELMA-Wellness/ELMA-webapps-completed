@@ -57,7 +57,7 @@ const getUserByFilter = (users: any[], filter: string) => {
       return users.filter(
         u =>
           (u.name || u.ageGroup) &&
-          (!u.gender || !u.sleepStyle || !u.stressLevel || !u.location)
+          (!u.gender || !u.sleepStyle || !u.stressLevel) 
       );
 
     case "Non Onbording Users":
