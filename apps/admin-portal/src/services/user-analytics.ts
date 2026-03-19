@@ -26,6 +26,20 @@ const filters = [
   "Six Game Finished Users",
 ];
 
+const getGameCompletionPercent = (data: any) => {
+  const games = [
+    data.gameOneFinished,
+    data.gameTwoFinished,
+    data.gameThreeFinished,
+    data.gameFourFinished,
+    data.gameFiveFinished,
+    data.gameSixFinished,
+  ];
+
+  const finishedCount = games.filter(Boolean).length;
+
+  return Math.round((finishedCount / 6) * 100);
+};
 const toJSDate = (ts: any) => {
   if (!ts) return null;
   return ts?.toDate ? ts.toDate() : new Date(ts);
@@ -135,7 +149,8 @@ export const getAllUserAnalytics = async (
         aiSnap,
         bookingSnap,
         bookingCompletedSnap,
-        sessionCompletedSnap
+        sessionCompletedSnap,
+        conversationSnap
       ] = await Promise.all([
 
         getDocs(query(
@@ -166,7 +181,12 @@ export const getAllUserAnalytics = async (
           collection(db, "bookings"),
           where("userId", "==", userId),
           where("status", "==", "completed")
+        )),
+        getDocs(query(
+          collection(db, "conversations"),
+          where("userId", "==", userId)
         ))
+
 
       ]);
 
@@ -178,6 +198,8 @@ export const getAllUserAnalytics = async (
         email: user.email || "",
 
         app_open: user.appOpenCount || 0,
+        profile_percent : getGameCompletionPercent(user),
+
 
         onboarding_started: user.onboardingStarted || 0,
         onboarding_completed: user.onBoradingFinished ? "Yes" : "No",
@@ -187,10 +209,10 @@ export const getAllUserAnalytics = async (
 
         mood_logged: moodSnap.size,
 
-        ai_chat_opened: user.aiChatOpened || 0,
+        ai_chat_opened: conversationSnap.size || 0,
         ai_message_sent: aiSnap.size,
 
-        therapist_profile_viewed: 0,
+        therapist_profile_viewed: user.therapistViewCount ||   0,
 
         booking_initiated: bookingSnap.size,
         booking_completed: bookingCompletedSnap.size,

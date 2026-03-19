@@ -75,6 +75,7 @@ export default function UserAnalyticsTable() {
               <th>Booking Initiated</th>
               <th>Booking Completed</th>
               <th>Session Completed</th>
+              <th>Profile %</th>
             </tr>
           </thead>
 
@@ -94,6 +95,7 @@ export default function UserAnalyticsTable() {
                 <td>{user.booking_initiated}</td>
                 <td>{user.booking_completed}</td>
                 <td>{user.session_completed}</td>
+                <td>{user?.profile_percent}</td>
               </tr>
             ))}
           </tbody>
