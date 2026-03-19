@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   totalUsers,
@@ -25,6 +25,22 @@ import {
 } from "@shared-ui/Table.jsx";
 import { getDashBoardData } from "../services/dashboard";
 import LoaderModal from "../components/Loader";
+import { useNavigate } from "react-router-dom";
+
+const filters = [
+  "Total Users",
+  "Active Users",
+  "New Users Today",
+  "Completed Onbording Users",
+  "Partially Onbording Users",
+  "Non Onbording Users",
+  "One Game Finished Users",
+  "Two Game Finished Users",
+  "Three Game Finished Users",
+  "Four Game Finished Users",
+  "Five Game Finished Users",
+  "Six Game Finished Users",
+];
 
 function INR(x) {
   try {
@@ -34,9 +50,12 @@ function INR(x) {
   }
 }
 
-function StatCard({ label, value, hint, color = "#fff" }) {
+function StatCard({ label, value, hint, color = "#fff",onCardClick}) {
+  
   return (
     <div
+      
+      onClick={onCardClick}
       style={{
         background: color,
         borderRadius: 16,
@@ -48,6 +67,8 @@ function StatCard({ label, value, hint, color = "#fff" }) {
         justifyContent: "center",
         color: "#111",
         transition: "all 0.2s ease-in-out",
+        cursor: "pointer",
+
       }}
     >
       <div style={{ fontSize: 14, fontWeight: 500, color: "#555" }}>
@@ -141,11 +162,26 @@ export default function Dashboard() {
     new_users_in_last_30_days: 0,
     therapist_earning_current_month_group_by_therapist_id: [],
     therapist_current_payout_month: [],
+    total_mood_logs: 0,
+    total_journals: 0,
+    total_ai_requests: 0,
+    today_active_users:0,
+    completely_onboarded_users:0,
+      partially_onboarded_users:0,
+      non_onboarded_users:0,
+      oneGameFinshedUsers:0,
+      twoGameFinshedUsers:0,
+      threeGameFinshedUsers:0,
+      fourGameFinshedUsers:0,
+      fiveGameFinshedUsers:0,
+      sixGameFinshedUsers:0,
   };
 
   const [dashData, setDashData] = useState(initialDashboardState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate=useNavigate();
+
 
   const setDashBoardMetricsByFetching = async () => {
     try {
@@ -170,6 +206,14 @@ export default function Dashboard() {
   useEffect(() => {
     setDashBoardMetricsByFetching();
   }, []);
+
+  const onCardClick=(filter)=>{
+    navigate("/user-analytics",{
+      state:{
+        filter
+      }
+    })
+  }
 
   return (
     <div
@@ -222,20 +266,99 @@ export default function Dashboard() {
           label="Total Users"
           value={dashData?.total_users ?? "—"}
           color="#EDE4FF"
+          onCardClick={()=>{onCardClick(filters[0])}}
         />
         <StatCard
           label="DAU (Today)"
           value={dashData?.dau_users ?? "—"}
           color="#EDE4FF"
+          onCardClick={()=>{onCardClick(filters[1])}}
         />
         <StatCard
           label="New Users Today"
           value={dashData?.new_users_today ?? "—"}
           color="#EDE4FF"
+          onCardClick={()=>{onCardClick(filters[2])}}
         />
+        <StatCard
+          label="Completed Onboardings"
+          value={dashData?.completely_onboarded_users ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[3])}}
+
+        />
+        <StatCard
+          label="Partially Onboardings"
+          value={dashData?.partially_onboarded_users ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[4])}}
+        />
+        <StatCard
+          label="Non Onboardings"
+          value={dashData?.non_onboarded_users ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[5])}}
+        />
+        <StatCard
+          label="One Game Completed"
+          value={dashData?.oneGameFinshedUsers ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[6])}}
+        />
+        <StatCard
+          label="Two Game Completed"
+          value={dashData?.twoGameFinshedUsers ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[7])}}
+        />
+        <StatCard
+          label="Three Game Completed"
+          value={dashData?.threeGameFinshedUsers ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[8])}}
+        />
+        <StatCard
+          label="Four Game Completed"
+          value={dashData?.fourGameFinshedUsers ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[9])}}
+        />
+        <StatCard
+          label="Five Game Completed"
+          value={dashData?.fiveGameFinshedUsers ?? "—"}
+           onCardClick={()=>{onCardClick(filters[10])}}
+
+          color="#EDE4FF"
+        />
+        <StatCard
+          label="Six Game Completed"
+          value={dashData?.sixGameFinshedUsers ?? "—"}
+          color="#EDE4FF"
+           onCardClick={()=>{onCardClick(filters[11])}}
+        />
+
+
+
+
+        
         <StatCard
           label="Therapists"
           value={dashData?.therapist_count ?? "—"}
+          color="#EDE4FF"
+        />
+         <StatCard
+          label="Moods"
+          value={dashData?.total_mood_logs ?? "—"}
+          color="#EDE4FF"
+        />
+        <StatCard
+          label="Journals"
+          value={dashData?.total_journals ?? "—"}
+          color="#EDE4FF"
+        />
+         <StatCard
+          label="AI Requests"
+          value={dashData?.total_ai_requests ?? "—"}
           color="#EDE4FF"
         />
       </div>

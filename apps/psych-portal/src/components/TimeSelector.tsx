@@ -13,7 +13,7 @@ import {
 import { auth, db } from "../firebase/config";
 import { hasOverlap } from "../utils/helper";
 import { useNavigate } from "react-router-dom";
-import { ConnectGoogleCalendar } from "./GoogleCalendar";
+import { ConnectCalendars } from "./ConnectCalendars";
 import TherapistCalendar from "./TherapistCalendar";
 import { getAvailability } from "../services/availabilty";
 
@@ -144,7 +144,7 @@ export default function TherapistTimeSelector() {
       {/* Header */}
       <div className="top-bar">
         <h1>Therapist Schedule</h1>
-        <ConnectGoogleCalendar />
+        <ConnectCalendars />
       </div>
 
       {/* Calendar Section */}
