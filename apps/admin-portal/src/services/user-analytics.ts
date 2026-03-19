@@ -212,7 +212,7 @@ export const getAllUserAnalytics = async (
         ai_chat_opened: conversationSnap.size || 0,
         ai_message_sent: aiSnap.size,
 
-        therapist_profile_viewed: user.therapistViewCount ||   0,
+        therapist_profile_viewed: user.therapistProfileViewCount ||   0,
 
         booking_initiated: bookingSnap.size,
         booking_completed: bookingCompletedSnap.size,
