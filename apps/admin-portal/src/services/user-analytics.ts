@@ -150,7 +150,7 @@ export const getAllUserAnalytics = async (
         bookingSnap,
         bookingCompletedSnap,
         sessionCompletedSnap,
-        conversationSnap
+        
       ] = await Promise.all([
 
         getDocs(query(
@@ -182,10 +182,7 @@ export const getAllUserAnalytics = async (
           where("userId", "==", userId),
           where("status", "==", "completed")
         )),
-        getDocs(query(
-          collection(db, "conversations"),
-          where("userId", "==", userId)
-        ))
+        
 
 
       ]);
@@ -209,7 +206,7 @@ export const getAllUserAnalytics = async (
 
         mood_logged: moodSnap.size,
 
-        ai_chat_opened: conversationSnap.size || 0,
+        ai_chat_opened: user.aiChatOpened || 0,
         ai_message_sent: aiSnap.size,
 
         therapist_profile_viewed: user.therapistProfileViewCount ||   0,
