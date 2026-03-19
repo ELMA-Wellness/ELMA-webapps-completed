@@ -15,6 +15,7 @@
     "firebase": "12.7.0"
   },
   "dependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.59.0",
     "axios": "^1.13.2"
   }
 }
