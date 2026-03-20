@@ -5,7 +5,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://elma.ltd/</loc>
-    <lastmod>2025-03-19</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://elma.ltd/" />
@@ -16,7 +16,7 @@
   <!-- Contact -->
   <url>
     <loc>https://elma.ltd/contact</loc>
-    <lastmod>2025-03-19</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -24,7 +24,7 @@
   <!-- Privacy Policy -->
   <url>
     <loc>https://elma.ltd/privacy</loc>
-    <lastmod>2025-03-19</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -32,7 +32,7 @@
   <!-- Terms & Conditions -->
   <url>
     <loc>https://elma.ltd/terms</loc>
-    <lastmod>2025-03-19</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -40,7 +40,7 @@
   <!-- Cancellation Policy -->
   <url>
     <loc>https://elma.ltd/cancellation</loc>
-    <lastmod>2025-03-19</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

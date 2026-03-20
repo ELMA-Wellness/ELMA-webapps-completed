@@ -19,7 +19,7 @@ function Footer() {
             <Link to="/cancellation">Cancellation Policy</Link>
           </div>
           <div className="footer-social">
-            <a href="http://linkedin.com/company/elma-emotional-life-management-assistant" target="_blank" rel="noopener noreferrer"><i className="fab fa-linkedin"></i></a>
+            <a href="https://www.linkedin.com/company/elma-emotional-life-management-assistant" target="_blank" rel="noopener noreferrer"><i className="fab fa-linkedin"></i></a>
             <a href="https://www.instagram.com/your_friend_elma/?utm_source=ig_web_button_share_sheet" target="_blank" rel="noopener noreferrer"><i className="fab fa-instagram"></i></a>
           </div>
         </div>

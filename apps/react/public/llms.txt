@@ -11,6 +11,7 @@ Using ELMA should feel like the smarter, cooler decision.
 Tagline: "Be cool. Be in control."
 
 ELMA is available on Android: https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP
+ELMA is available on iOS: https://apps.apple.com/in/app/elma-emotional-companion/id6756991672
 
 ## What ELMA Does
 

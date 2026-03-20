@@ -249,7 +249,7 @@ function HomePage() {
 
   const android_package_name = 'com.elma.app'
   const ios_app_name = 'elma-emotional-companion'
-  const ios_app_id = '123456789'
+  const ios_app_id = '6756991672'
 
   return (
     <>
@@ -263,7 +263,7 @@ function HomePage() {
             <div className='elma-logos'>
               <img 
                 src="/images/ELMA_logos.png" 
-                alt="ELMA" 
+                alt="ELMA — AI Emotional Companion App"
                 className="elma-main-logo"
               />
             </div>
@@ -639,14 +639,14 @@ function HomePage() {
             <div className="phone-wrapper">
               <img
                 src="/images/phone-mock.jpeg"
-                alt="Phone Mockup"
+                alt="ELMA emotional wellness app interface on Android"
                 className="phone-img"
               />
 
               {/* Mobile Image */}
               <img
                 src="/images/phone-mock-mobile.png"
-                alt="Phone Mockup Mobile"
+                alt="ELMA app on mobile — emotional companion interface"
                 className="phone-img mobile-phone"
               />
 
