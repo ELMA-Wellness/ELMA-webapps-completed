@@ -1,10 +1,6 @@
 # ELMA — netlify.toml
 # Build, redirect, header, and prerender configuration
 
-[build]
-  command = "cd apps/react && npm run build"
-  publish = "apps/react/dist"
-
 # ── SPA fallback (React Router) ───────────────────────────────────────────────
 [[redirects]]
   from   = "/*"
