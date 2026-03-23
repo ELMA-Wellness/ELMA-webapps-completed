@@ -160,8 +160,9 @@
     <!-- ── Fonts ──────────────────────────────────────────────────────────── -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- ── Icons ──────────────────────────────────────────────────────────── -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+    <!-- ── Icons (deferred — non-render-blocking) ────────────────────────── -->
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" /></noscript>
 
     <!-- ── Critical image preload ─────────────────────────────────────────── -->
     <link rel="preload" as="image" href="/images/elma-logo.png" />
