@@ -2,16 +2,16 @@
    Home Page Styles for ELMA
    ============================= */
 
-/* Hero */
+/* ── Hero ──────────────────────────────────────────────────────────────────── */
 .hero-section {
   position: relative;
   min-height: 100vh;
   width: 100%;
   background-image: url('/images/hero-section.webp');
-  background-size: cover, cover;
-  background-position: top, center;
-  background-repeat: no-repeat, no-repeat;
-  z-index: 0;
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  overflow: hidden;
 }
 
 .hero-section::before {
@@ -22,35 +22,68 @@
     radial-gradient(1200px circle at 10% 10%, rgba(186,146,255,0.10), transparent 60%),
     radial-gradient(1000px circle at 90% 20%, rgba(144,224,239,0.08), transparent 60%),
     linear-gradient(180deg, rgba(11,12,18,0.4) 0%, rgba(14,17,24,0.7) 100%);
+  pointer-events: none;
   z-index: 0;
 }
 
-.hero-content {
-  text-align: center;
-  max-width: 980px;
-  margin: 0 auto;
+/* Split layout container */
+.hero-container {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  padding-top: 6rem;
+  padding-bottom: 2rem;
+  gap: 2rem;
   position: relative;
   z-index: 1;
-  height: 100vh;
+}
+
+/* Left — text */
+.hero-content {
+  flex: 1 1 50%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
+  text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
-.hero-elma-wide img {
-  width: 100%;
-  max-width: 900px;
-  border-radius: 24px;
-  box-shadow: 0 24px 80px rgba(186, 146, 255, 0.25);
+/* Right — 3D scene */
+.hero-spline-wrapper {
+  flex: 1 1 50%;
+  height: 600px;
+  position: relative;
+  z-index: 2;
 }
 
+/* Gradient word */
+.gradient-text {
+  background: linear-gradient(135deg, #BA92FF, #90E0EF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Spinner shown while Spline loads */
+.spline-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(186,146,255,0.2);
+  border-top-color: #BA92FF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Logo (mobile only by default) */
 .elma-logos {
   display: none;
 }
 
 .elma-main-logo {
   width: 100%;
-  max-width: 180px; /* Significantly reduced size */
+  max-width: 180px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 0 20px rgba(186, 146, 255, 0.3));
@@ -61,37 +94,70 @@
   transform: scale(1.05);
 }
 
-@media (max-width: 768px) {
-
-  .elma-logos {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: 0.5rem; /* Space above headline */
-  z-index: 2;
-}
-
-  .elma-main-logo {
-    max-width: 140px; /* Even smaller on mobile */
-  }
-}
-
 .hero-headline {
-  font-size: 2.6rem;
-  line-height: 1.2;
-  margin-top: 1rem;
+  font-size: 3rem;
+  line-height: 1.15;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .hero-subheadline {
   font-size: 1.1rem;
   color: #d6d8df;
-  margin: 1rem auto 2rem;
-  max-width: 800px;
+  margin: 1rem 0 2rem;
+  max-width: 520px;
 }
 .hero-cta-buttons {
   display: flex;
   gap: 1rem;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
+}
+.made-in-india {
+  color: #cbd0d9;
+  margin-top: 1rem;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .hero-container {
+    flex-direction: column;
+    padding-top: 5rem;
+    text-align: center;
+  }
+  .hero-content {
+    flex: none;
+    text-align: center;
+    align-items: center;
+  }
+  .hero-subheadline {
+    max-width: 600px;
+  }
+  .hero-cta-buttons {
+    justify-content: center;
+  }
+  .hero-spline-wrapper {
+    flex: none;
+    width: 100%;
+    height: 380px;
+  }
+  .elma-logos {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  .elma-main-logo {
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-headline {
+    font-size: 2.2rem;
+  }
+  .hero-spline-wrapper {
+    height: 300px;
+  }
 }
 .cta-button {
   display: inline-flex;

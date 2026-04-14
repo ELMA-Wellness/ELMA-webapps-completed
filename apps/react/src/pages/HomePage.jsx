@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './Home.css'
+import { SplineScene } from '../components/SplineScene.jsx'
+import { Spotlight } from '../components/Spotlight.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
@@ -254,35 +256,41 @@ function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="hero-section" aria-label="Decorative hero background" style={{ paddingTop: '6rem' }}>
-        <div className="container">
+      <section className="hero-section" aria-label="Decorative hero background">
+        <Spotlight color="rgba(186,146,255,0.22)" size={500} />
+        <div className="container hero-container">
+
+          {/* Left — text content */}
           <div className="hero-content">
-            {/* <div className="hero-elma-wide" data-aos="zoom-in">
-              <img src="/images/elma-avatar.png" alt="ELMA - Your AI Powered Emotional Companion" loading="eager" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/800x450/BA92FF/FFFFFF?text=ELMA+Avatar' }} />
-            </div> */}
             <div className='elma-logos'>
-              <img 
-                src="/images/ELMA_logos.png" 
+              <img
+                src="/images/ELMA_logos.png"
                 alt="ELMA — AI Emotional Companion App"
                 className="elma-main-logo"
               />
             </div>
             <h1 className="hero-headline" data-aos="fade-up" data-aos-delay="200">
               <span className="line">Your AI powered</span>{" "}
-              <span className="line">emotional</span>{" "}
+              <span className="line gradient-text">emotional</span>{" "}
               <span className="line">companion.</span>
             </h1>
             <p className="hero-subheadline" data-aos="fade-up" data-aos-delay="300">ELMA helps you understand your moods, reframe your thoughts, and grow stronger every day. Stigma-free, science-backed, and always by your side.</p>
             <div className="hero-cta-buttons" data-aos="fade-up" data-aos-delay="400">
-              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
+              <a href="https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN" target="_blank" rel="noopener noreferrer">
                 <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
-              <a href={`https://apps.apple.com/in/app/elma-emotional-companion/id6756991672`} target="_blank" rel="noopener noreferrer">
+              <a href="https://apps.apple.com/in/app/elma-emotional-companion/id6756991672" target="_blank" rel="noopener noreferrer">
                 <img src="/images/app-store.png" alt="Download on the App Store" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
             </div>
             <p className="made-in-india" data-aos="fade-up" data-aos-delay="500">🇮🇳 Made in Visionary India for the World</p>
           </div>
+
+          {/* Right — Elma 3D interactive. Replace scene URL with your own Spline scene. */}
+          <div className="hero-spline-wrapper" aria-hidden="true">
+            <SplineScene scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" />
+          </div>
+
         </div>
       </section>
 
