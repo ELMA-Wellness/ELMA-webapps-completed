@@ -8,7 +8,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          motion: ['framer-motion'],
           firebase: [
             'firebase/app',
             'firebase/auth',
