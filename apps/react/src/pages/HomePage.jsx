@@ -288,7 +288,7 @@ function HomePage() {
 
           {/* Right — Elma 3D interactive. Replace scene URL with your own Spline scene. */}
           <div className="hero-spline-wrapper" aria-hidden="true">
-            <SplineScene scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" />
+            <SplineScene scene="https://prod.spline.design/BL9x04gqCyShaKB3KJPksNS6/scene.splinecode" />
           </div>
 
         </div>
