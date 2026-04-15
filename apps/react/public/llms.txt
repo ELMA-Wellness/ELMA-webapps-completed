@@ -51,6 +51,8 @@ The competitor frame: "Most apps help you cope. ELMA helps you understand."
 ## Pages
 
 - / — Main landing page with product overview, features, psychologist partnership
+- /about — Company story, founding mission, team values, and technology overview
+- /elma-experts — Expert marketplace: certified psychologists who partner with ELMA's AI for data-informed therapy sessions
 - /contact — Contact form and team details
 - /privacy — Privacy policy (DPDP 2023, GDPR compliant)
 - /terms — Terms and conditions

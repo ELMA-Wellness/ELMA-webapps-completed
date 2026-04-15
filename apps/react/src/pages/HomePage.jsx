@@ -1,8 +1,12 @@
 import { useRef, useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import './Home.css'
-import { SplineScene } from '../components/SplineScene.jsx'
-import { Spotlight } from '../components/Spotlight.jsx'
+import { HeroSection } from '../components/HeroSection.jsx'
+import { HowElmaWorks } from '../components/HowElmaWorks.jsx'
+import { ElmaShowcaseSection } from '../components/ElmaShowcaseSection.jsx'
+import HoloCard from '../components/HoloCard.jsx'
+import { useLang } from '../contexts/LangContext.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
@@ -88,20 +92,81 @@ function WaitlistModal({ isOpen, onClose }) {
   )
 }
 
+/* ─── Country codes for psychologist modal ───────────────────── */
+const PM_COUNTRY_CODES = [
+  { code: '+1',   flag: '🇺🇸', name: 'US' },
+  { code: '+44',  flag: '🇬🇧', name: 'UK' },
+  { code: '+91',  flag: '🇮🇳', name: 'IN' },
+  { code: '+81',  flag: '🇯🇵', name: 'JP' },
+  { code: '+33',  flag: '🇫🇷', name: 'FR' },
+  { code: '+49',  flag: '🇩🇪', name: 'DE' },
+  { code: '+34',  flag: '🇪🇸', name: 'ES' },
+  { code: '+55',  flag: '🇧🇷', name: 'BR' },
+  { code: '+86',  flag: '🇨🇳', name: 'CN' },
+  { code: '+82',  flag: '🇰🇷', name: 'KR' },
+  { code: '+61',  flag: '🇦🇺', name: 'AU' },
+  { code: '+971', flag: '🇦🇪', name: 'UAE' },
+  { code: '+65',  flag: '🇸🇬', name: 'SG' },
+  { code: '+27',  flag: '🇿🇦', name: 'ZA' },
+]
+
+const PM_SPECIALITIES = [
+  'Clinical Psychology',
+  'Cognitive Behavioral Therapy (CBT)',
+  'Counseling Psychology',
+  'Child & Adolescent Psychology',
+  'Anxiety & Depression',
+  'Trauma & PTSD',
+  'Relationship Counseling',
+  'Grief & Loss',
+  'Addiction & Recovery',
+  'Mindfulness & Meditation',
+  'Psychiatry',
+  'Occupational Therapy',
+  'Other',
+]
+
+/* ─── Input style helper ─────────────────────────────────────── */
+const pmInput = {
+  width: '100%',
+  padding: '0.85rem 1rem',
+  background: 'rgba(255,255,255,0.05)',
+  border: '1px solid rgba(186,146,255,0.2)',
+  borderRadius: '12px',
+  color: '#fff',
+  fontSize: '0.93rem',
+  outline: 'none',
+  boxSizing: 'border-box',
+  fontFamily: 'inherit',
+  transition: 'border-color 0.2s',
+}
+const pmFocus = (e) => { e.target.style.borderColor = 'rgba(186,146,255,0.6)' }
+const pmBlur  = (e) => { e.target.style.borderColor = 'rgba(186,146,255,0.2)' }
+
 function PsychologistModal({ isOpen, onClose }) {
-  const nameRef = useRef(null)
-  const emailRef = useRef(null)
-  const licenseRef = useRef(null)
-  const consentRef = useRef(null)
-  const [sending, setSending] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState('')
+  const { t } = useLang()
+  const nameRef     = useRef(null)
+  const emailRef    = useRef(null)
+  const phoneRef    = useRef(null)
+  const licenseRef  = useRef(null)
+  const consentRef  = useRef(null)
+  const [countryCode, setCountryCode] = useState('+91')
+  const [speciality, setSpeciality]   = useState('')
+  const [sending, setSending]         = useState(false)
+  const [success, setSuccess]         = useState(false)
+  const [error, setError]             = useState('')
+
+  // Reset state when modal reopens
+  useEffect(() => {
+    if (isOpen) { setSuccess(false); setError('') }
+  }, [isOpen])
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    const form = e.currentTarget
-    const name = nameRef.current?.value.trim() || ''
+    const form  = e.currentTarget
+    const name  = nameRef.current?.value.trim() || ''
     const email = emailRef.current?.value.trim() || ''
+    const phone = phoneRef.current?.value.trim() || ''
     const license = licenseRef.current?.value.trim() || ''
     const consent = !!consentRef.current?.checked
     if (!name || !email || !license || !consent) return
@@ -110,16 +175,15 @@ function PsychologistModal({ isOpen, onClose }) {
     const timestamp = new Date().toISOString()
     const data = {
       access_key: WEB3FORMS_ACCESS_KEY,
-      type: 'psychologist_application',
-      name,
-      email,
-      license,
-      consent,
-      timestamp,
+      to: 'ydk@elma.ltd',
+      type: 'expert_application',
+      name, email,
+      phone: phone ? `${countryCode} ${phone}` : '',
+      license, speciality, timestamp,
       from_name: 'ELMA Website',
-      subject: `New Psychologist Application — ${name}`,
-      message: `Form: ELMA Psychologist Application\nName: ${name}\nEmail: ${email}\nLicense: ${license}\nConsent: ${consent ? 'Yes' : 'No'}\nSubmitted At: ${timestamp}`,
-      reply_to: email,
+      subject: `New Expert Application — ${name} → ydk@elma.ltd`,
+      message: `Form: ELMA Expert Application\nTo: ydk@elma.ltd\nName: ${name}\nEmail: ${email}\nPhone: ${countryCode} ${phone}\nLicense: ${license}\nSpeciality: ${speciality || 'Not specified'}\nConsent: Yes\nSubmitted At: ${timestamp}`,
+      reply_to: 'ydk@elma.ltd',
     }
     try {
       const resp = await fetch(WEB3FORMS_ENDPOINT, {
@@ -130,54 +194,249 @@ function PsychologistModal({ isOpen, onClose }) {
       const result = await resp.json()
       if (!resp.ok || !result.success) throw new Error(`Request failed: ${resp.status}`)
       if (form && typeof form.reset === 'function') form.reset()
+      setSpeciality('')
       setSuccess(true)
     } catch (err) {
       console.error('Error:', err)
-      setError('Submission failed. Please try again.')
+      setError(t('modal_error'))
     } finally {
       setSending(false)
     }
   }
 
   return (
-    <div className={`modal ${isOpen ? 'active' : ''}`} onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Join ELMA's Expert Network</h2>
-          <button className="modal-close" onClick={onClose} aria-label="Close">&times;</button>
-        </div>
-        <div className="modal-body">
-          {!success ? (
-            <>
-              <p>Help us make emotional wellness accessible to millions.</p>
-              <form className="modal-form" onSubmit={onSubmit}>
-                <input type="hidden" name="form_name" value="ELMA Psychologist Application" />
-                <input type="text" name="name" placeholder="Full Name" required ref={nameRef} />
-                <input type="email" name="email" placeholder="Professional Email" required ref={emailRef} />
-                <input type="text" name="license" placeholder="License Number" required ref={licenseRef} />
-                <div className="consent-wrapper">
-                  <input type="checkbox" id="psychologistConsent" name="consent" ref={consentRef} required />
-                  <label htmlFor="psychologistConsent">I consent to ELMA processing my data.</label>
-                </div>
-                <button type="submit" className="cta-button primary modal-submit" disabled={sending}>
-                  {sending ? 'Submitting...' : 'Submit Application'}
+    <AnimatePresence>
+      {isOpen && (
+        /* ── Overlay ── */
+        <motion.div
+          key="psych-modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+          onClick={onClose}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9000,
+            background: 'rgba(0,0,0,0.78)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '16px',
+            overflowY: 'auto',
+          }}
+        >
+          {/* ── Glowing border wrapper ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 560,
+              borderRadius: '26px',
+              padding: '2px',
+              background: 'linear-gradient(135deg, rgba(186,146,255,0.55) 0%, rgba(144,224,239,0.35) 50%, rgba(255,187,216,0.45) 100%)',
+              boxShadow: '0 32px 80px rgba(186,146,255,0.22), 0 8px 32px rgba(0,0,0,0.6)',
+              flexShrink: 0,
+            }}
+          >
+            {/* ── Inner modal ── */}
+            <div style={{
+              borderRadius: '24px',
+              background: '#09061a',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Subtle ambient orbs in background */}
+              <div aria-hidden="true" style={{ position: 'absolute', width: 260, height: 260, top: -80, right: -60, borderRadius: '50%', background: 'radial-gradient(circle, rgba(186,146,255,0.18) 0%, transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+              <div aria-hidden="true" style={{ position: 'absolute', width: 200, height: 200, bottom: -40, left: -40, borderRadius: '50%', background: 'radial-gradient(circle, rgba(144,224,239,0.13) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
+              {/* ── FORM PANEL ── */}
+              <div style={{
+                overflowY: 'auto',
+                maxHeight: '90vh',
+                padding: 'clamp(28px, 5vw, 44px) clamp(24px, 5vw, 40px)',
+                position: 'relative',
+              }}>
+                {/* Close button */}
+                <button
+                  onClick={onClose}
+                  aria-label="Close"
+                  style={{
+                    position: 'absolute', top: 16, right: 16,
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.07)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    cursor: 'pointer', color: 'rgba(255,255,255,0.6)',
+                    fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(186,146,255,0.15)'; e.currentTarget.style.color = '#BA92FF' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
+                >
+                  ×
                 </button>
-                {error && (<p style={{ color: '#ff6b6b', marginTop: '0.75rem' }} aria-live="polite">{error}</p>)}
-              </form>
-            </>
-          ) : (
-            <div className="success-state">
-              <span className="heart-confirmation" aria-hidden="true">♥</span>
-              <h3>Application submitted! ELMA is excited to grow with you.</h3>
+
+                {success ? (
+                  /* ── Success state ── */
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    style={{ textAlign: 'center', padding: '3rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}
+                  >
+                    <motion.div
+                      initial={{ scale: 0 }} animate={{ scale: 1 }}
+                      transition={{ delay: 0.1, type: 'spring', stiffness: 260, damping: 18 }}
+                      style={{
+                        width: 72, height: 72, borderRadius: '50%',
+                        background: 'linear-gradient(135deg, rgba(186,146,255,0.2), rgba(144,224,239,0.15))',
+                        border: '1px solid rgba(186,146,255,0.4)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '2rem',
+                      }}
+                    >✦</motion.div>
+                    <h3 style={{ color: '#BA92FF', fontSize: '1.4rem', fontWeight: 700 }}>{t('modal_success_title')}</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, maxWidth: 340 }}>{t('modal_success_msg')}</p>
+                  </motion.div>
+                ) : (
+                  /* ── Form ── */
+                  <>
+                    <div style={{ marginBottom: '1.75rem', paddingRight: '2rem' }}>
+                      <h2 style={{
+                        fontSize: 'clamp(1.3rem, 2.5vw, 1.65rem)', fontWeight: 800,
+                        background: 'linear-gradient(135deg, #fff 0%, rgba(186,146,255,0.9) 100%)',
+                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                        marginBottom: '0.4rem', lineHeight: 1.2,
+                      }}>{t('modal_title')}</h2>
+                      <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.87rem', lineHeight: 1.6 }}>{t('modal_sub')}</p>
+                    </div>
+
+                    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                      <input type="hidden" name="form_name" value="ELMA Expert Application" />
+
+                      {/* Name */}
+                      <input
+                        ref={nameRef} type="text" name="name"
+                        placeholder={t('modal_name')} required
+                        style={pmInput} onFocus={pmFocus} onBlur={pmBlur}
+                      />
+
+                      {/* Email */}
+                      <input
+                        ref={emailRef} type="email" name="email"
+                        placeholder={t('modal_email')} required
+                        style={pmInput} onFocus={pmFocus} onBlur={pmBlur}
+                      />
+
+                      {/* Phone + country code */}
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <select
+                          value={countryCode}
+                          onChange={e => setCountryCode(e.target.value)}
+                          style={{
+                            ...pmInput,
+                            width: 'auto',
+                            minWidth: 90,
+                            flexShrink: 0,
+                            cursor: 'pointer',
+                          }}
+                          onFocus={pmFocus} onBlur={pmBlur}
+                        >
+                          {PM_COUNTRY_CODES.map(c => (
+                            <option key={c.code} value={c.code} style={{ background: '#0d0a28' }}>
+                              {c.flag} {c.code}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          ref={phoneRef} type="tel" name="phone"
+                          placeholder={t('modal_phone')}
+                          style={{ ...pmInput, flex: 1 }}
+                          onFocus={pmFocus} onBlur={pmBlur}
+                        />
+                      </div>
+
+                      {/* License */}
+                      <input
+                        ref={licenseRef} type="text" name="license"
+                        placeholder={t('modal_license')} required
+                        style={pmInput} onFocus={pmFocus} onBlur={pmBlur}
+                      />
+
+                      {/* Speciality */}
+                      <select
+                        name="speciality"
+                        value={speciality}
+                        onChange={e => setSpeciality(e.target.value)}
+                        style={{ ...pmInput, cursor: 'pointer', color: speciality ? '#fff' : 'rgba(255,255,255,0.4)' }}
+                        onFocus={pmFocus} onBlur={pmBlur}
+                      >
+                        <option value="" style={{ background: '#0d0a28', color: 'rgba(255,255,255,0.4)' }}>
+                          {t('modal_select_speciality')}
+                        </option>
+                        {PM_SPECIALITIES.map(s => (
+                          <option key={s} value={s} style={{ background: '#0d0a28', color: '#fff' }}>{s}</option>
+                        ))}
+                      </select>
+
+                      {/* Consent */}
+                      <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginTop: '4px' }}>
+                        <input
+                          ref={consentRef} type="checkbox" name="consent" required
+                          style={{ marginTop: '3px', accentColor: '#BA92FF', flexShrink: 0 }}
+                        />
+                        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', lineHeight: 1.6 }}>
+                          {t('modal_consent')}
+                        </span>
+                      </label>
+
+                      {/* Error */}
+                      {error && (
+                        <p style={{ color: '#ff6b6b', fontSize: '0.85rem', margin: 0 }} aria-live="polite">{error}</p>
+                      )}
+
+                      {/* Submit */}
+                      <motion.button
+                        type="submit"
+                        disabled={sending}
+                        whileHover={!sending ? { scale: 1.02 } : {}}
+                        whileTap={!sending ? { scale: 0.98 } : {}}
+                        style={{
+                          marginTop: '4px',
+                          padding: '0.95rem',
+                          background: sending
+                            ? 'rgba(186,146,255,0.3)'
+                            : 'linear-gradient(135deg, #BA92FF 0%, #90E0EF 100%)',
+                          border: 'none',
+                          borderRadius: '14px',
+                          color: sending ? 'rgba(255,255,255,0.6)' : '#09061a',
+                          fontWeight: 700,
+                          fontSize: '0.95rem',
+                          cursor: sending ? 'not-allowed' : 'pointer',
+                          fontFamily: 'inherit',
+                          letterSpacing: '0.02em',
+                          transition: 'background 0.2s',
+                        }}
+                      >
+                        {sending ? t('modal_submitting') : t('modal_submit')}
+                      </motion.button>
+                    </form>
+                  </>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
 
 function HomePage() {
+  const { t } = useLang()
   const [waitlistOpen, setWaitlistOpen] = useState(false)
   const [psychOpen, setPsychOpen] = useState(false)
 
@@ -256,43 +515,7 @@ function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="hero-section" aria-label="Decorative hero background">
-        <Spotlight color="rgba(186,146,255,0.22)" size={500} />
-        <div className="container hero-container">
-
-          {/* Left — text content */}
-          <div className="hero-content">
-            <div className='elma-logos'>
-              <img
-                src="/images/ELMA_logos.png"
-                alt="ELMA — AI Emotional Companion App"
-                className="elma-main-logo"
-              />
-            </div>
-            <h1 className="hero-headline" data-aos="fade-up" data-aos-delay="200">
-              <span className="line">Your AI powered</span>{" "}
-              <span className="line gradient-text">emotional</span>{" "}
-              <span className="line">companion.</span>
-            </h1>
-            <p className="hero-subheadline" data-aos="fade-up" data-aos-delay="300">ELMA helps you understand your moods, reframe your thoughts, and grow stronger every day. Stigma-free, science-backed, and always by your side.</p>
-            <div className="hero-cta-buttons" data-aos="fade-up" data-aos-delay="400">
-              <a href="https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN" target="_blank" rel="noopener noreferrer">
-                <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
-              </a>
-              <a href="https://apps.apple.com/in/app/elma-emotional-companion/id6756991672" target="_blank" rel="noopener noreferrer">
-                <img src="/images/app-store.png" alt="Download on the App Store" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
-              </a>
-            </div>
-            <p className="made-in-india" data-aos="fade-up" data-aos-delay="500">🇮🇳 Made in Visionary India for the World</p>
-          </div>
-
-          {/* Right — Elma 3D interactive. Replace scene URL with your own Spline scene. */}
-          <div className="hero-spline-wrapper" aria-hidden="true">
-            <SplineScene scene="https://prod.spline.design/BL9x04gqCyShaKB3KJPksNS6/scene.splinecode" />
-          </div>
-
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Why ELMA Section */}
       {/* <section className="why-elma-section" id="why-elma">
@@ -329,268 +552,23 @@ function HomePage() {
         </div>
       </section> */}
 
-      {/* Features Section */}
-      <section className="features-section" id="features">
-        <div className="container">
-          <div className="section-header" data-aos="fade-up">
-            <h2>What You Can Do With ELMA</h2>
-            <p>Your growth, your pace, your companion.</p>
-          </div>
-          <div className="features-grid">
-            <div className="feature-card" data-aos="flip-left" data-aos-delay="100">
-              <div className="feature-icon">🌸</div>
-              <h3>Know your emotions better</h3>
-              <p>Feel and name your emotions come alive in color, intensity, and triggers.</p>
-            </div>
-            <div className="feature-card" data-aos="flip-left" data-aos-delay="200">
-              <div className="feature-icon">🎮</div>
-              <h3>Playable Emotional Skills</h3>
-              <p>Flip negative thoughts, calm in 60s, or spot thinking traps and get a better, alternate perspective on your emotions — through science-backed games.</p>
-            </div>
-            <div className="feature-card" data-aos="flip-left" data-aos-delay="300">
-              <div className="feature-icon">🪄</div>
-              <h3>AI Companion Chat</h3>
-              <p>Talk to ELMA anytime — she listens, guides, celebrates your growth and most importantly doesn't fuel your delusions instead guides you better.</p>
-            </div>
-            <div className="feature-card" data-aos="flip-left" data-aos-delay="400">
-              <div className="feature-icon">👩‍⚕️</div>
-              <h3>Psychologist Directory</h3>
-              <p>Book verified experts and share your insights (only if you choose) for more meaningful sessions.</p>
-            </div>
-            <div className="feature-card" data-aos="flip-left" data-aos-delay="500">
-              <div className="feature-icon">📊</div>
-              <h3>My Growth Dashboard</h3>
-              <p>Track moods, strengths, and rewards in a stigma-free way.</p>
-            </div>
-            <div className="feature-card" data-aos="flip-left" data-aos-delay="500">
-              <div className="feature-icon">📖</div>
-              <h3>Daily Gratitude Journal</h3>
-              <p>Express self gratitude in our encrypted and Face ID/ Fingerprint protected daily gratitude journal that lets you internalise and gives you a safe private space</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* How ELMA Works */}
+      <HowElmaWorks />
 
-      {/* Psychologist Partner Section */}
-      <section className="psychologist-partner-section" id="for-psychologists">
-        <div className="container">
-          <div className="partner-pitch">
-            <h2 data-aos="fade-up">👨‍⚕️ Partner With ELMA: Expand Your Impact</h2>
-            <h4 data-aos="fade-up" data-aos-delay="100">ELMA empowers certified psychologists to reach more clients, save time in intake, and provide deeper therapy with AI-powered insights.</h4>
-            <div className="benefit-cards-grid">
-              <div className="partner-benefit-card" data-aos="zoom-in" data-aos-delay="200">
-                <div className="benefit-icon">🧑‍⚕️</div>
-                <h3>Expand Your Reach</h3>
-                <p>Serve clients nationwide and across the global Indian diaspora.</p>
-                <p className="benefit-highlight">Go beyond your city → ELMA connects you with a larger pool of clients.</p>
-                <div className="benefit-animation">
-                  <span className="pulse-dot"></span>
-                  <span className="pulse-dot" style={{ ['--delay']: '0.5s' }}></span>
-                  <span className="pulse-dot" style={{ ['--delay']: '1s' }}></span>
-                </div>
-              </div>
-              <div className="partner-benefit-card" data-aos="zoom-in" data-aos-delay="400">
-                <div className="benefit-icon">💼</div>
-                <h3>Practice on Your Terms</h3>
-                <p>Choose your hours, set your own fees.</p>
-                <p className="benefit-highlight">Weekly payouts → no billing hassle.</p>
-                <div className="benefit-features">
-                  <span className="feature-tag">Flexible Hours</span>
-                  <span className="feature-tag">Your Rates</span>
-                  <span className="feature-tag">Weekly Pay</span>
-                </div>
-              </div>
-              <div className="partner-benefit-card" data-aos="zoom-in" data-aos-delay="500">
-                <div className="benefit-icon">🌍</div>
-                <h3>Grow With ELMA</h3>
-                <p>Be part of a trusted national network.</p>
-                <p className="benefit-highlight">Future expansion: serve diaspora in UK, US, Canada, and Australia.</p>
-                <div className="country-flags">
-                  <span title="India">🇮🇳</span>
-                  <span title="UK">🇬🇧</span>
-                  <span title="USA">🇺🇸</span>
-                  <span title="Canada">🇨🇦</span>
-                  <span title="Australia">🇦🇺</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* ELMA Companion + Therapist Carousel + Join Network */}
+      <ElmaShowcaseSection onJoinTherapist={() => setPsychOpen(true)} />
 
-          <div className="privacy-security-section">
-            <h2 data-aos="fade-up">🔒 Privacy You Can Trust. Security That's Global Standard.</h2>
-            <div className="security-features" data-aos="fade-up" data-aos-delay="100">
-              <div className="security-item"><i className="fas fa-lock"></i><span>End-to-end encrypted sessions</span></div>
-              <div className="security-item"><i className="fas fa-ban"></i><span>No session recordings stored</span></div>
-              <div className="security-item"><i className="fas fa-check-circle"></i><span>Explicit user consent for every data share</span></div>
-              <div className="security-item"><i className="fas fa-scroll"></i><span>Compliant with: India DPDP 2023, MHCA 2017, UK GDPR, EU GDPR</span></div>
-            </div>
-            <div className="compliance-badges" data-aos="zoom-in" data-aos-delay="200">
-              <div className="badge-item" title="All data is encrypted using industry-standard protocols">
-                <div className="badge-circle">
-                  <svg viewBox="0 0 24 24" width="32" height="32">
-                    <path d="M12 2L4 7V12C4 16.5 6.8 20.7 11 21.9C11.3 22 11.7 22 12 21.9C16.2 20.7 20 16.5 20 12V7L12 2Z" fill="url(#shield-gradient)" stroke="none" />
-                    <path d="M12 11V15M12 15L10 13M12 15L14 13" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <span className="badge-label">End-to-End Encryption</span>
-              </div>
-              <div className="badge-item" title="Compliant with European data protection standards">
-                <div className="badge-circle"><div className="eu-flag"><span className="star">⭐</span><span className="star">⭐</span><span className="star">⭐</span><span className="star">⭐</span><span className="star">⭐</span></div></div>
-                <span className="badge-label">GDPR Compliant</span>
-              </div>
-              <div className="badge-item" title="India's Digital Personal Data Protection Act 2023">
-                <div className="badge-circle">
-                  <div className="india-flag">
-                    <div className="saffron"></div>
-                    <div className="white"><div className="chakra">☸</div></div>
-                    <div className="green"></div>
-                  </div>
-                </div>
-                <span className="badge-label">DPDP 2023 Ready</span>
-              </div>
-              <div className="badge-item" title="Mental Healthcare Act 2017 Compliant">
-                <div className="badge-circle">
-                  <svg viewBox="0 0 24 24" width="32" height="32">
-                    <path d="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3Z" fill="none" stroke="url(#law-gradient)" strokeWidth="2" />
-                    <path d="M7 7H17M7 12H17M7 17H13" stroke="url(#law-gradient)" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <span className="badge-label">MHCA 2017 Compliance</span>
-              </div>
-              <div className="badge-item" title="Your privacy is our priority">
-                <div className="badge-circle">
-                  <svg viewBox="0 0 24 24" width="32" height="32">
-                    <circle cx="12" cy="12" r="10" fill="url(#check-gradient)" />
-                    <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <span className="badge-label">User-First Privacy</span>
-              </div>
-            </div>
-            {/* Inline SVG gradients used above */}
-            <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
-              <defs>
-                <linearGradient id="shield-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#BA92FF', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#90E0EF', stopOpacity: 1 }} />
-                </linearGradient>
-                <linearGradient id="law-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#FFBBD8', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#BA92FF', stopOpacity: 1 }} />
-                </linearGradient>
-                <linearGradient id="check-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#90E0EF', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#FFBBD8', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
 
-          {/* Academic Trust */}
-          <div className="academic-trust-section">
-            <h2 data-aos="fade-up">🎓 Grounded in Science. Inspired by Global Research.</h2>
-            <p className="trust-description" data-aos="fade-up" data-aos-delay="100">Our methods draw on decades of evidence from the world's best universities in psychology and neuroscience.</p>
-            <div className="university-logos" data-aos="zoom-in" data-aos-delay="200">
-              <div className="uni-logo"><div className="logo-placeholder harvard">HARVARD</div></div>
-              <div className="uni-logo"><div className="logo-placeholder stanford">STANFORD</div></div>
-              <div className="uni-logo"><div className="logo-placeholder yale">YALE</div></div>
-              <div className="uni-logo"><div className="logo-placeholder oxford">OXFORD</div></div>
-            </div>
-            <p className="research-caption" data-aos="fade-up" data-aos-delay="300">Research-inspired frameworks from global leaders</p>
-            <div className="trust-stats" data-aos="fade-up" data-aos-delay="400">
-              <div className="trust-stat"><span className="trust-number">500+</span><span className="trust-label">Research Papers Analyzed</span></div>
-              <div className="trust-stat"><span className="trust-number">15+</span><span className="trust-label">Years of Combined Research</span></div>
-              <div className="trust-stat"><span className="trust-number">98%</span><span className="trust-label">Evidence-Based Methods</span></div>
-            </div>
-          </div>
 
-          {/* CTA for partners */}
-          <div className="partner-cta-section" data-aos="zoom-in">
-            <div className="cta-content">
-              <h2>Ready to Transform Mental Healthcare?</h2>
-              <p>Join a growing network of forward-thinking psychologists</p>
-              <button className="cta-button primary large" id="partnerCTA" onClick={() => setPsychOpen(true)}>Apply to Join ELMA's Expert Network</button>
-              <div className="cta-features">
-                <span><i className="fas fa-check"></i> Quick 5-minute application</span>
-                <span><i className="fas fa-check"></i> Verification within 48 hours</span>
-                <span><i className="fas fa-check"></i> Start earning immediately</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How We're Different Section */}
-      <section className="different-section" id="how-different">
-        <div className="container">
-          <div className="section-header" data-aos="fade-up">
-            <h2>How We're Different</h2>
-            <p>"Most apps stop at tracking. ELMA goes further."</p>
-          </div>
-          <div className="comparison-grid">
-            <div className="comparison-column traditional" data-aos="fade-right">
-              <h3>Traditional Apps</h3>
-              <div className="comparison-items">
-                <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Just mood logs</span></div>
-                <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Generic tips</span></div>
-                <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Faceless interface</span></div>
-                <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Intrusive notifications</span></div>
-                <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Clinical and boring UI</span></div>
-              </div>
-            </div>
-            <div className="comparison-column elma" data-aos="fade-left">
-              <h3>ELMA</h3>
-              <div className="comparison-items">
-                <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Stress trigger Detection</span></div>
-                <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Interactive, science-backed games</span></div>
-                <div className="benefit-item"><i className="fas fa-check-circle"></i><span>ELMA herself, your companion & mascot</span></div>
-                <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Your privacy, always in your control</span></div>
-                <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Mood Flower, Ribbon, Avatar</span></div>
-              </div>
-            </div>
-          </div>
-          {/* Mobile paired comparison for horizontal alignment */}
-          <div className="comparison-mobile-header" aria-hidden="true">
-            <div className="header-title traditional">Traditional Apps</div>
-            <div className="header-title elma">ELMA</div>
-          </div>
-          <div className="comparison-pairs" aria-label="Traditional vs ELMA comparison (mobile)">
-            <div className="comparison-pair">
-              <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Just mood logs</span></div>
-              <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Stress trigger Detection</span></div>
-            </div>
-            <div className="comparison-pair">
-              <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Generic tips</span></div>
-              <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Interactive, science-backed games</span></div>
-            </div>
-            <div className="comparison-pair">
-              <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Faceless interface</span></div>
-              <div className="benefit-item"><i className="fas fa-check-circle"></i><span>ELMA herself, your companion & mascot</span></div>
-            </div>
-            <div className="comparison-pair">
-              <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Intrusive notifications</span></div>
-              <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Your privacy, always in your control</span></div>
-            </div>
-            <div className="comparison-pair">
-              <div className="benefit-item"><i className="fas fa-times-circle"></i><span>Clinical and boring UI</span></div>
-              <div className="benefit-item"><i className="fas fa-check-circle"></i><span>Mood Flower, Ribbon, Avatar</span></div>
-            </div>
-          </div>
-          <div className="brand-statement" data-aos="zoom-in" data-aos-delay="300">
-            <p>"Cool enough for Gen Z. Serious enough for experts. Futuristic enough for investors."</p>
-          </div>
-        </div>
-      </section>
-      
 
       <section className="download-section" id="final-cta">
 
         <div className="download-container">
           {/* LEFT CONTENT */}
           <div className="download-left">
-            <h2>Download the app now!</h2>
+            <h2>{t('dl_heading')}</h2>
             <p>
-              Share your thoughts and moods with our 24/7 AI Emotional Companion and take a step towards your Emotional Wellness <br />
+              {t('dl_sub')} <br />
             </p>
 
             <div className="store-buttons">
@@ -603,7 +581,7 @@ function HomePage() {
               <a /> */}
 
               <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
-                <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" loading="lazy" decoding="async" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
 
 
@@ -637,7 +615,7 @@ function HomePage() {
               /> */}
 
               <a href={`https://apps.apple.com/in/app/elma-emotional-companion/id6756991672`} target="_blank" rel="noopener noreferrer">
-                <img src="/images/apple-download-bottom.png" alt="Get it on Apple App Store" className="store-btn" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <img src="/images/apple-download-bottom.png" alt="Get it on Apple App Store" className="store-btn" loading="lazy" decoding="async" onError={(e) => e.currentTarget.style.display = 'none'} />
               </a>
             </div>
           </div>
@@ -649,14 +627,21 @@ function HomePage() {
                 src="/images/phone-mock.jpeg"
                 alt="ELMA emotional wellness app interface on Android"
                 className="phone-img"
+                loading="lazy"
+                decoding="async"
               />
 
               {/* Mobile Image */}
-              <img
-                src="/images/phone-mock-mobile.png"
-                alt="ELMA app on mobile — emotional companion interface"
-                className="phone-img mobile-phone"
-              />
+              <picture>
+                <source srcSet="/images/phone-mock-mobile.webp" type="image/webp" />
+                <img
+                  src="/images/phone-mock-mobile.png"
+                  alt="ELMA app on mobile — emotional companion interface"
+                  className="phone-img mobile-phone"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
 
             </div>
           </div>

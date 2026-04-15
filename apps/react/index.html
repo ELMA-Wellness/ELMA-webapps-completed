@@ -28,8 +28,8 @@
 
     <!-- ── Twitter / X Card ───────────────────────────────────────────────── -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@elma.ai_official" />
-    <meta name="twitter:creator" content="@elma.ai_official" />
+    <meta name="twitter:site" content="@elmaai_official" />
+    <meta name="twitter:creator" content="@elmaai_official" />
     <meta name="twitter:title" content="ELMA — Your AI Emotional Companion" />
     <meta name="twitter:description" content="Your 24/7 AI emotional companion. Understand your moods, track emotional patterns, and grow stronger." />
     <meta name="twitter:image" content="https://elma.ltd/images/elma-og-cover.png" />
@@ -107,6 +107,13 @@
             "priceCurrency": "INR",
             "availability": "https://schema.org/InStock"
           },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "1200",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
           "publisher": { "@id": "https://elma.ltd/#organization" },
           "featureList": [
             "Emotion Flower Wheel mood selector",
@@ -157,14 +164,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
 
-    <!-- ── Fonts ──────────────────────────────────────────────────────────── -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- ── Fonts (non-blocking preload) ─────────────────────────────────── -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" /></noscript>
 
     <!-- ── Icons (deferred — non-render-blocking) ────────────────────────── -->
     <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" /></noscript>
 
     <!-- ── Critical image preload ─────────────────────────────────────────── -->
+    <link rel="preload" as="image" href="/images/elma-hero-section.webp" type="image/webp" fetchpriority="high" />
     <link rel="preload" as="image" href="/images/elma-logo.png" />
     <link rel="preload" as="image" href="/images/elma-splash.png" />
   </head>

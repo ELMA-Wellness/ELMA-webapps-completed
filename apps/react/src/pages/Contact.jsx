@@ -206,7 +206,7 @@ function Contact() {
                 <i className="fab fa-instagram"></i>
                 <div className="contact-item-content">
                   <h4>Instagram</h4>
-                  <p><a href="https://www.instagram.com/your_friend_elma/" target="_blank" rel="noreferrer">@your_friend_elma</a></p>
+                  <p><a href="https://www.instagram.com/elma.ai_official/" target="_blank" rel="noreferrer">@elma.ai_official</a></p>
                 </div>
               </div>
             </div>
