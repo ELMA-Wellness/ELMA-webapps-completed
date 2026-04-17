@@ -247,24 +247,39 @@ function HomePage() {
     if (e.key === 'ArrowRight') nextSlide()
   }
 
+  const android_package_name = 'com.elma.app'
+  const ios_app_name = 'elma-emotional-companion'
+  const ios_app_id = '123456789'
+
   return (
     <>
       {/* Hero Section */}
-      <section className="hero-section" style={{ paddingTop: '6rem' }}>
+      <section className="hero-section" aria-label="Decorative hero background" style={{ paddingTop: '6rem' }}>
         <div className="container">
           <div className="hero-content">
-            <div className="hero-elma-wide" data-aos="zoom-in">
+            {/* <div className="hero-elma-wide" data-aos="zoom-in">
               <img src="/images/elma-avatar.png" alt="ELMA - Your AI Powered Emotional Companion" loading="eager" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/800x450/BA92FF/FFFFFF?text=ELMA+Avatar' }} />
+            </div> */}
+            <div className='elma-logos'>
+              <img 
+                src="/images/ELMA_logos.png" 
+                alt="ELMA" 
+                className="elma-main-logo"
+              />
             </div>
             <h1 className="hero-headline" data-aos="fade-up" data-aos-delay="200">
-               <span className="line">Your AI powered</span>{" "}
-               <span className="line">emotional</span>{" "}
-               <span className="line">companion.</span>
-             </h1>
+              <span className="line">Your AI powered</span>{" "}
+              <span className="line">emotional</span>{" "}
+              <span className="line">companion.</span>
+            </h1>
             <p className="hero-subheadline" data-aos="fade-up" data-aos-delay="300">ELMA helps you understand your moods, reframe your thoughts, and grow stronger every day. Stigma-free, science-backed, and always by your side.</p>
             <div className="hero-cta-buttons" data-aos="fade-up" data-aos-delay="400">
-              <button className="cta-button primary large" id="heroUserCTA" onClick={() => setWaitlistOpen(true)}><span>✨</span> Start your journey with ELMA</button>
-              <button className="cta-button secondary large" id="heroPsychologistCTA" onClick={() => setPsychOpen(true)}><span>👩‍⚕️</span> Join ELMA's trusted expert network</button>
+              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
+                <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </a>
+              <a href={`https://apps.apple.com/in/app/elma-emotional-companion/id6756991672`} target="_blank" rel="noopener noreferrer">
+                <img src="/images/app-store.png" alt="Download on the App Store" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </a>
             </div>
             <p className="made-in-india" data-aos="fade-up" data-aos-delay="500">🇮🇳 Made in Visionary India for the World</p>
           </div>
@@ -272,7 +287,7 @@ function HomePage() {
       </section>
 
       {/* Why ELMA Section */}
-      <section className="why-elma-section" id="why-elma">
+      {/* <section className="why-elma-section" id="why-elma">
         <div className="container">
           <div className="section-header" data-aos="fade-up">
             <h2>Why ELMA?</h2>
@@ -304,121 +319,7 @@ function HomePage() {
             <p>"Every mood has a story. ELMA helps you understand yours."</p>
           </div>
         </div>
-      </section>
-
-      {/* App Showcase Section */}
-      <section id="app-showcase" className="elma-showcase-section" aria-label="ELMA App Screens">
-        <div className="elma-showcase-container">
-          <div className="elma-showcase-header" data-aos="fade-up">
-            <h2 className="elma-showcase-title">Experience ELMA in Action</h2>
-            <p className="elma-showcase-subtitle">Four powerful screens, one seamless emotional journey</p>
-          </div>
-          <div className="elma-showcase-stage" data-aos="fade-up" data-aos-delay="200">
-            <div
-              className="elma-showcase-devices-wrapper"
-              role="region"
-              aria-label="App screens carousel"
-              style={{ ['--slide-index']: showcaseIndex }}
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              onKeyDown={onKeyDown}
-              tabIndex={0}
-            >
-              <div className="elma-showcase-device is-hero" data-device="1">
-                <div className="elma-showcase-phone">
-                  <img src="/images/elma-splash.png" alt="ELMA welcome screen with logo and tagline" className="elma-screen" loading="lazy" />
-                  <div className="elma-phone-glow" aria-hidden="true"></div>
-                </div>
-                <div className="elma-screen-caption">
-                  <h3>Welcome to ELMA</h3>
-                  <p>Your journey begins here</p>
-                </div>
-              </div>
-              <div className="elma-showcase-device is-left" data-device="2">
-                <div className="elma-showcase-phone">
-                  <img src="/images/elma-dashboard.png" alt="ELMA dashboard showing mood tracking and streaks" className="elma-screen" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/390x844/90E0EF/FFFFFF?text=Dashboard' }} />
-                  <div className="elma-phone-glow" aria-hidden="true"></div>
-                </div>
-                <div className="elma-screen-caption">
-                  <h3>Emotional Dashboard</h3>
-                  <p>Track moods, streaks & growth</p>
-                </div>
-              </div>
-              <div className="elma-showcase-device is-right" data-device="3">
-                <div className="elma-showcase-phone">
-                  <div className="elma-phone-frame">
-                    <div className="elma-phone-notch" aria-hidden="true"></div>
-                    <div className="elma-phone-screen">
-                      <img src="/images/elma-journal.png" alt="ELMA private journal with lock icon" className="elma-screen" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/390x844/FFBBD8/FFFFFF?text=Journal' }} />
-                    </div>
-                    <div className="elma-phone-homebar" aria-hidden="true"></div>
-                  </div>
-                  <div className="elma-phone-glow" aria-hidden="true"></div>
-                </div>
-                <div className="elma-screen-caption">
-                  <h3>Private Journal</h3>
-                  <p>Your thoughts—encrypted & safe</p>
-                </div>
-              </div>
-              <div className="elma-showcase-device is-bottom" data-device="4">
-                <div className="elma-showcase-phone">
-                  <div className="elma-phone-frame">
-                    <div className="elma-phone-notch" aria-hidden="true"></div>
-                    <div className="elma-phone-screen">
-                      <img src="/images/elma-moodflower.png" alt="ELMA mood flower selection wheel" className="elma-screen" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/390x844/90E0EF/FFFFFF?text=Mood+Flower' }} />
-                    </div>
-                    <div className="elma-phone-homebar" aria-hidden="true"></div>
-                  </div>
-                  <div className="elma-phone-glow" aria-hidden="true"></div>
-                </div>
-                <div className="elma-screen-caption">
-                  <h3>Mood Flower</h3>
-                  <p>Name feelings & see patterns</p>
-                </div>
-              </div>
-            </div>
-            <div className="elma-showcase-dots" role="tablist" aria-label="Screen navigation">
-              <button
-                className={`elma-dot ${showcaseIndex === 0 ? 'is-active' : ''}`}
-                role="tab"
-                aria-selected={showcaseIndex === 0}
-                aria-label="Screen 1"
-                onClick={() => goToSlide(0)}
-              ></button>
-              <button
-                className={`elma-dot ${showcaseIndex === 1 ? 'is-active' : ''}`}
-                role="tab"
-                aria-selected={showcaseIndex === 1}
-                aria-label="Screen 2"
-                onClick={() => goToSlide(1)}
-              ></button>
-              <button
-                className={`elma-dot ${showcaseIndex === 2 ? 'is-active' : ''}`}
-                role="tab"
-                aria-selected={showcaseIndex === 2}
-                aria-label="Screen 3"
-                onClick={() => goToSlide(2)}
-              ></button>
-              <button
-                className={`elma-dot ${showcaseIndex === 3 ? 'is-active' : ''}`}
-                role="tab"
-                aria-selected={showcaseIndex === 3}
-                aria-label="Screen 4"
-                onClick={() => goToSlide(3)}
-              ></button>
-            </div>
-            <div className="elma-carousel-nav" aria-label="Carousel controls">
-              <button className="elma-carousel-button prev" onClick={prevSlide} aria-label="Previous">
-                ‹
-              </button>
-              <button className="elma-carousel-button next" onClick={nextSlide} aria-label="Next">
-                ›
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
       <section className="features-section" id="features">
@@ -453,6 +354,11 @@ function HomePage() {
               <h3>My Growth Dashboard</h3>
               <p>Track moods, strengths, and rewards in a stigma-free way.</p>
             </div>
+            <div className="feature-card" data-aos="flip-left" data-aos-delay="500">
+              <div className="feature-icon">📖</div>
+              <h3>Daily Gratitude Journal</h3>
+              <p>Express self gratitude in our encrypted and Face ID/ Fingerprint protected daily gratitude journal that lets you internalise and gives you a safe private space</p>
+            </div>
           </div>
         </div>
       </section>
@@ -474,13 +380,6 @@ function HomePage() {
                   <span className="pulse-dot" style={{ ['--delay']: '0.5s' }}></span>
                   <span className="pulse-dot" style={{ ['--delay']: '1s' }}></span>
                 </div>
-              </div>
-              <div className="partner-benefit-card" data-aos="zoom-in" data-aos-delay="300">
-                <div className="benefit-icon">📊</div>
-                <h3>Work Smarter, Not Harder</h3>
-                <p>Patients arrive with mood logs, journaling, and AI insights.</p>
-                <p className="benefit-highlight">Sessions begin deeper and faster — skipping 2–3 typical intake sessions.</p>
-                <div className="benefit-stat"><span className="stat-number">60</span>%<span className="stat-label">Time Saved</span></div>
               </div>
               <div className="partner-benefit-card" data-aos="zoom-in" data-aos-delay="400">
                 <div className="benefit-icon">💼</div>
@@ -609,14 +508,6 @@ function HomePage() {
                 <span><i className="fas fa-check"></i> Start earning immediately</span>
               </div>
             </div>
-            <div className="cta-visual">
-              <div className="floating-badges">
-                <span className="float-badge" style={{ ['--delay']: '0s' }}>🎯</span>
-                <span className="float-badge" style={{ ['--delay']: '0.5s' }}>💡</span>
-                <span className="float-badge" style={{ ['--delay']: '1s' }}>🚀</span>
-                <span className="float-badge" style={{ ['--delay']: '1.5s' }}>🌟</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -682,27 +573,87 @@ function HomePage() {
           </div>
         </div>
       </section>
+      
 
-      {/* Final CTA Section */}
-      <section className="final-cta-section">
-        <div className="container">
-          <div className="cta-content" data-aos="zoom-in">
-            <div className="confetti-container">
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-              <div className="confetti"></div>
-              <div className="confetti"></div>
+      <section className="download-section" id="final-cta">
+
+        <div className="download-container">
+          {/* LEFT CONTENT */}
+          <div className="download-left">
+            <h2>Download the app now!</h2>
+            <p>
+              Share your thoughts and moods with our 24/7 AI Emotional Companion and take a step towards your Emotional Wellness <br />
+            </p>
+
+            <div className="store-buttons">
+              {/* <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer"></a>
+              <img
+                src="/images/google-play.png"
+                alt="Get it on Google Play"
+                className="store-btn"
+              />
+              <a /> */}
+
+              <a href={`https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN`} target="_blank" rel="noopener noreferrer">
+                <img src="/images/google-play.png" alt="Get it on Google Play" className="store-button" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              {/* <img
+                src="/images/apple-download-bottom.png"
+                alt="Download on the App Store"
+                className="store-btn"
+              /> */}
+
+              <a href={`https://apps.apple.com/in/app/elma-emotional-companion/id6756991672`} target="_blank" rel="noopener noreferrer">
+                <img src="/images/apple-download-bottom.png" alt="Get it on Apple App Store" className="store-btn" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </a>
             </div>
-            <h2>Life, made easy. One mood, one moment at a time.</h2>
-            <p>"Emotions aren't problems. They're signals. ELMA helps you identify and deal with them."</p>
-            <div className="final-cta-buttons">
-              <button className="cta-button primary large" id="finalUserCTA" onClick={() => setWaitlistOpen(true)}><span>✨</span> Begin your ELMA journey today</button>
-              <button className="cta-button secondary large" id="finalPsychologistCTA" onClick={() => setPsychOpen(true)}><span>👩‍⚕️</span> Be part of ELMA's expert network</button>
+          </div>
+
+          {/* RIGHT CONTENT */}
+          <div className="download-right">
+            <div className="phone-wrapper">
+              <img
+                src="/images/phone-mock.jpeg"
+                alt="Phone Mockup"
+                className="phone-img"
+              />
+
+              {/* Mobile Image */}
+              <img
+                src="/images/phone-mock-mobile.png"
+                alt="Phone Mockup Mobile"
+                className="phone-img mobile-phone"
+              />
+
             </div>
-            <p className="tagline">"Designed to make your life easy, powered by science."</p>
           </div>
         </div>
+
       </section>
 
       {/* Modals */}

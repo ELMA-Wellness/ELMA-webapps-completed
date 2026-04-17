@@ -16,6 +16,7 @@ function Footer() {
             <Link to="/privacy">Privacy Policy</Link>
             <Link to="/terms">Terms of Service</Link>
             <Link to="/contact">Contact</Link>
+            <Link to="/cancellation">Cancellation Policy</Link>
           </div>
           <div className="footer-social">
             <a href="http://linkedin.com/company/elma-emotional-life-management-assistant" target="_blank" rel="noopener noreferrer"><i className="fab fa-linkedin"></i></a>
@@ -23,7 +24,7 @@ function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2025 ELMA. All rights reserved. Made with ❤️ in Visionary India for the World 🌍</p>
+          <p>&copy; 2026 ELMA Emotion Solutions LLP. All rights reserved. Made with ❤️ in Visionary India for the World 🌍</p>
         </div>
       </div>
     </footer>
