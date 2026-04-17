@@ -14,17 +14,9 @@ import { useSearchParams } from "react-router-dom";
  */
 
 
-const THERAPIST_INFO = {
-  name: "Dr. Sarah Mitchell",
-  credentials: "PhD",
-  specialties: ["Anxiety", "Relationships"],
-  avatarInitials: "SM",
-};
 
-const SESSION_META = {
-  durationMins: 50,
-  startTime: "10:00 AM",
-};
+
+
 
 export default function App() {
   const [screen, setScreen] = useState("lobby");   // lobby | waiting | live | ended
@@ -39,30 +31,62 @@ export default function App() {
     const sessionCode = params.get("sessionCode");
     const userId = params.get("userId");
     const role = params.get("role");
+    const name = params.get('name')
+    const skills = params.get("skills")
+      ? JSON.parse(decodeURIComponent(params.get("skills")))
+      : [];
+
+    // ✅ decode time string
+    const startTime = params.get("startTime")
+      ? decodeURIComponent(params.get("startTime"))
+      : "";
 
     return {
       sessionCode,
       userId,
       role,
+      name,
+      skills,
+      startTime
     };
   }
 
- 
-  const {
-      sessionCode,
-      userId,
-      role,
-    }= getSessionQueryParams();
-  
 
-  
+  const {
+    sessionCode,
+    userId,
+    role,
+    name,
+    skills,
+    startTime
+  } = getSessionQueryParams();
+
+
+
 
 
   const SESSION_CONFIG = {
     sessionCode: sessionCode || "69a54abd29c99c56303ea5f6",
     userId: userId || "696f408b2ff51b82b1cee0e6",
-    role: role,           // "patient" | "therapist"
+    role: role,           // "patient" | "therapist",
+    name,
+    skills,
+    startTime
   };
+
+  const THERAPIST_INFO = {
+    name,
+    credentials: "PhD",
+    specialties: skills,
+    avatarInitials: "SM",
+  };
+
+  const SESSION_META = {
+  durationMins: 50,
+  startTime,
+};
+
+  console.log(SESSION_CONFIG)
 
   // ── Lobby → Waiting ──────────────────────────────────────────────────────
   const handleLobbyJoined = () => {

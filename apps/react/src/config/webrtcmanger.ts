@@ -1,28 +1,28 @@
-const WEBSOCKET_URL = 'wss://elma-wellness-v2.onrender.com'; // Replace with your WebSocket server URL
+const WEBSOCKET_URL = 'wss://elma-wellness.onrender.com'; // Replace with your WebSocket server URL
 const ICE_SERVERS = [
   {
-    urls: "stun:stun.relay.metered.ca:80",
-  },
-  {
-    urls: "turn:global.relay.metered.ca:80",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
-  {
-    urls: "turn:global.relay.metered.ca:80?transport=tcp",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
-  {
-    urls: "turn:global.relay.metered.ca:443",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
-  {
-    urls: "turns:global.relay.metered.ca:443?transport=tcp",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
+        urls: "stun:stun.relay.metered.ca:80",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80",
+        username: "84190094f65f8a6f5db0b231",
+        credential: "Cb5GBx3J1vw8vtEp",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:80?transport=tcp",
+        username: "84190094f65f8a6f5db0b231",
+        credential: "Cb5GBx3J1vw8vtEp",
+      },
+      {
+        urls: "turn:global.relay.metered.ca:443",
+        username: "84190094f65f8a6f5db0b231",
+        credential: "Cb5GBx3J1vw8vtEp",
+      },
+      {
+        urls: "turns:global.relay.metered.ca:443?transport=tcp",
+        username: "84190094f65f8a6f5db0b231",
+        credential: "Cb5GBx3J1vw8vtEp",
+      },
 ];
 type Role = 'patient' | 'therapist';
 type StreamCallback = (stream: MediaStream | null) => void;

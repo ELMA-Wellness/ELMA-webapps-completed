@@ -441,7 +441,7 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: "#9889c8", marginBottom: 2 }}>Session Time</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#2d1f5e", fontVariantNumeric: "tabular-nums" }}>{em}:{es}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#2d1f5e", fontVariantNumeric: "tabular-nums" }}>{sm.startTime}</div>
                 </div>
               </div>
             </div>
