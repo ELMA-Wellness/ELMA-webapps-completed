@@ -2,6 +2,8 @@ import { motion } from 'framer-motion'
 import { ElmaGlobe } from './ElmaGlobe.jsx'
 import HoloCard from './HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
+import { getAll } from '../firebase/firestore.ts'
+import { use, useEffect,useState } from 'react'
 
 const ease = [0.22, 1, 0.36, 1]
 
@@ -123,6 +125,59 @@ function TherapistCard({ t }) {
 // ── Main export ───────────────────────────────────────────────────────────────
 export function ElmaShowcaseSection({ onJoinTherapist }) {
   const { t } = useLang()
+
+  const[therapists,setTherapists]=useState([])
+
+
+  const loadAllTherapists=async()=>{
+
+    try{
+
+      const res=await getAll('therapists')
+
+
+
+      const formatted=res?.map((item)=>{
+
+        
+        return {
+            ...item,
+
+             id: item.id,  
+             name: item.name,  
+             spec: item.professtional_title,        
+             lang: item.languages.join(' · '),            
+             rating: item?.rating || 5, 
+             reviews: 0, 
+             exp: item?.experience,  
+             img: item?.photo
+
+
+        }
+      })
+            const filtered=formatted.filter((item)=>item.email!=='rahulbhuse2019@gmail.com')
+
+      setTherapists(filtered)
+
+
+
+    }
+    catch(err){
+     
+
+    }
+    finally{
+
+    }
+    
+  }
+
+  useEffect(()=>{
+    loadAllTherapists()
+
+  },[])
+
+  console.log("therapists",therapists)
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════
@@ -265,7 +320,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
         {/* Full-bleed scrolling carousel */}
         <div className="tc-scroll-outer">
           <div className="tc-scroll-track">
-            {[...THERAPISTS, ...THERAPISTS].map((t, i) => (
+            {therapists.map((t, i) => (
               <TherapistCard key={`${t.id}-${i}`} t={t} />
             ))}
           </div>
