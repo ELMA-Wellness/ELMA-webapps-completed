@@ -7,6 +7,8 @@ import Bookings from "./routes/Bookings.jsx";
 import Earnings from "./routes/Earnings.jsx";
 import TherapistTimeSelector from "./components/TimeSelector.js";
 import { getDashBoardData } from "./services/dashboard.js";
+import OutLookCalendarConnectedPage from "./components/OutlookCalandarConnected.js";
+import ResetPassword from "./routes/ResetPassword.jsx";
 
 // Small helper
 function getTherapist() {
@@ -46,7 +48,12 @@ export default function App() {
         {/* LOGIN */}
         <Route path="/auth/sign-in" element={<PsychAuthSignIn />} />
 
+         <Route path="/auth/reset-pwd" element={<ResetPassword />} />
+
         <Route path="/time-slot" element={<TherapistTimeSelector/>} />
+
+        <Route path="/calendar-connected" element={<OutLookCalendarConnectedPage />} />
+
 
         {/* PROTECTED ROUTES */}
         <Route

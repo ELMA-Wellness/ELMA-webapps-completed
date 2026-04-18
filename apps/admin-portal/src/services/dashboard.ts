@@ -25,6 +25,25 @@ const toJSDate = (value: any): Date | null => {
   return isNaN(parsed.getTime()) ? null : parsed;
 };
 
+import { collectionGroup,} from "firebase/firestore";
+
+
+export const getTotalAIMessages = async () => {
+  try {
+    const q = query(
+      collectionGroup(db, "messages"),
+      where("sender", "==", "ai")
+    );
+
+    const snap = await getDocs(q);
+
+    return snap.size; // total AI messages
+  } catch (err) {
+    console.error("Error getting AI message count:", err);
+    return 0;
+  }
+};
+
 export const getDashBoardData = async () => {
   try {
     const now = new Date();
@@ -49,12 +68,56 @@ export const getDashBoardData = async () => {
     // ─────────────────────────────
     // USERS & THERAPISTS
     // ─────────────────────────────
-    const [usersSnap, therapistSnap] = await Promise.all([
+    const [usersSnap, therapistSnap,moodLogsSnap,journalSnap] = await Promise.all([
       getDocs(collection(db, "users")),
       getDocs(collection(db, "therapists")),
+      getDocs(collection(db, "moodLogs")),
+      getDocs(collection(db, "journals")),
+
     ]);
 
     const users = usersSnap.docs.map((d) => d.data());
+
+    const completely_onboarded_users=users.filter((i)=>(i.onBoradingFinished===true)).length;
+
+    const partially_onboarded_users=users.filter((i)=>((i.name || i.ageGroup) && (
+      !i.gender || !i.sleepStyle || !i.stressLevel || !i.location
+    )
+
+    )).length;
+
+    const non_onboarded_users=users.filter((i)=>(
+      !i.name || !i.ageGroup 
+    )).length;
+
+     const oneGameFinshedUsers=users.filter((i)=>(
+      i.gameOneFinished 
+    )).length;
+
+    const twoGameFinshedUsers=users.filter((i)=>(
+      i.gameTwoFinished 
+    )).length;
+
+
+    const threeGameFinshedUsers=users.filter((i)=>(
+      i.gameThreeFinished 
+    )).length;
+
+    const fourGameFinshedUsers=users.filter((i)=>(
+      i.gameFourFinished 
+    )).length;
+
+    const fiveGameFinshedUsers=users.filter((i)=>(
+      i.gameFiveFinished 
+    )).length;
+
+    const sixGameFinshedUsers=users.filter((i)=>(
+      i.gameSixFinished 
+    )).length;
+
+    
+
+     
 
     const therapists = therapistSnap.docs.map((d) => {
       return {
@@ -191,6 +254,20 @@ export const getDashBoardData = async () => {
           ?.sort((a, b) => b.current_month_earning - a.current_month_earning)
           ?.slice(0, 3),
       therapist_current_payout_month,
+      total_mood_logs: moodLogsSnap.docs.length,
+      total_journals: journalSnap.docs.length,
+      total_ai_requests: await getTotalAIMessages(),
+      today_active_users:dau_users,
+      completely_onboarded_users,
+      partially_onboarded_users,
+      non_onboarded_users,
+      oneGameFinshedUsers,
+      twoGameFinshedUsers,
+      threeGameFinshedUsers,
+      fourGameFinshedUsers,
+      fiveGameFinshedUsers,
+      sixGameFinshedUsers,
+
     };
   } catch (err: any) {
     console.error("getDashBoardData error:", err?.message);

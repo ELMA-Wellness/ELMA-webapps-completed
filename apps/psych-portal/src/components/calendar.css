@@ -1,129 +1,356 @@
-/* Container */
+/* ==============================================
+   THERAPIST CALENDAR — calendar.css
+============================================== */
+
+:root {
+  --cal-font: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --border: 1px solid #e5e7eb;
+  --radius: 8px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-bar: 0 -2px 16px rgba(0,0,0,0.10);
+  --confirm-bar-height: 72px;
+}
+
+/* ── Container ─────────────────────────────── */
 .calendar-container {
   height: 650px;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  font-family: "Inter", system-ui, -apple-system;
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  font-family: var(--cal-font);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
 }
 
-/* Header (Days) */
-.rbc-header {
-  padding: 10px 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #3c4043;
-  border-bottom: 1px solid #e0e0e0;
+.calendar-container .rbc-calendar {
+  flex: 1;
+  min-height: 0;
 }
 
-/* Time column */
-.rbc-time-gutter {
-  font-size: 12px;
-  color: #5f6368;
-}
-
-/* Grid lines */
-.rbc-timeslot-group {
-  border-bottom: 1px solid #f1f3f4;
-}
-
-/* Current time indicator */
-.rbc-current-time-indicator {
-  background-color: #ea4335;
-  height: 2px;
-}
-
-/* Event */
-.rbc-event {
-  box-shadow: none;
-}
-
-/* Event hover */
-.rbc-event:hover {
-  filter: brightness(0.97);
-}
-
-/* Selected slot */
-.rbc-slot-selection {
-  background-color: rgba(66, 133, 244, 0.15);
-}
-
-/* Toolbar */
+/* ── Toolbar ───────────────────────────────── */
 .rbc-toolbar {
-  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
 }
 
 .rbc-toolbar button {
-  background: #ffffff;
-  border: 1px solid #dadce0;
+  background: #fff;
+  border: var(--border);
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 13px;
-  color: #3c4043;
+  font-family: var(--cal-font);
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  min-height: 34px;
+  white-space: nowrap;
 }
-
-.rbc-toolbar button:hover {
-  background: #f1f3f4;
-}
-
+.rbc-toolbar button:hover { background: #f3f4f6; }
 .rbc-toolbar button.rbc-active {
   background: #e8f0fe;
   color: #1a73e8;
   border-color: #1a73e8;
+  font-weight: 600;
+}
+.rbc-toolbar button:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
 }
 
-/* Agenda view */
-.rbc-agenda-view table {
+/* ── Header ────────────────────────────────── */
+.rbc-header {
+  padding: 10px 4px;
   font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: var(--border);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Selected preview block */
-.selected-event {
-  height: 100%;
-  width: 100%;
-  padding: 6px;
+/* ── Time gutter ────────────────────────────── */
+.rbc-time-gutter { font-size: 12px; color: #6b7280; white-space: nowrap; }
+.rbc-time-gutter .rbc-label { padding: 0 8px; }
+
+/* ── Grid ──────────────────────────────────── */
+.rbc-timeslot-group { border-bottom: 1px solid #f1f3f4; min-height: 40px; }
+.rbc-day-slot .rbc-time-slot { border-top: 1px dotted #f1f3f4; }
+
+/* ── Current time indicator ────────────────── */
+.rbc-current-time-indicator {
+  background-color: #ea4335;
+  height: 2px;
+  z-index: 3;
+}
+.rbc-current-time-indicator::before {
+  content: "";
+  position: absolute;
+  left: -5px; top: -4px;
+  width: 10px; height: 10px;
+  background: #ea4335;
+  border-radius: 50%;
+}
+
+/* ── Slot selection highlight ──────────────── */
+.rbc-slot-selection {
+  background-color: rgba(245,158,11,0.12);
+  border: 1px dashed #f59e0b;
+  border-radius: 4px;
+}
+
+/* ── Events ────────────────────────────────── */
+.rbc-event {
+  border-radius: 6px !important;
+  border: none !important;
+  padding: 3px 6px !important;
+  font-size: 12px;
+  font-family: var(--cal-font);
+  box-shadow: none !important;
+  overflow: hidden;
+}
+.rbc-event:focus { outline: none; }
+
+/* ── Cal-event inner layout ────────────────── */
+.cal-event {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Small label */
-.selected-label {
+.cal-event__icon { font-size: 11px; flex-shrink: 0; }
+
+.cal-event__title {
   font-size: 11px;
   font-weight: 600;
-  color: #92400e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 
-/* Actions pinned near endTime */
-.selected-actions {
+/* "tap to free" hint — subtle, right-aligned */
+.cal-event__hint {
+  font-size: 10px;
+  opacity: 0.6;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-style: italic;
+}
+
+/* Pointer for unavailable so it looks clickable */
+.cal-event--unavailable { cursor: pointer; }
+.cal-event--unavailable:hover .cal-event__hint { opacity: 1; }
+
+/* ── All-day row (unused) ───────────────────── */
+.rbc-allday-cell { display: none; }
+
+/* ── Scrollbar ──────────────────────────────── */
+.rbc-time-content {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+.rbc-time-content::-webkit-scrollbar { width: 4px; }
+.rbc-time-content::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+/* ==============================================
+   CONFIRM BAR — shared base
+============================================== */
+.confirm-bar {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  margin-top: 10px;
+  animation: slideUp 0.18s ease;
 }
 
-/* Confirm button */
-.confirm-btn {
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mark unavailable variant */
+.confirm-bar--mark {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+
+/* Make available variant */
+.confirm-bar--free {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+}
+
+.confirm-bar__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.confirm-bar__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.confirm-bar__time {
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.confirm-bar__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Bar buttons ───────────────────────────── */
+.confirm-bar__btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--cal-font);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+/* Amber — mark unavailable */
+.confirm-bar__btn--primary {
   background: #f59e0b;
   color: #fff;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
 }
+.confirm-bar__btn--primary:hover { background: #d97706; }
 
-.confirm-btn:hover {
-  background: #d97706;
+/* Green — make available */
+.confirm-bar__btn--green {
+  background: #16a34a;
+  color: #fff;
 }
+.confirm-bar__btn--green:hover { background: #15803d; }
 
-/* Cancel icon */
-.cancel-btn {
+/* Ghost — cancel */
+.confirm-bar__btn--ghost {
   background: transparent;
-  border: none;
-  color: #92400e;
-  font-size: 14px;
-  cursor: pointer;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+.confirm-bar__btn--ghost:hover { background: #f3f4f6; color: #374151; }
+
+.confirm-bar__btn:focus-visible {
+  outline: 2px solid #374151;
+  outline-offset: 2px;
 }
 
+/* ==============================================
+   📱 MOBILE (≤ 768px)
+============================================== */
+@media (max-width: 768px) {
+  .calendar-container {
+    height: calc(100dvh - 110px);
+    padding: 6px 4px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Toolbar */
+  .rbc-toolbar { margin-bottom: 6px; gap: 4px; }
+  .rbc-toolbar .rbc-toolbar-label { font-size: 13px; }
+  .rbc-toolbar button { font-size: 12px; padding: 5px 10px; min-height: 36px; }
+
+  /* Header */
+  .rbc-header { font-size: 11px; padding: 7px 2px; }
+
+  /* Time gutter */
+  .rbc-time-gutter { font-size: 10px; min-width: 40px; max-width: 40px; }
+  .rbc-time-gutter .rbc-label { padding: 0 4px; }
+
+  /* Slots */
+  .rbc-timeslot-group { min-height: 48px; }
+
+  /* Events */
+  .rbc-event { font-size: 11px !important; min-height: 28px; }
+
+  /* Hide hint on mobile to save space — bar will appear on tap */
+  .cal-event__hint { display: none; }
+
+  /* Confirm bar: fixed sticky bottom sheet on mobile */
+  .confirm-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 12px 12px 0 0;
+    margin-top: 0;
+    padding: 14px 16px 20px;
+    box-shadow: var(--shadow-bar);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    z-index: 1000;
+    animation: slideUpMobile 0.2s ease;
+  }
+
+  @keyframes slideUpMobile {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .confirm-bar__label { font-size: 15px; }
+  .confirm-bar__time  { font-size: 13px; }
+
+  .confirm-bar__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .confirm-bar__btn {
+    min-height: 44px; /* WCAG touch target */
+    font-size: 14px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ==============================================
+   📱 EXTRA-SMALL (≤ 375px)
+============================================== */
+@media (max-width: 375px) {
+  .rbc-toolbar button { padding: 5px 7px; font-size: 11px; }
+  .rbc-toolbar .rbc-toolbar-label { font-size: 12px; }
+  .rbc-time-gutter { min-width: 34px; max-width: 34px; font-size: 9px; }
+}

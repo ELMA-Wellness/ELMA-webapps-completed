@@ -6,9 +6,9 @@ const IS_APP_LAUNCHED =
     import.meta.env.VITE_APP_LAUNCHED === "true";
 
 const ANDROID_STORE_URL =
-    "https://play.google.com/store/apps/details?id=com.elma.app"; // TODO: replace
+    "https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP&hl=en_IN"; 
 const IOS_STORE_URL =
-    "https://apps.apple.com/app/id1234567890"; // TODO: replace
+    "https://apps.apple.com/in/app/elma-emotional-companion/id6756991672"; 
 
 function detectDevice() {
     const ua = navigator.userAgent.toLowerCase();
@@ -82,8 +82,6 @@ const AppLanding = () => {
         setStatus("");
 
         try {
-
-
             await addData('qrScans', {
                 email: contact,
                 createdAt: new Date(),

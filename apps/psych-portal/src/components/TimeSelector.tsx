@@ -8,11 +8,12 @@ import {
   addDoc,
   collection,
   writeBatch,
+  deleteDoc,
 } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
 import { hasOverlap } from "../utils/helper";
 import { useNavigate } from "react-router-dom";
-import { ConnectGoogleCalendar } from "./GoogleCalendar";
+import { ConnectCalendars } from "./ConnectCalendars";
 import TherapistCalendar from "./TherapistCalendar";
 import { getAvailability } from "../services/availabilty";
 
@@ -120,9 +121,21 @@ export default function TherapistTimeSelector() {
   }) => {
     try {
       await addDoc(collection(db, "therapistAvailabilty"), payload);
+      await setEventsByfetching();
       console.log("✅ Unavailability saved");
     } catch (err) {
       console.error("❌ Failed to save unavailability", err);
+    }
+  };
+
+  // Deletes the unavailable doc from Firestore then refreshes the calendar
+  const handleRemoveUnavailable = async (availabilityId: string) => {
+    try {
+      await deleteDoc(doc(db, "therapistAvailabilty", availabilityId));
+      await setEventsByfetching();
+      console.log("✅ Slot made available again");
+    } catch (err) {
+      console.error("❌ Failed to remove unavailability", err);
     }
   };
 
@@ -131,15 +144,18 @@ export default function TherapistTimeSelector() {
       {/* Header */}
       <div className="top-bar">
         <h1>Therapist Schedule</h1>
-        <ConnectGoogleCalendar />
+        <ConnectCalendars />
       </div>
 
       {/* Calendar Section */}
       <div className="calendar-section">
-        <TherapistCalendar therapistId={tid} onCreateUnavailable={handleCreateUnavailable} availabilities={events} />
+        <TherapistCalendar
+          therapistId={tid}
+          availabilities={events}
+          onCreateUnavailable={handleCreateUnavailable}
+          onRemoveUnavailable={handleRemoveUnavailable}
+        />
       </div>
-
-      
     </div>
   );
 }
