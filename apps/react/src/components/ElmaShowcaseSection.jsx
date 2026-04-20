@@ -80,13 +80,6 @@ function TherapistCard({ therapist, tFn }) {
         <p className="tc-name">{therapist.name}</p>
         <p className="tc-spec">{therapist.spec}</p>
         <p className="tc-lang">{therapist.lang}</p>
-        <div className="tc-meta">
-          <span className="tc-rating">★ {therapist.rating}</span>
-          <span className="tc-sep">·</span>
-          <span className="tc-reviews">{therapist.reviews} {tFn('showcase_reviews')}</span>
-          <span className="tc-sep">·</span>
-          <span className="tc-exp">{therapist.exp}</span>
-        </div>
       </div>
     </HoloCard>
   )
