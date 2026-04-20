@@ -7,11 +7,13 @@ import { HowElmaWorks } from '../components/HowElmaWorks.jsx'
 import { ElmaShowcaseSection } from '../components/ElmaShowcaseSection.jsx'
 import HoloCard from '../components/HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
 
 function WaitlistModal({ isOpen, onClose }) {
+  const { t } = useLang()
   const emailRef = useRef(null)
   const consentRef = useRef(null)
   const [sending, setSending] = useState(false)
@@ -50,7 +52,7 @@ function WaitlistModal({ isOpen, onClose }) {
       setSuccess(true)
     } catch (err) {
       console.error('Error:', err)
-      setError('Submission failed. Please try again.')
+      setError(t('modal_error'))
     } finally {
       setSending(false)
     }
@@ -60,22 +62,22 @@ function WaitlistModal({ isOpen, onClose }) {
     <div className={`modal ${isOpen ? 'active' : ''}`} onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Join ELMA's Waitlist</h2>
+          <h2>{t('waitlist_title')}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">&times;</button>
         </div>
         <div className="modal-body">
           {!success ? (
             <>
-              <p>Be the first to experience emotional wellness reimagined!</p>
+              <p>{t('waitlist_sub')}</p>
               <form className="modal-form" onSubmit={onSubmit}>
                 <input type="hidden" name="form_name" value="ELMA Waitlist" />
-                <input type="email" name="email" placeholder="Enter your email" required ref={emailRef} />
+                <input type="email" name="email" placeholder={t('waitlist_email')} required ref={emailRef} />
                 <div className="consent-wrapper">
                   <input type="checkbox" id="waitlistConsent" name="consent" ref={consentRef} required />
-                  <label htmlFor="waitlistConsent">I agree to receive early-access updates from ELMA.</label>
+                  <label htmlFor="waitlistConsent">{t('waitlist_consent')}</label>
                 </div>
                 <button type="submit" className="cta-button primary modal-submit" disabled={sending}>
-                  {sending ? 'Joining...' : 'Join Waitlist'}
+                  {sending ? t('waitlist_joining') : t('waitlist_submit')}
                 </button>
                 {error && (<p style={{ color: '#ff6b6b', marginTop: '0.75rem' }} aria-live="polite">{error}</p>)}
               </form>
@@ -83,7 +85,7 @@ function WaitlistModal({ isOpen, onClose }) {
           ) : (
             <div className="success-state">
               <span className="heart-confirmation" aria-hidden="true">♥</span>
-              <h3>You're in! ELMA is excited to grow with you.</h3>
+              <h3>{t('waitlist_success')}</h3>
             </div>
           )}
         </div>
@@ -512,8 +514,41 @@ function HomePage() {
   const ios_app_name = 'elma-emotional-companion'
   const ios_app_id = '6756991672'
 
+  const homepageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is ELMA?',
+        acceptedAnswer: { '@type': 'Answer', text: 'ELMA is a 24/7 AI emotional companion app that helps you understand your moods, track emotional patterns, and grow stronger — stigma-free and science-backed.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is ELMA free to use?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes, ELMA is free to download and start using. Premium features are available via subscription.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'What platforms is ELMA available on?',
+        acceptedAnswer: { '@type': 'Answer', text: 'ELMA is available on Android (Google Play) and iOS (App Store).' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is ELMA therapy or a replacement for a therapist?',
+        acceptedAnswer: { '@type': 'Answer', text: 'No — ELMA is an AI emotional companion, not a therapist. For professional support, ELMA also connects you with certified psychologists via its Expert Marketplace.' },
+      },
+    ],
+  }
+
   return (
     <>
+      <SEO
+        title="Your AI Emotional Companion | Be Cool. Be In Control."
+        description="ELMA is your 24/7 AI emotional companion. Talk through anxiety, burnout & stress — stigma-free, science-backed. India's most empathetic AI. Free on Android & iOS."
+        canonical="/"
+        schema={homepageSchema}
+      />
       {/* Hero Section */}
       <HeroSection />
 

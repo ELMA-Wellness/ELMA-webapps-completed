@@ -3,100 +3,24 @@ import { motion } from 'framer-motion'
 import HoloCard from './HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
 
-// ── ELMA user journey data ────────────────────────────────────────────────────
-const JOURNEY = [
-  {
-    id: 1,
-    title: 'Assess',
-    subtitle: 'Gamified Assessments',
-    content:
-      'Playful, research-backed emotional assessments reveal your baseline across 12 dimensions — built on 500+ peer-reviewed studies from Harvard, Oxford & Stanford.',
-    icon: '🎯',
-    relatedIds: [2],
-    status: 'completed',
-    energy: 100,
-    accent: '#BA92FF',
-  },
-  {
-    id: 2,
-    title: 'Log',
-    subtitle: 'Mood & Energy Logging',
-    content:
-      'Daily micro check-ins let you log your mood, its intensity, emotional triggers, and energy levels. Every entry deepens your self-awareness automatically.',
-    icon: '📊',
-    relatedIds: [1, 3],
-    status: 'completed',
-    energy: 88,
-    accent: '#90E0EF',
-  },
-  {
-    id: 3,
-    title: 'Profile',
-    subtitle: 'Your Emotional Profile',
-    content:
-      "Your logs transform into a live, personalized Emotional Profile — patterns, strengths, and growth areas beautifully shown through ELMA's Mood Flower.",
-    icon: '🌸',
-    relatedIds: [2, 4],
-    status: 'completed',
-    energy: 82,
-    accent: '#FFBBD8',
-  },
-  {
-    id: 4,
-    title: 'Journal',
-    subtitle: 'Encrypted Gratitude Journal',
-    content:
-      'Face ID-protected, end-to-end encrypted. A completely private space to reflect, reframe, and internalize your emotional journey — 100% stigma-free.',
-    icon: '📖',
-    relatedIds: [3, 5],
-    status: 'completed',
-    energy: 75,
-    accent: '#BA92FF',
-  },
-  {
-    id: 5,
-    title: 'Play',
-    subtitle: 'Calm in 60 & Sleep Games',
-    content:
-      'Science-backed mini-games like Calm in 60 and Sleep Wind Down help you regulate emotions in under a minute. Proven CBT techniques, made delightfully playable.',
-    icon: '🎮',
-    relatedIds: [4, 6],
-    status: 'completed',
-    energy: 78,
-    accent: '#90E0EF',
-  },
-  {
-    id: 6,
-    title: 'Talk',
-    subtitle: 'ELMA — Your AI Companion',
-    content:
-      'Speak to ELMA in any language. She knows your emotional history, meets you where you are, and is your always-available, non-judgmental friend — no toxic positivity.',
-    icon: '💜',
-    relatedIds: [5, 7],
-    status: 'completed',
-    energy: 92,
-    accent: '#FFBBD8',
-  },
-  {
-    id: 7,
-    title: 'Heal',
-    subtitle: 'Certified Therapy Sessions',
-    content:
-      "Book certified therapists who receive your full Emotional Profile before your session. No wasted intake — you start feeling better from Session 1.",
-    icon: '🩺',
-    relatedIds: [6],
-    status: 'in-progress',
-    energy: 95,
-    accent: '#BA92FF',
-  },
+// ── Journey step meta (icons, ids, status, energy, accent — language-neutral) ─
+const JOURNEY_META = [
+  { id: 1, icon: '🎯', relatedIds: [2],    status: 'completed',   energy: 100, accent: '#BA92FF', titleKey: 'how_step1_title', subKey: 'how_step1_sub', contentKey: 'how_step1_content' },
+  { id: 2, icon: '📊', relatedIds: [1, 3], status: 'completed',   energy: 88,  accent: '#90E0EF', titleKey: 'how_step2_title', subKey: 'how_step2_sub', contentKey: 'how_step2_content' },
+  { id: 3, icon: '🌸', relatedIds: [2, 4], status: 'completed',   energy: 82,  accent: '#FFBBD8', titleKey: 'how_step3_title', subKey: 'how_step3_sub', contentKey: 'how_step3_content' },
+  { id: 4, icon: '📖', relatedIds: [3, 5], status: 'completed',   energy: 75,  accent: '#BA92FF', titleKey: 'how_step4_title', subKey: 'how_step4_sub', contentKey: 'how_step4_content' },
+  { id: 5, icon: '🎮', relatedIds: [4, 6], status: 'completed',   energy: 78,  accent: '#90E0EF', titleKey: 'how_step5_title', subKey: 'how_step5_sub', contentKey: 'how_step5_content' },
+  { id: 6, icon: '💜', relatedIds: [5, 7], status: 'completed',   energy: 92,  accent: '#FFBBD8', titleKey: 'how_step6_title', subKey: 'how_step6_sub', contentKey: 'how_step6_content' },
+  { id: 7, icon: '🩺', relatedIds: [6],    status: 'in-progress', energy: 95,  accent: '#BA92FF', titleKey: 'how_step7_title', subKey: 'how_step7_sub', contentKey: 'how_step7_content' },
 ]
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
+  const { t } = useLang()
   const map = {
-    completed:   { label: 'COMPLETE',    bg: '#fff', color: '#000', border: '#fff' },
-    'in-progress': { label: 'IN PROGRESS', bg: 'rgba(255,255,255,0.12)', color: '#fff', border: 'rgba(255,255,255,0.4)' },
-    pending:     { label: 'PENDING',     bg: 'transparent', color: 'rgba(255,255,255,0.5)', border: 'rgba(255,255,255,0.2)' },
+    completed:   { labelKey: 'how_status_complete', bg: '#fff', color: '#000', border: '#fff' },
+    'in-progress': { labelKey: 'how_status_progress', bg: 'rgba(255,255,255,0.12)', color: '#fff', border: 'rgba(255,255,255,0.4)' },
+    pending:     { labelKey: 'how_status_pending',  bg: 'transparent', color: 'rgba(255,255,255,0.5)', border: 'rgba(255,255,255,0.2)' },
   }
   const s = map[status] || map.pending
   return (
@@ -107,13 +31,14 @@ function StatusBadge({ status }) {
       background: s.bg, color: s.color,
       border: `1px solid ${s.border}`,
     }}>
-      {s.label}
+      {t(s.labelKey)}
     </span>
   )
 }
 
 // ── Expanded info card ────────────────────────────────────────────────────────
 function NodeCard({ item, allItems, onNavigate }) {
+  const { t } = useLang()
   return (
     <HoloCard
       onClick={e => e.stopPropagation()}
@@ -145,7 +70,7 @@ function NodeCard({ item, allItems, onNavigate }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <StatusBadge status={item.status} />
           <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'rgba(255,255,255,0.35)' }}>
-            Step {item.id} of {allItems.length}
+            {t('how_step_of')} {item.id} {t('how_of')} {allItems.length}
           </span>
         </div>
         <div style={{ fontSize: '1rem', fontWeight: 700, color: '#f0f2f8', lineHeight: 1.2 }}>
@@ -161,7 +86,7 @@ function NodeCard({ item, allItems, onNavigate }) {
         <div style={{ marginBottom: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: '0.68rem' }}>
             <span style={{ color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 3 }}>
-              ⚡ Impact Level
+              ⚡ {t('how_impact')}
             </span>
             <span style={{ fontFamily: 'monospace', color: item.accent }}>{item.energy}%</span>
           </div>
@@ -179,7 +104,7 @@ function NodeCard({ item, allItems, onNavigate }) {
         {item.relatedIds.length > 0 && (
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 10 }}>
             <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-              🔗 Connected Steps
+              🔗 {t('how_connected')}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {item.relatedIds.map(rid => {
@@ -296,6 +221,15 @@ function OrbitalNode({ item, index, total, rotationAngle, isExpanded, isRelated,
 // ── Main section ──────────────────────────────────────────────────────────────
 export function HowElmaWorks() {
   const { t } = useLang()
+
+  // Build translated journey array
+  const JOURNEY = JOURNEY_META.map(m => ({
+    ...m,
+    title:    t(m.titleKey),
+    subtitle: t(m.subKey),
+    content:  t(m.contentKey),
+  }))
+
   const [expandedId, setExpandedId]   = useState(null)
   const [rotationAngle, setRotationAngle] = useState(0)
   const [autoRotate, setAutoRotate]   = useState(true)
@@ -359,12 +293,12 @@ export function HowElmaWorks() {
         >
           <span className="section-label">{t('how_label')}</span>
           <h2>{t('how_heading')}</h2>
-          <p>Seven connected steps — from first self-discovery to feeling truly heard and healed.</p>
+          <p>{t('how_sub')}</p>
         </motion.div>
       </div>
 
       {/* hint text */}
-      <p className="orbital-hint">Tap any step to explore</p>
+      <p className="orbital-hint">{t('how_hint')}</p>
 
       {/* orbital stage */}
       <motion.div

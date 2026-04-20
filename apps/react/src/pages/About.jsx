@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import HoloCard from '../components/HoloCard.jsx'
+import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 /* ─── ambient orb ───────────────────────────────────────────── */
 function Orb({ style }) {
@@ -67,15 +69,8 @@ function PillarCard({ icon, title, desc, color, delay }) {
 
 /* ─── main page ─────────────────────────────────────────────── */
 export default function About() {
+  const { t } = useLang()
 
-  useEffect(() => {
-    document.title = 'About ELMA — AI Emotional Companion Built for Human Connection'
-    const meta = document.querySelector('meta[name="description"]')
-    if (meta) {
-      meta.setAttribute('content', "ELMA is India's first AI-powered emotional companion — combining cutting-edge voice AI, emotion detection, and cognitive behavioural science to make emotional wellness accessible for everyone.")
-    }
-    return () => { document.title = 'ELMA — Your AI Emotional Companion' }
-  }, [])
 
   const heroRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
@@ -83,25 +78,42 @@ export default function About() {
   const heroY = useTransform(scrollYProgress, [0, 0.6], [0, -60])
 
   const pillars = [
-    { icon: '🧬', title: 'Science-Backed', desc: 'Built on CBT, DBT, and positive psychology frameworks validated by research from Harvard, Oxford, and Stanford.', color: '#BA92FF' },
-    { icon: '🔒', title: 'Privacy-First', desc: 'End-to-end encrypted emotional data with Face ID lock, explicit consent architecture, and zero data brokering — ever.', color: '#90E0EF' },
-    { icon: '🌏', title: 'Radically Accessible', desc: 'Available in 8+ languages with a pricing model designed for global equity — because emotional wellness is a human right.', color: '#FFBBD8' },
-    { icon: '🤝', title: 'Human + AI', desc: 'ELMA enhances human therapists, not replaces them. Our Expert Network ensures professional support is always reachable.', color: '#BA92FF' },
-    { icon: '🎮', title: 'Stigma-Free Design', desc: 'Playful, non-clinical UX designed to welcome users who would never visit a therapy office — and grow with them over time.', color: '#90E0EF' },
-    { icon: '✦', title: 'Emotionally Intelligent', desc: 'Real-time emotion detection via voice, text, and behavioural signals — ELMA listens between the lines.', color: '#FFBBD8' },
+    { icon: '🧬', title: t('about_p1_title'), desc: t('about_p1_desc'), color: '#BA92FF' },
+    { icon: '🔒', title: t('about_p2_title'), desc: t('about_p2_desc'), color: '#90E0EF' },
+    { icon: '🌏', title: t('about_p3_title'), desc: t('about_p3_desc'), color: '#FFBBD8' },
+    { icon: '🤝', title: t('about_p4_title'), desc: t('about_p4_desc'), color: '#BA92FF' },
+    { icon: '🎮', title: t('about_p5_title'), desc: t('about_p5_desc'), color: '#90E0EF' },
+    { icon: '✦',  title: t('about_p6_title'), desc: t('about_p6_desc'), color: '#FFBBD8' },
   ]
 
   const techStack = [
-    { label: 'Emotion AI', detail: 'Multimodal emotion detection from voice tone, speech cadence, and linguistic cues', icon: '🧠' },
-    { label: 'LLM Core', detail: 'Powered by state-of-the-art large language models fine-tuned on clinical psychology frameworks', icon: '⚡' },
-    { label: 'Voice AI', detail: 'Hands-free, low-latency conversation — as natural as speaking to a friend', icon: '🎙️' },
-    { label: 'Adaptive Profiling', detail: 'Continuously learning Emotional Profile that grows more accurate and personalised over time', icon: '📈' },
-    { label: 'Expert Integration', detail: 'Seamless, consent-gated handoff between ELMA AI and certified human therapists', icon: '🩺' },
-    { label: 'Privacy Engine', detail: 'Encrypted-at-rest emotional data with granular, user-controlled sharing permissions', icon: '🔐' },
+    { label: t('about_t1_label'), detail: t('about_t1_detail'), icon: '🧠' },
+    { label: t('about_t2_label'), detail: t('about_t2_detail'), icon: '⚡' },
+    { label: t('about_t3_label'), detail: t('about_t3_detail'), icon: '🎙️' },
+    { label: t('about_t4_label'), detail: t('about_t4_detail'), icon: '📈' },
+    { label: t('about_t5_label'), detail: t('about_t5_detail'), icon: '🩺' },
+    { label: t('about_t6_label'), detail: t('about_t6_detail'), icon: '🔐' },
   ]
+
+  const aboutSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    '@id': 'https://elma.ltd/about#webpage',
+    url: 'https://elma.ltd/about',
+    name: 'About ELMA — AI Emotional Companion Built for Human Connection',
+    description: "ELMA is India's first AI-powered emotional companion — voice AI, emotion detection, and cognitive behavioural science, all in one app.",
+    isPartOf: { '@id': 'https://elma.ltd/#website' },
+    about: { '@id': 'https://elma.ltd/#organization' },
+  }
 
   return (
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
+      <SEO
+        title="About ELMA — AI Emotional Companion Built for Human Connection"
+        description="Meet the team behind ELMA — India's first AI emotional companion. Voice AI + emotion science + CBT, built in Visionary India for the world. Our mission: emotional wellness for everyone."
+        canonical="/about"
+        schema={aboutSchema}
+      />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section ref={heroRef} style={{ position: 'relative', minHeight: '95vh', display: 'flex', alignItems: 'center', overflow: 'hidden', padding: 'clamp(6rem, 10vw, 9rem) 0 clamp(4rem, 7vw, 6rem)' }}>
@@ -128,7 +140,7 @@ export default function About() {
               borderRadius: '999px', padding: '0.45rem 1.1rem', marginBottom: '2.5rem' }}
           >
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#90E0EF', display: 'inline-block' }} />
-            <span style={{ color: '#90E0EF', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Our Story</span>
+            <span style={{ color: '#90E0EF', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('about_hero_label')}</span>
           </motion.div>
 
           <div style={{ maxWidth: 820 }}>
@@ -137,12 +149,12 @@ export default function About() {
               transition={{ duration: 0.85, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               style={{ fontSize: 'clamp(2.8rem, 6vw, 5rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.04em', marginBottom: '2rem', fontFamily: '"Plus Jakarta Sans", sans-serif' }}
             >
-              We built{' '}
+              {t('about_hero_h1a')}{' '}
               <span style={{
                 background: 'linear-gradient(135deg, #BA92FF 0%, #FFBBD8 50%, #90E0EF 100%)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>ELMA</span>
-              {' '}because the world needed a friend who never forgets, never judges, and never gives up.
+              {' '}{t('about_hero_h1b')}
             </motion.h1>
 
             <motion.p
@@ -150,8 +162,7 @@ export default function About() {
               transition={{ duration: 0.75, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
               style={{ color: 'rgba(255,255,255,0.58)', fontSize: 'clamp(1rem, 1.8vw, 1.2rem)', lineHeight: 1.8, maxWidth: 640 }}
             >
-              Mental health support should not be a privilege. It should not require booking weeks in advance, paying ₹5,000 per hour, or overcoming the shame of walking into a clinic.
-              ELMA was born to change that.
+              {t('about_hero_sub')}
             </motion.p>
           </div>
 
@@ -161,7 +172,7 @@ export default function About() {
             transition={{ delay: 1.2, duration: 0.6 }}
             style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}
           >
-            <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Scroll</span>
+            <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('about_scroll')}</span>
             <motion.div
               animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}
               style={{ width: 1, height: 32, background: 'linear-gradient(to bottom, rgba(186,146,255,0.5), transparent)' }}
@@ -193,10 +204,10 @@ export default function About() {
                 <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(186,146,255,0.3) 1px, transparent 1px)', backgroundSize: '20px 20px', opacity: 0.2 }} />
                 <div style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '2rem' }}>
                   <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🇮🇳</div>
-                  <div style={{ color: '#BA92FF', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Made in Bharat</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginTop: '0.4rem', lineHeight: 1.6 }}>Built for the world,<br />rooted in Indian values of care</div>
+                  <div style={{ color: '#BA92FF', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>{t('about_bharat_title')}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginTop: '0.4rem', lineHeight: 1.6 }}>{t('about_bharat_desc')}</div>
                   <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    {['Empathy', 'Respect', 'Growth', 'Inclusion'].map(v => (
+                    {[t('about_val1'), t('about_val2'), t('about_val3'), t('about_val4')].map(v => (
                       <span key={v} style={{
                         background: 'rgba(186,146,255,0.1)', border: '1px solid rgba(186,146,255,0.2)',
                         borderRadius: '999px', padding: '0.25rem 0.7rem',
@@ -213,16 +224,12 @@ export default function About() {
               initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             >
-              <span style={{ color: '#90E0EF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1.25rem' }}>The Origin</span>
+              <span style={{ color: '#90E0EF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1.25rem' }}>{t('about_origin_label')}</span>
               <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.2, marginBottom: '1.5rem' }}>
-                One in seven Indians experiences a mental health condition. Most never get help.
+                {t('about_origin_h2')}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {[
-                  "India has fewer than 10,000 psychiatrists for 1.4 billion people. Stigma, cost, and access keep 80% of people who need support from ever receiving it.",
-                  "ELMA was created by a team who experienced this gap firsthand — and decided that building an AI companion trained on clinical psychology was not just possible, but necessary.",
-                  "We are not trying to replace therapy. We are building the bridge that brings millions of people close enough to ask for it.",
-                ].map((para, i) => (
+                {[t('about_origin_p1'), t('about_origin_p2'), t('about_origin_p3')].map((para, i) => (
                   <p key={i} style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.97rem', lineHeight: 1.8, margin: 0 }}>{para}</p>
                 ))}
               </div>
@@ -239,13 +246,13 @@ export default function About() {
             viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             style={{ textAlign: 'center', marginBottom: '3rem' }}
           >
-            <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.025em' }}>By the numbers</h2>
+            <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.025em' }}>{t('about_numbers_h2')}</h2>
           </motion.div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1.25rem' }}>
-            <NumberCard number="8+" label="Languages" desc="Hindi, English, Tamil, and more" delay={0} />
-            <NumberCard number="24/7" label="Availability" desc="ELMA never sleeps, never cancels" delay={0.08} />
-            <NumberCard number="∞" label="Patience" desc="Judgment-free, every single session" delay={0.16} />
-            <NumberCard number="1M+" label="Target reach by 2026" desc="Users across South & Southeast Asia" delay={0.24} />
+            <NumberCard number="8+"  label={t('about_n1_label')} desc={t('about_n1_desc')} delay={0} />
+            <NumberCard number="24/7" label={t('about_n2_label')} desc={t('about_n2_desc')} delay={0.08} />
+            <NumberCard number="∞"   label={t('about_n3_label')} desc={t('about_n3_desc')} delay={0.16} />
+            <NumberCard number="1M+" label={t('about_n4_label')} desc={t('about_n4_desc')} delay={0.24} />
           </div>
         </div>
       </section>
@@ -259,9 +266,9 @@ export default function About() {
             viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{ textAlign: 'center', marginBottom: '3.5rem' }}
           >
-            <span style={{ color: '#FFBBD8', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>What We Stand For</span>
+            <span style={{ color: '#FFBBD8', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>{t('about_pillars_label')}</span>
             <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-              Six principles. One mission.
+              {t('about_pillars_h2')}
             </h2>
           </motion.div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
@@ -278,12 +285,12 @@ export default function About() {
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              <span style={{ color: '#BA92FF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1.25rem' }}>The Technology</span>
+              <span style={{ color: '#BA92FF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1.25rem' }}>{t('about_tech_label')}</span>
               <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.2, marginBottom: '1.5rem' }}>
-                Built at the intersection of AI and clinical psychology
+                {t('about_tech_h2')}
               </h2>
               <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: '1rem', lineHeight: 1.8, marginBottom: '2rem' }}>
-                ELMA is not a chatbot with a therapist skin. It is a multi-modal AI system that understands emotion from voice, text, and behaviour — and uses that understanding to provide personalised, evidence-based support.
+                {t('about_tech_desc')}
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {techStack.map((item, i) => (
@@ -343,8 +350,8 @@ export default function About() {
                   backdropFilter: 'blur(20px)',
                 }}>
                   <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✦</div>
-                  <div style={{ color: '#BA92FF', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>ELMA Core</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', marginTop: '0.3rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Emotion AI Engine</div>
+                  <div style={{ color: '#BA92FF', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>{t('about_core')}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', marginTop: '0.3rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{t('about_core_sub')}</div>
                 </div>
 
                 {/* Orbit labels */}
@@ -399,9 +406,9 @@ export default function About() {
               letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.92)', margin: '0 0 2rem',
               fontStyle: 'italic',
             }}>
-              "Every mood has a story. ELMA helps you understand yours — and grow beyond it."
+              {t('about_mission_quote')}
             </blockquote>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>The ELMA Mission</p>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>{t('about_mission_label')}</p>
           </motion.div>
         </div>
       </section>
@@ -413,23 +420,23 @@ export default function About() {
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="section-label">The ELMA Difference</span>
-            <h2>Most apps stop at tracking.<br />ELMA goes further.</h2>
+            <span className="section-label">{t('diff_label')}</span>
+            <h2>{t('diff_heading1')}<br />{t('diff_heading2')}</h2>
           </motion.div>
 
           <div className="upgrade-table">
             <div className="upgrade-header">
               <div className="uh-feature" />
-              <div className="uh-col uh-old">Others</div>
-              <div className="uh-col uh-new">ELMA</div>
+              <div className="uh-col uh-old">{t('diff_others')}</div>
+              <div className="uh-col uh-new">{t('diff_elma')}</div>
             </div>
 
             {[
-              { feature: 'Mood tracking', icon: '📊', old: 'Basic log entries only',           elma: 'Trigger detection, intensity mapping & live pattern recognition' },
-              { feature: 'Guidance',      icon: '🎯', old: 'Generic tips from a database',     elma: 'Personalised CBT & mindfulness games that adapt to YOUR emotional data' },
-              { feature: 'Companion',     icon: '💜', old: 'A faceless, impersonal app',        elma: 'ELMA — an emotionally intelligent AI who grows with you, judgment-free' },
-              { feature: 'Privacy',       icon: '🔒', old: 'Vague data policies, no control',  elma: 'Face ID, end-to-end encryption, explicit consent for every data share' },
-              { feature: 'Therapy',       icon: '🩺', old: 'No professional support at all',   elma: 'Certified therapists who receive your Emotional Profile before Session 1' },
+              { feature: t('row1_feature'), icon: '📊', old: t('row1_old'), elma: t('row1_elma') },
+              { feature: t('row2_feature'), icon: '🎯', old: t('row2_old'), elma: t('row2_elma') },
+              { feature: t('row3_feature'), icon: '💜', old: t('row3_old'), elma: t('row3_elma') },
+              { feature: t('row4_feature'), icon: '🔒', old: t('row4_old'), elma: t('row4_elma') },
+              { feature: t('row5_feature'), icon: '🩺', old: t('row5_old'), elma: t('row5_elma') },
             ].map((row, i) => (
               <motion.div
                 key={row.feature}
@@ -474,10 +481,10 @@ export default function About() {
           >
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(186,146,255,0.5), transparent)' }} />
             <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.025em', marginBottom: '1rem' }}>
-              Start your journey with ELMA
+              {t('about_cta_h2')}
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: '1rem', lineHeight: 1.75, marginBottom: '2rem', maxWidth: 480, margin: '0 auto 2rem' }}>
-              Whether you are a user seeking support or a therapist looking to amplify your impact — ELMA is for you.
+              {t('about_cta_sub')}
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a
@@ -494,7 +501,7 @@ export default function About() {
                 onMouseOver={e => e.currentTarget.style.opacity = '0.88'}
                 onMouseOut={e => e.currentTarget.style.opacity = '1'}
               >
-                Download ELMA →
+                {t('about_cta_download')}
               </a>
               <a
                 href="/elma-experts"
@@ -509,7 +516,7 @@ export default function About() {
                 onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(186,146,255,0.6)'; e.currentTarget.style.color = '#fff' }}
                 onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(186,146,255,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}
               >
-                Join as an Expert
+                {t('about_cta_expert')}
               </a>
             </div>
           </HoloCard>

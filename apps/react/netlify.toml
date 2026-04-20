@@ -5,6 +5,18 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # Cache puppeteer's Chromium download between Netlify builds
+  PUPPETEER_CACHE_DIR = "/opt/buildhome/.cache/puppeteer"
+  # Skip re-downloading Chrome if already cached
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "false"
+
+[context.deploy-preview]
+  command = "npm run build:vite"
+
+[context.branch-deploy]
+  command = "npm run build:vite"
+
 # ── Security & SEO headers (all pages) ───────────────────────────────────────
 [[headers]]
   for = "/*"

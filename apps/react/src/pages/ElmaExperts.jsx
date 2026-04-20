@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import HoloCard from '../components/HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
@@ -132,6 +133,7 @@ const COUNTRY_CODES = [
 ]
 
 function JoinForm() {
+  const { t } = useLang()
   const nameRef = useRef(null)
   const emailRef = useRef(null)
   const phoneRef = useRef(null)
@@ -177,7 +179,7 @@ function JoinForm() {
       setSuccess(true)
     } catch (err) {
       console.error('Error:', err)
-      setError('Submission failed. Please try again.')
+      setError(t('modal_error'))
     } finally {
       setSending(false)
     }
@@ -199,9 +201,9 @@ function JoinForm() {
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
         style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✦</div>
-        <h3 style={{ color: '#BA92FF', fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>Application Received!</h3>
+        <h3 style={{ color: '#BA92FF', fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.75rem' }}>{t('modal_success_title')}</h3>
         <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>
-          Welcome to the ELMA Expert waitlist. We will reach out with onboarding details as we expand.
+          {t('modal_success_msg')}
         </p>
       </motion.div>
     )
@@ -209,8 +211,8 @@ function JoinForm() {
 
   return (
     <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <input ref={nameRef} type="text" placeholder="Full Name" required style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
-      <input ref={emailRef} type="email" placeholder="Professional Email" required style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
+      <input ref={nameRef} type="text" placeholder={t('experts_form_name')} required style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
+      <input ref={emailRef} type="email" placeholder={t('experts_form_email')} required style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
 
       {/* Phone with country code */}
       <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -232,15 +234,15 @@ function JoinForm() {
         <input
           ref={phoneRef}
           type="tel"
-          placeholder="Phone Number"
+          placeholder={t('experts_form_phone')}
           style={{ ...inputStyle, flex: 1 }}
           onFocus={focusBorder}
           onBlur={blurBorder}
         />
       </div>
 
-      <input ref={licenseRef} type="text" placeholder="License / Registration Number" required style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
-      <input ref={specialityRef} type="text" placeholder="Speciality (e.g. CBT, Trauma, Anxiety)" style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
+      <input ref={licenseRef} type="text" placeholder={t('experts_form_license')} required style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
+      <input ref={specialityRef} type="text" placeholder={t('experts_form_speciality')} style={inputStyle} onFocus={focusBorder} onBlur={blurBorder} />
       <button
         type="submit"
         disabled={sending}
@@ -252,7 +254,7 @@ function JoinForm() {
           letterSpacing: '0.02em', fontFamily: 'inherit', transition: 'opacity 0.2s',
         }}
       >
-        {sending ? 'Submitting…' : 'Apply to Join'}
+        {sending ? t('experts_form_submitting') : t('experts_form_submit')}
       </button>
       {error && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', margin: 0 }} aria-live="polite">{error}</p>}
     </form>
@@ -271,55 +273,71 @@ export default function ElmaExperts() {
   }, [])
 
   const benefits = [
-    { icon: '📊', title: 'Emotional Profile Before Every Session', desc: "Clients arrive with a structured Emotional Profile built by ELMA — so you spend less time on intake and more time on meaningful work." },
-    { icon: '🌐', title: 'Reach Beyond Your City', desc: "ELMA's platform connects you to users across India and globally, growing your practice without growing your overhead." },
-    { icon: '🤝', title: 'Warm AI Handoffs', desc: 'ELMA intelligently identifies when a user needs human support and refers them to you — generating qualified, ready-to-engage clients.' },
-    { icon: '📅', title: 'Flexible Scheduling', desc: 'Set your own availability. Work with as many or as few clients as you choose. ELMA fits your practice, not the other way around.' },
-    { icon: '🔒', title: 'Ethical, Privacy-First Data', desc: 'All shared data is explicitly consented by users. You see only what they choose to share, and never without permission.' },
-    { icon: '🚀', title: 'Early-Access Revenue Share', desc: "As a founding ELMA Expert, you benefit from priority listing, promotional features, and our early-mover revenue model." },
+    { icon: '📊', title: t('experts_b1_title'), desc: t('experts_b1_desc') },
+    { icon: '🌐', title: t('experts_b2_title'), desc: t('experts_b2_desc') },
+    { icon: '🤝', title: t('experts_b3_title'), desc: t('experts_b3_desc') },
+    { icon: '📅', title: t('experts_b4_title'), desc: t('experts_b4_desc') },
+    { icon: '🔒', title: t('experts_b5_title'), desc: t('experts_b5_desc') },
+    { icon: '🚀', title: t('experts_b6_title'), desc: t('experts_b6_desc') },
   ]
 
   const steps = [
     {
       step: '01', color: '#BA92FF',
-      title: 'User Downloads ELMA',
-      desc: 'Your future client begins their journey with a quick emotional onboarding — sharing their struggles, goals, and preferences to personalise the experience from day one.',
-      points: ['Guided first-session setup', 'Private, anonymous by default', 'Available in 8+ languages'],
+      title: t('experts_s1_title'),
+      desc: t('experts_s1_desc'),
+      points: [t('experts_s1_p1'), t('experts_s1_p2'), t('experts_s1_p3')],
     },
     {
       step: '02', color: '#90E0EF',
-      title: 'Daily Emotional Check-ins Begin',
-      desc: "ELMA becomes part of the user's daily routine — mood logs, journaling, voice check-ins, and emotion-aware conversations that build a living picture of their mental state.",
-      points: ['Voice & text emotion detection', 'Trigger + pattern logging', 'Guided mindfulness exercises'],
+      title: t('experts_s2_title'),
+      desc: t('experts_s2_desc'),
+      points: [t('experts_s2_p1'), t('experts_s2_p2'), t('experts_s2_p3')],
     },
     {
       step: '03', color: '#FFBBD8',
-      title: "ELMA Builds Their Emotional Profile",
-      desc: "Over weeks, ELMA maps emotional baselines, recurring triggers, and behavioural patterns — creating a structured Emotional Profile no traditional intake can replicate.",
-      points: ['CBT-aligned profiling', 'Severity & frequency scoring', 'Longitudinal trend tracking'],
+      title: t('experts_s3_title'),
+      desc: t('experts_s3_desc'),
+      points: [t('experts_s3_p1'), t('experts_s3_p2'), t('experts_s3_p3')],
     },
     {
       step: '04', color: '#BA92FF',
-      title: 'Professional Support Detected',
-      desc: 'When ELMA identifies signals beyond AI scope — persistent distress, crisis markers, or user-initiated requests — it gently recommends connecting with a professional.',
-      points: ['Safety-first escalation logic', 'Crisis detection protocols', 'User consent at every step'],
+      title: t('experts_s4_title'),
+      desc: t('experts_s4_desc'),
+      points: [t('experts_s4_p1'), t('experts_s4_p2'), t('experts_s4_p3')],
     },
     {
       step: '05', color: '#90E0EF',
-      title: 'Smart Match to the Right Expert',
-      desc: "ELMA matches the user to the best-fit ELMA Expert based on speciality, language, availability, and the user's Emotional Profile — maximising therapeutic fit.",
-      points: ['Speciality-based matching', 'Language & location filters', 'User-controlled preferences'],
+      title: t('experts_s5_title'),
+      desc: t('experts_s5_desc'),
+      points: [t('experts_s5_p1'), t('experts_s5_p2'), t('experts_s5_p3')],
     },
     {
       step: '06', color: '#FFBBD8',
-      title: 'You Lead With Full Context',
-      desc: "Before Session 1, you review the user's Emotional Profile — entering with weeks of behavioural data, identified triggers, and a clear therapeutic starting point.",
-      points: ['Pre-session profile review', 'Deeper work from day one', 'Ongoing ELMA support between sessions'],
+      title: t('experts_s6_title'),
+      desc: t('experts_s6_desc'),
+      points: [t('experts_s6_p1'), t('experts_s6_p2'), t('experts_s6_p3')],
     },
   ]
 
+  const expertsSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://elma.ltd/elma-experts#webpage',
+    url: 'https://elma.ltd/elma-experts',
+    name: 'ELMA Experts — Join Our Therapist Network',
+    description: 'Join the ELMA Expert network. Certified psychologists earn on their own schedule, reach global users, and grow their practice via AI-assisted tools.',
+    isPartOf: { '@id': 'https://elma.ltd/#website' },
+  }
+
   return (
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
+      <SEO
+        title="ELMA Experts — Join Our Therapist & Psychologist Network"
+        description="Become an ELMA Expert. Join certified therapists & psychologists earning on their own schedule. AI handles admin — you focus on healing. Apply in 5 minutes."
+        canonical="/elma-experts"
+        schema={expertsSchema}
+      />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section style={{ position: 'relative', padding: 'clamp(6rem, 12vw, 10rem) 0 clamp(4rem, 8vw, 6rem)', minHeight: '90vh', display: 'flex', alignItems: 'center' }}>
@@ -336,7 +354,7 @@ export default function ElmaExperts() {
               borderRadius: '999px', padding: '0.45rem 1.1rem', marginBottom: '2rem' }}
           >
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#BA92FF', display: 'inline-block' }} />
-            <span style={{ color: '#BA92FF', fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>ELMA Experts Programme</span>
+            <span style={{ color: '#BA92FF', fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{t('experts_badge')}</span>
           </motion.div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 500px), 1fr))', gap: '4rem', alignItems: 'center' }}>
@@ -359,7 +377,7 @@ export default function ElmaExperts() {
                 transition={{ duration: 0.7, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
                 style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'clamp(1rem, 1.8vw, 1.15rem)', lineHeight: 1.75, marginBottom: '2.5rem', maxWidth: 520 }}
               >
-                ELMA Experts are certified psychologists and counselling therapists who partner with ELMA's AI to deliver personalised, data-informed care — at scale, without compromise.
+                {t('experts_hero_desc')}
               </motion.p>
 
               <motion.div
@@ -369,12 +387,12 @@ export default function ElmaExperts() {
               >
                 <a href="#apply" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #BA92FF, #90E0EF)', color: '#0a0a0a', fontWeight: 700, fontSize: '1rem', padding: '0.85rem 2rem', borderRadius: '12px', textDecoration: 'none', letterSpacing: '0.02em', transition: 'opacity 0.2s' }}
                   onMouseOver={e => e.currentTarget.style.opacity = '0.88'} onMouseOut={e => e.currentTarget.style.opacity = '1'}>
-                  Apply Now →
+                  {t('experts_apply_now')}
                 </a>
                 <a href="#how-it-works" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(186,146,255,0.3)', color: 'rgba(255,255,255,0.75)', fontWeight: 600, fontSize: '0.95rem', padding: '0.85rem 1.75rem', borderRadius: '12px', textDecoration: 'none', background: 'transparent', transition: 'border-color 0.2s, color 0.2s' }}
                   onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(186,146,255,0.6)'; e.currentTarget.style.color = '#fff' }}
                   onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(186,146,255,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}>
-                  Learn More
+                  {t('experts_learn_more')}
                 </a>
               </motion.div>
             </div>
@@ -396,10 +414,10 @@ export default function ElmaExperts() {
             style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '4rem', borderTop: '1px solid rgba(186,146,255,0.1)', paddingTop: '3rem' }}
           >
             {[
-              { n: '8+', label: 'Languages Supported' },
-              { n: '1:1', label: 'AI-to-Expert Handoff' },
-              { n: '24/7', label: 'AI Support Between Sessions' },
-              { n: '100%', label: 'Consent-Driven Data Sharing' },
+              { n: '8+', label: t('experts_stat1') },
+              { n: '1:1', label: t('experts_stat2') },
+              { n: '24/7', label: t('experts_stat3') },
+              { n: '100%', label: t('experts_stat4') },
             ].map(({ n, label }, i) => (
               <motion.div key={i}
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
@@ -424,9 +442,9 @@ export default function ElmaExperts() {
             viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{ textAlign: 'center', marginBottom: '4rem' }}
           >
-            <span style={{ color: '#90E0EF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>How ELMA Works With You</span>
+            <span style={{ color: '#90E0EF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>{t('experts_hiw_label')}</span>
             <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.2, margin: '0 auto', maxWidth: 600 }}>
-              AI does the groundwork.<br />You do the healing.
+              {t('experts_hiw_h2a')}<br />{t('experts_hiw_h2b')}
             </h2>
           </motion.div>
 
@@ -476,9 +494,9 @@ export default function ElmaExperts() {
             viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{ textAlign: 'center', marginBottom: '3.5rem' }}
           >
-            <span style={{ color: '#BA92FF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>Why Join</span>
+            <span style={{ color: '#BA92FF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1rem' }}>{t('experts_why_label')}</span>
             <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-              What being an ELMA Expert means for your practice
+              {t('experts_why_h2')}
             </h2>
           </motion.div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.25rem' }}>
@@ -515,15 +533,15 @@ export default function ElmaExperts() {
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              <span style={{ color: '#BA92FF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1.25rem' }}>Apply to the Programme</span>
+              <span style={{ color: '#BA92FF', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '1.25rem' }}>{t('experts_apply_label')}</span>
               <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.2, marginBottom: '1.5rem' }}>
-                Ready to shape the future of emotional wellness?
+                {t('experts_apply_h2')}
               </h2>
               <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '1rem', lineHeight: 1.75, marginBottom: '2rem' }}>
-                We are onboarding a founding cohort of ELMA Experts — licensed psychologists and counselling therapists who share our vision of accessible, AI-augmented mental health support.
+                {t('experts_apply_desc')}
               </p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-                {['RCI/licensed practitioners welcome', 'All therapy specialisations considered', 'Remote & in-person options', 'No exclusivity requirement'].map((item, i) => (
+                {[t('experts_apply_l1'), t('experts_apply_l2'), t('experts_apply_l3'), t('experts_apply_l4')].map((item, i) => (
                   <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>
                     <span style={{ color: '#90E0EF', fontWeight: 700, fontSize: '1rem' }}>✓</span> {item}
                   </li>
@@ -543,9 +561,9 @@ export default function ElmaExperts() {
                 position: 'relative', overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(186,146,255,0.4), transparent)' }} />
-                <h3 style={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.5rem' }}>Apply Now</h3>
+                <h3 style={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.5rem' }}>{t('experts_form_title')}</h3>
                 <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '1.75rem', lineHeight: 1.6 }}>
-                  Join the founding cohort of ELMA Experts shaping the future of emotional wellness.
+                  {t('experts_form_sub')}
                 </p>
                 <JoinForm />
               </HoloCard>

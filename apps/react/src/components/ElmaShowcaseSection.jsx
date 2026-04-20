@@ -3,7 +3,7 @@ import { ElmaGlobe } from './ElmaGlobe.jsx'
 import HoloCard from './HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
 import { getAll } from '../firebase/firestore.ts'
-import { use, useEffect,useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ease = [0.22, 1, 0.36, 1]
 
@@ -19,28 +19,13 @@ const LANGUAGES = [
   { label: 'Marathi',  flag: '🇮🇳' },
 ]
 
-// ── Capabilities ──────────────────────────────────────────────────────────────
-const CAPABILITIES = [
-  {
-    icon: '🧠',
-    title: 'Research-Trained Intelligence',
-    body: 'Trained on 500+ peer-reviewed papers from Harvard, Oxford & Stanford across psychology, neuroscience, and CBT — so every response is grounded in science.',
-  },
-  {
-    icon: '📊',
-    title: 'Learns From Your Emotional Data',
-    body: "Every mood log, energy check-in, and journal entry feeds into ELMA's understanding of YOU. The more you share, the more precisely she can support you.",
-  },
-  {
-    icon: '🎙️',
-    title: 'Hands-Free Voice Conversations',
-    body: 'Just speak. ELMA listens, detects emotional tone, and responds — no typing needed. It feels like talking to a friend who always has time for you.',
-  },
-  {
-    icon: '💜',
-    title: 'Non-Judgmental. Always.',
-    body: 'No toxic positivity. No shame. ELMA meets you exactly where you are and holds space for the real, unfiltered you — 24 hours a day, 7 days a week.',
-  },
+// ── Capabilities (built at render time via t()) ───────────────────────────────
+const CAP_ICONS = ['🧠', '📊', '🎙️', '💜']
+const CAP_KEYS  = [
+  { title: 'cap1_title', body: 'cap1_body' },
+  { title: 'cap2_title', body: 'cap2_body' },
+  { title: 'cap3_title', body: 'cap3_body' },
+  { title: 'cap4_title', body: 'cap4_body' },
 ]
 
 // ── Therapist data ────────────────────────────────────────────────────────────
@@ -57,28 +42,13 @@ const THERAPISTS = [
   { id: 10, name: 'Dr. Sameer Gupta',  spec: 'Anger Management',        lang: 'Hindi · English',            rating: 4.8, reviews: 160, exp: '13 yrs', img: 'https://i.pravatar.cc/120?img=20' },
 ]
 
-// ── Network benefits ──────────────────────────────────────────────────────────
-const BENEFITS = [
-  {
-    icon: '🌐',
-    title: 'Reach Beyond Your City',
-    body: 'Serve clients across India and the global Indian diaspora in UK, US, Canada & Australia — all from wherever you practice.',
-  },
-  {
-    icon: '📋',
-    title: 'Sessions That Start Strong',
-    body: "Every client arrives with their Emotional Profile. You walk in already knowing their patterns — no wasted intake, deeper therapy from day one.",
-  },
-  {
-    icon: '💳',
-    title: 'Your Terms. Weekly Payouts.',
-    body: 'Set your own hours, set your own fees. ELMA handles scheduling, payments, and reminders. You focus entirely on the client.',
-  },
-  {
-    icon: '🔬',
-    title: 'Be Part of the Science',
-    body: "Join a network of forward-thinking therapists helping build the world's most emotionally-intelligent wellness platform — a first of its kind.",
-  },
+// ── Network benefits (built at render time via t()) ───────────────────────────
+const BEN_ICONS = ['🌐', '📋', '💳', '🔬']
+const BEN_KEYS  = [
+  { title: 'ben1_title', body: 'ben1_body' },
+  { title: 'ben2_title', body: 'ben2_body' },
+  { title: 'ben3_title', body: 'ben3_body' },
+  { title: 'ben4_title', body: 'ben4_body' },
 ]
 
 // ── Voice wave bars ───────────────────────────────────────────────────────────
@@ -98,18 +68,18 @@ function VoiceWave() {
 }
 
 // ── Single therapist card ─────────────────────────────────────────────────────
-function TherapistCard({ t }) {
+function TherapistCard({ therapist, tFn }) {
   return (
     <HoloCard className="therapist-card">
       <div className="tc-avatar-wrap">
-        <img src={t.img} alt={t.name} className="tc-avatar" loading="lazy"
+        <img src={therapist.img} alt={therapist.name} className="tc-avatar" loading="lazy"
           onError={e => { e.currentTarget.style.display = 'none' }} />
         <span className="tc-verified" title="Verified">✓</span>
       </div>
       <div className="tc-body">
-        <p className="tc-name">{t.name}</p>
-        <p  className="tc-spec">{t.spec}</p>
-        <p className="tc-lang">{t.lang}</p>
+        <p className="tc-name">{therapist.name}</p>
+        <p  className="tc-spec">{therapist.spec}</p>
+        <p className="tc-lang">{therapist.lang}</p>
         {/* <div className="tc-meta">
           <span className="tc-rating">★ {t.rating}</span>
           <span className="tc-sep">·</span>
@@ -126,58 +96,54 @@ function TherapistCard({ t }) {
 export function ElmaShowcaseSection({ onJoinTherapist }) {
   const { t } = useLang()
 
-  const[therapists,setTherapists]=useState([])
+  const [therapists, setTherapists] = useState([])
 
-
-  const loadAllTherapists=async()=>{
-
-    try{
-
-      const res=await getAll('therapists')
-
-
-
-      const formatted=res?.map((item)=>{
-
-        
-        return {
-            ...item,
-
-             id: item.id,  
-             name: item.name,  
-             spec: item.professtional_title,        
-             lang: item.languages.join(' · '),            
-             rating: item?.rating || 5, 
-             reviews: 0, 
-             exp: item?.experience,  
-             img: item?.photo
-
-
-        }
-      })
-            const filtered=formatted.filter((item)=>item.email!=='rahulbhuse2019@gmail.com')
-
+  const loadAllTherapists = async () => {
+    try {
+      const res = await getAll('therapists')
+      const formatted = res?.map((item) => ({
+        ...item,
+        id: item.id,
+        name: item.name,
+        spec: item.professtional_title,
+        lang: item.languages.join(' · '),
+        rating: item?.rating || 5,
+        reviews: 0,
+        exp: item?.experience,
+        img: item?.photo,
+      }))
+      const filtered = formatted.filter((item) => item.email !== 'rahulbhuse2019@gmail.com')
       setTherapists(filtered)
-
-
-
+    } catch (err) {
+      // silently fall back to empty list
     }
-    catch(err){
-     
-
-    }
-    finally{
-
-    }
-    
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     loadAllTherapists()
+  }, [])
 
-  },[])
+  const displayTherapists = therapists.length > 0 ? therapists : THERAPISTS
 
-  console.log("therapists",therapists)
+  const capabilities = CAP_KEYS.map((k, i) => ({
+    icon: CAP_ICONS[i],
+    title: t(k.title),
+    body: t(k.body),
+  }))
+
+  const benefits = BEN_KEYS.map((k, i) => ({
+    icon: BEN_ICONS[i],
+    title: t(k.title),
+    body: t(k.body),
+  }))
+
+  const stats = [
+    { v: '50+',  l: t('showcase_stat1') },
+    { v: '8+',   l: t('showcase_stat2') },
+    { v: '24/7', l: t('showcase_stat3') },
+    { v: '100%', l: t('showcase_stat4') },
+  ]
+
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════
@@ -193,10 +159,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
           >
             <span className="section-label">{t('showcase_label')}</span>
             <h2>{t('showcase_heading')}<br />{t('showcase_heading2')}</h2>
-            <p className="section-sub">
-              Powered by emotional science and built on your own data,
-              ELMA becomes more attuned to you with every interaction.
-            </p>
+            <p className="section-sub">{t('showcase_sub')}</p>
           </motion.div>
 
           {/* Two-column layout */}
@@ -221,19 +184,19 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 {/* Floating data badges */}
                 <div className="data-badge badge-tl">
                   <span className="db-icon">📊</span>
-                  <span className="db-text">Emotional Profile<br /><strong>Updated Live</strong></span>
+                  <span className="db-text">{t('showcase_badge_ep')}<br /><strong>{t('showcase_badge_ep_sub')}</strong></span>
                 </div>
                 <div className="data-badge badge-br">
                   <span className="db-icon">🧬</span>
-                  <span className="db-text">500+ Papers<br /><strong>Research Base</strong></span>
+                  <span className="db-text">{t('showcase_badge_papers')}<br /><strong>{t('showcase_badge_papers_sub')}</strong></span>
                 </div>
               </div>
 
               {/* Voice bar */}
               <div className="companion-voice-box">
-                <span className="cvb-label">🎙️ Hands-free mode</span>
+                <span className="cvb-label">{t('showcase_voice')}</span>
                 <VoiceWave />
-                <span className="cvb-listening">Listening…</span>
+                <span className="cvb-listening">{t('showcase_listening')}</span>
               </div>
 
               {/* Language pills */}
@@ -250,15 +213,15 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                     {l.flag} {l.label}
                   </motion.span>
                 ))}
-                <span className="lang-pill lang-pill-more">+ more</span>
+                <span className="lang-pill lang-pill-more">{t('showcase_more')}</span>
               </div>
             </motion.div>
 
             {/* RIGHT — Capabilities */}
             <div className="companion-caps">
-              {CAPABILITIES.map((c, i) => (
+              {capabilities.map((c, i) => (
                 <motion.div
-                  key={c.title}
+                  key={i}
                   initial={{ opacity: 0, x: 28 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -282,12 +245,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 viewport={{ once: true }}
                 transition={{ delay: 0.45, duration: 0.6, ease }}
               >
-                {[
-                  { v: '50+',  l: 'Emotions detected' },
-                  { v: '8+',   l: 'Languages spoken'  },
-                  { v: '24/7', l: 'Always available'  },
-                  { v: '100%', l: 'Private & secure'  },
-                ].map(s => (
+                {stats.map(s => (
                   <div key={s.l} className="csr-item">
                     <span className="csr-val gradient-text">{s.v}</span>
                     <span className="csr-lbl">{s.l}</span>
@@ -310,18 +268,15 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
           >
             <span className="section-label">{t('therapist_label')}</span>
             <h2>{t('therapist_heading')}</h2>
-            <p className="section-sub">
-              Every therapist on ELMA is verified, credentialed, and receives your
-              Emotional Profile before your first session — so you feel heard from minute one.
-            </p>
+            <p className="section-sub">{t('showcase_therapist_sub')}</p>
           </motion.div>
         </div>
 
         {/* Full-bleed scrolling carousel */}
         <div className="tc-scroll-outer">
           <div className="tc-scroll-track">
-            {therapists.map((t, i) => (
-              <TherapistCard key={`${t.id}-${i}`} t={t} />
+            {[...displayTherapists, ...displayTherapists].map((therapist, i) => (
+              <TherapistCard key={`${therapist.id}-${i}`} therapist={therapist} tFn={t} />
             ))}
           </div>
         </div>
@@ -351,7 +306,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease }}
           >
-            🌍 The World's First Global Emotional Wellness Network
+            {t('showcase_globe_badge')}
           </motion.div>
 
           {/* Split: Globe left · Copy right */}
@@ -377,8 +332,8 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 viewport={{ once: true }}
                 transition={{ delay: 0.15, duration: 0.7, ease }}
               >
-                Emotional wellness<br />
-                <span className="gradient-text">has no borders.</span>
+                {t('showcase_globe_h2a')}<br />
+                <span className="gradient-text">{t('showcase_globe_h2b')}</span>
               </motion.h2>
 
               <motion.p
@@ -388,10 +343,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 viewport={{ once: true }}
                 transition={{ delay: 0.25, duration: 0.7, ease }}
               >
-                ELMA is building a connected world where anyone — wherever they are —
-                can access science-backed emotional support, an AI companion who truly
-                knows them, and certified therapists who walk in already understanding
-                their emotional history.
+                {t('showcase_globe_sub1')}
               </motion.p>
 
               <motion.p
@@ -401,9 +353,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 viewport={{ once: true }}
                 transition={{ delay: 0.32, duration: 0.7, ease }}
               >
-                For therapists, this means a global practice — not limited by geography.
-                For users, it means world-class mental healthcare in their language,
-                at their time, from anywhere on the planet.
+                {t('showcase_globe_sub2')}
               </motion.p>
 
               {/* Country pills */}
@@ -415,7 +365,7 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 viewport={{ once: true }}
                 transition={{ delay: 0.38, duration: 0.6, ease }}
               >
-                <span className="nc-label">Live in</span>
+                <span className="nc-label">{t('showcase_live_in')}</span>
                 {['🇮🇳 India', '🇬🇧 UK', '🇺🇸 USA', '🇨🇦 Canada', '🇦🇺 Australia', '🇦🇪 UAE'].map(c => (
                   <span key={c} className="nc-country">{c}</span>
                 ))}
@@ -430,12 +380,12 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
                 transition={{ delay: 0.44, duration: 0.65, ease }}
               >
                 <button className="join-cta-btn" onClick={onJoinTherapist}>
-                  Join ELMA's Expert Network
+                  {t('showcase_join_cta')}
                 </button>
                 <div className="join-cta-reassure">
-                  <span>⚡ Quick 5-min application</span>
-                  <span>✓ Verified within 48 hours</span>
-                  <span>💳 Start earning immediately</span>
+                  <span>{t('showcase_quick')}</span>
+                  <span>{t('showcase_verified')}</span>
+                  <span>{t('showcase_earning')}</span>
                 </div>
               </motion.div>
             </div>
@@ -443,9 +393,9 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
 
           {/* Benefits grid — full width below */}
           <div className="benefits-grid" style={{ marginTop: '4rem' }}>
-            {BENEFITS.map((b, i) => (
+            {benefits.map((b, i) => (
               <motion.div
-                key={b.title}
+                key={i}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

@@ -1,226 +1,173 @@
 import React from 'react'
+import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
+
+const CONTENT = {
+  en: {
+    title: 'Platform Terms & Conditions',
+    updated: 'Last Updated: December 2025',
+    sections: [
+      { heading: "1. ELMA's Role 🏷️", body: [{ type: 'h4', text: '1.1 What ELMA is' }, { type: 'ul', items: ['ELMA is a digital emotional wellness support platform that offers:', '• AI-based emotional support tools, and', '• access to independent third-party mental wellness professionals (e.g., psychologists) for online sessions.'] }, { type: 'h4', text: '1.2 What ELMA is not' }, { type: 'ul', items: ['ELMA is not:', '• a hospital, clinic, medical provider, or emergency service;', '• a psychiatric or medical treatment provider;', '• a crisis intervention service;', '• a substitute for licensed medical/psychiatric care;', '• a replacement for real-life relationships, community support, or professional care.'] }, { type: 'h4', text: '1.3 No doctor–patient relationship with ELMA' }, { type: 'p', text: 'Your use of ELMA does not create any doctor–patient, therapist–patient, fiduciary, or similar professional relationship between you and ELMA.' }] },
+      { heading: '2. Eligibility, Age, and Account ✅', body: [{ type: 'h4', text: '2.1 Eligibility and Age Restriction' }, { type: 'ul', items: ['ELMA is intended only for users who are 18 years of age or older.', 'By creating an account or using the Platform, you confirm that you are at least 18 years old.', 'ELMA does not knowingly collect data from anyone under 18.', 'If ELMA becomes aware that a user is under 18, the account will be immediately suspended or deleted without notice.', 'Parents or guardians who believe a minor has accessed ELMA should contact us immediately for account removal.'] }, { type: 'h4', text: '2.2 Account accuracy' }, { type: 'p', text: 'You agree to provide accurate information and keep it updated. You are responsible for all activity under your account.' }, { type: 'h4', text: '2.3 Security' }, { type: 'p', text: 'You must keep login credentials confidential. You agree to notify ELMA immediately if you suspect unauthorized access.' }] },
+      { heading: '3. AI Companion (ELMA AI) — Strict Limitations 🤖', body: [{ type: 'h4', text: '3.1 What ELMA AI does' }, { type: 'p', text: 'ELMA AI provides general emotional wellness support such as reflection, grounding, supportive conversation, and simple wellness suggestions.' }, { type: 'h4', text: '3.2 What ELMA AI does not do' }, { type: 'ul', items: ['ELMA AI is not human and is not a medical professional;', 'does not provide medical, psychiatric, legal, financial, or other professional advice;', 'does not diagnose, prescribe, or treat any condition;', 'is not intended to be used for emergencies.'] }, { type: 'h4', text: '3.3 AI limitations and user responsibility' }, { type: 'ul', items: ['AI outputs may be inaccurate, incomplete, or inappropriate for your situation.', 'ELMA AI responses are automatically generated.', 'You are solely responsible for how you interpret and act on them.', 'You will not rely on ELMA AI as a substitute for professional judgment or emergency help.'] }] },
+      { heading: '4. Crisis and Emergency Disclaimer 🚨', body: [{ type: 'h4', text: '4.1 Not an emergency service' }, { type: 'p', text: 'ELMA is not suitable for emergencies. If you are at risk of harming yourself or others, or in immediate danger, you must seek immediate help from local emergency services or a trusted person.' }, { type: 'h4', text: '4.2 Crisis resources' }, { type: 'p', text: 'ELMA may display crisis resources as a convenience but does not provide emergency response or monitoring.' }] },
+      { heading: '5. Professionals — Third-Party Marketplace Role 👩‍⚕️', body: [{ type: 'h4', text: '5.1 Independent professionals' }, { type: 'p', text: 'Psychologists and other professionals available through ELMA are independent third parties. They are not ELMA employees, agents, or representatives.' }, { type: 'h4', text: '5.2 ELMA does not control clinical judgment' }, { type: 'p', text: 'ELMA does not supervise, direct, or control the professional services provided, and is not responsible for clinical judgment, outcomes, or professional conduct.' }, { type: 'h4', text: '5.3 User–professional relationship' }, { type: 'p', text: 'Any professional relationship created is between you and the professional. Any dispute regarding professional services is primarily between you and the professional, subject to applicable law.' }] },
+      { heading: '6. Platform-Only Rule (Anti-Circumvention) 🧭', body: [{ type: 'h4', text: '6.1 No off-platform solicitation' }, { type: 'p', text: 'You agree not to use ELMA to arrange, solicit, or accept sessions, payments, or ongoing engagements outside the Platform with any professional discovered through ELMA.' }, { type: 'h4', text: '6.2 Enforcement' }, { type: 'p', text: 'Circumvention may lead to account suspension/termination, and you may lose access without refund to the extent permitted by law.' }] },
+      { heading: '7. User Conduct (Strict) 🚦', body: [{ type: 'ul', items: ['Do not harass, threaten, exploit, or abuse any person.', 'Do not attempt to obtain personal contact details to bypass the Platform.', 'Do not upload unlawful, defamatory, hateful, or harmful content.', 'Do not misuse the AI to generate harmful instructions or content.', 'Do not reverse engineer, disrupt, or attempt unauthorized access.', 'Do not manipulate reviews, ratings, or platform integrity.'] }, { type: 'p', text: 'ELMA may take protective action including suspension or termination.' }] },
+      { heading: '8. Payments, Refunds, and Charges 💳', body: [{ type: 'h4', text: '8.1 Payments' }, { type: 'p', text: 'ELMA facilitates payments for services and may charge platform fees. Payment processing may involve third-party payment providers.' }, { type: 'h4', text: '8.2 Refunds/rescheduling' }, { type: 'p', text: "Refund and rescheduling rules are governed by ELMA's refund/cancellation policy presented at checkout or in the relevant flow. Where required by law, mandatory consumer rights apply." }, { type: 'h4', text: '8.3 No liability for third-party failures' }, { type: 'p', text: 'ELMA is not responsible for failures or delays caused by payment gateways, banks, networks, or third-party services.' }] },
+      { heading: '9. Privacy, Data, and Consent 🛡️', body: [{ type: 'h4', text: '9.1 Privacy Policy controls' }, { type: 'p', text: 'Your use of ELMA is also governed by the ELMA Privacy Policy. If there is a conflict, the Privacy Policy governs data handling.' }, { type: 'h4', text: '9.2 Consent and feature-specific disclosures' }, { type: 'p', text: 'ELMA may require additional feature-specific consents (e.g., AI chat, voice features, therapy sessions). By using those features, you agree to the relevant disclosures and consents.' }, { type: 'h4', text: '9.3 Data rights and requests' }, { type: 'p', text: 'You may request access, correction, or deletion of your data subject to legal requirements and security obligations, as described in the Privacy Policy.' }] },
+      { heading: '10. Technical Limitations 🛠️', body: [{ type: 'p', text: 'ELMA does not guarantee uninterrupted operation. You acknowledge the Platform may be affected by:' }, { type: 'ul', items: ['device limitations', 'OS updates', 'internet outages', 'maintenance', 'third-party service disruptions'] }] },
+      { heading: '11. Intellectual Property ©️', body: [{ type: 'p', text: 'ELMA and its logos, UI, and platform content are owned by ELMA or licensors. You may not copy, modify, distribute, or exploit ELMA IP without permission.' }] },
+      { heading: '12. Reputation, Public Sharing, and Misrepresentation 📣', body: [{ type: 'p', text: 'You agree not to:' }, { type: 'ul', items: ["publish ELMA content or conversations in a misleading way,", "misrepresent ELMA's services as medical diagnosis/treatment,", 'defame or harass professionals or users.'] }, { type: 'p', text: 'ELMA may take action to protect safety and reputation.' }] },
+      { heading: '13. Limitation of Liability (Maximum Protection) ⚖️', body: [{ type: 'p', text: 'To the fullest extent permitted by law:' }, { type: 'ul', items: ['ELMA is not liable for emotional outcomes, distress, or any reliance on AI outputs.', 'ELMA is not liable for professional services, clinical outcomes, or disputes between users and professionals.', 'ELMA is not liable for indirect, incidental, special, consequential, or punitive damages.'] }, { type: 'p', text: "If liability cannot be excluded, ELMA's total liability will be limited to the fees you paid to ELMA in the 30 days immediately before the event giving rise to the claim." }] },
+      { heading: '14. Termination and Safety Actions 🛑', body: [{ type: 'p', text: 'ELMA may suspend or terminate your account at any time if required for:' }, { type: 'ul', items: ['safety', 'legal compliance', 'suspected fraud', 'policy violations', 'platform integrity'] }] },
+      { heading: '15. Changes to Terms 📝', body: [{ type: 'p', text: 'We may update these Terms from time to time. If changes are material, we will provide notice within the app or website. Continued use after updates means you accept the updated Terms.' }] },
+      { heading: '16. Governing Law and Jurisdiction 📜', body: [{ type: 'p', text: 'These Terms are governed by the laws of India. Courts of Jaipur, Rajasthan, India shall have exclusive jurisdiction, subject to mandatory consumer protections where applicable.' }] },
+      { heading: '17. Final Acknowledgement ✅', body: [{ type: 'p', text: 'By using ELMA, you confirm that:' }, { type: 'ul', items: ["you understand ELMA's limits and that it is not an emergency service;", 'you accept responsibility for your decisions and usage;', 'you use the Platform voluntarily and agree to these Terms.'] }] },
+      { heading: 'Privacy Policy 🛡️', body: [{ type: 'p', text: 'Your use of ELMA is also governed by our Privacy Policy. Please review it to understand how we handle your data.' }] },
+      { heading: 'Contact 📞', body: [{ type: 'ul', items: ['Email: support@elma.ltd', 'Company: ELMA Emotion Solutions LLP', 'Address: ELMA Emotion Solutions LLP, Jaipur, Rajasthan, India'] }] },
+    ],
+  },
+  fr: {
+    title: 'Conditions Générales de la Plateforme',
+    updated: 'Dernière mise à jour : Décembre 2025',
+    sections: [
+      { heading: "1. Rôle d'ELMA 🏷️", body: [{ type: 'h4', text: '1.1 Ce qu\'est ELMA' }, { type: 'ul', items: ['ELMA est une plateforme numérique de soutien au bien-être émotionnel qui propose :', '• des outils de soutien émotionnel basés sur l\'IA, et', '• l\'accès à des professionnels indépendants du bien-être mental (ex : psychologues) pour des séances en ligne.'] }, { type: 'h4', text: '1.2 Ce que n\'est pas ELMA' }, { type: 'ul', items: ['ELMA n\'est pas :', '• un hôpital, une clinique, un prestataire médical ou un service d\'urgence ;', '• un prestataire de traitement psychiatrique ou médical ;', '• un service d\'intervention en cas de crise ;', '• un substitut aux soins médicaux/psychiatriques agréés ;', '• un substitut aux relations réelles, au soutien communautaire ou aux soins professionnels.'] }, { type: 'h4', text: '1.3 Pas de relation médecin-patient avec ELMA' }, { type: 'p', text: 'Votre utilisation d\'ELMA ne crée aucune relation médecin-patient, thérapeute-patient, fiduciaire ou professionnelle similaire entre vous et ELMA.' }] },
+      { heading: '2. Éligibilité, âge et compte ✅', body: [{ type: 'h4', text: '2.1 Éligibilité et restriction d\'âge' }, { type: 'ul', items: ['ELMA est destinée uniquement aux utilisateurs âgés de 18 ans ou plus.', 'En créant un compte ou en utilisant la plateforme, vous confirmez avoir au moins 18 ans.', 'ELMA ne collecte pas sciemment de données auprès de personnes de moins de 18 ans.', 'Si ELMA prend connaissance qu\'un utilisateur a moins de 18 ans, le compte sera immédiatement suspendu ou supprimé sans préavis.', 'Les parents ou tuteurs qui pensent qu\'un mineur a accédé à ELMA doivent nous contacter immédiatement pour supprimer le compte.'] }, { type: 'h4', text: '2.2 Exactitude du compte' }, { type: 'p', text: 'Vous acceptez de fournir des informations exactes et de les mettre à jour. Vous êtes responsable de toute activité sous votre compte.' }, { type: 'h4', text: '2.3 Sécurité' }, { type: 'p', text: 'Vous devez garder vos identifiants de connexion confidentiels. Vous acceptez de notifier ELMA immédiatement si vous suspectez un accès non autorisé.' }] },
+      { heading: '3. Compagnon IA (ELMA AI) — Limitations strictes 🤖', body: [{ type: 'h4', text: '3.1 Ce que fait ELMA AI' }, { type: 'p', text: 'ELMA AI fournit un soutien général au bien-être émotionnel tel que la réflexion, l\'ancrage, la conversation de soutien et des suggestions simples de bien-être.' }, { type: 'h4', text: '3.2 Ce que ne fait pas ELMA AI' }, { type: 'ul', items: ['ELMA AI n\'est pas humain et n\'est pas un professionnel médical ;', 'ne fournit pas de conseils médicaux, psychiatriques, juridiques, financiers ou autres conseils professionnels ;', 'ne diagnostique, ne prescrit, ni ne traite aucune condition ;', 'n\'est pas destinée à être utilisée en cas d\'urgence.'] }, { type: 'h4', text: '3.3 Limitations de l\'IA et responsabilité de l\'utilisateur' }, { type: 'ul', items: ['Les résultats de l\'IA peuvent être inexacts, incomplets ou inappropriés à votre situation.', 'Les réponses d\'ELMA AI sont générées automatiquement.', 'Vous êtes seul responsable de la façon dont vous les interprétez et agissez en conséquence.', 'Vous ne vous fierez pas à ELMA AI en remplacement du jugement professionnel ou de l\'aide d\'urgence.'] }] },
+      { heading: '4. Avertissement sur les crises et urgences 🚨', body: [{ type: 'h4', text: '4.1 Pas un service d\'urgence' }, { type: 'p', text: 'ELMA n\'est pas adaptée aux urgences. Si vous risquez de vous blesser ou de blesser autrui, ou si vous êtes en danger immédiat, vous devez chercher une aide immédiate auprès des services d\'urgence locaux ou d\'une personne de confiance.' }, { type: 'h4', text: '4.2 Ressources de crise' }, { type: 'p', text: 'ELMA peut afficher des ressources de crise à titre de commodité, mais ne fournit pas de réponse d\'urgence ni de surveillance.' }] },
+      { heading: '5. Professionnels — Rôle de place de marché tierce 👩‍⚕️', body: [{ type: 'h4', text: '5.1 Professionnels indépendants' }, { type: 'p', text: 'Les psychologues et autres professionnels disponibles via ELMA sont des tiers indépendants. Ils ne sont pas des employés, agents ou représentants d\'ELMA.' }, { type: 'h4', text: '5.2 ELMA ne contrôle pas le jugement clinique' }, { type: 'p', text: 'ELMA ne supervise pas, ne dirige pas et ne contrôle pas les services professionnels fournis, et n\'est pas responsable du jugement clinique, des résultats ou de la conduite professionnelle.' }, { type: 'h4', text: '5.3 Relation utilisateur–professionnel' }, { type: 'p', text: 'Toute relation professionnelle créée est entre vous et le professionnel. Tout litige concernant les services professionnels est principalement entre vous et le professionnel, conformément à la loi applicable.' }] },
+      { heading: '6. Règle de la plateforme uniquement (Anti-contournement) 🧭', body: [{ type: 'h4', text: '6.1 Pas de sollicitation hors plateforme' }, { type: 'p', text: 'Vous acceptez de ne pas utiliser ELMA pour organiser, solliciter ou accepter des séances, des paiements ou des engagements continus en dehors de la plateforme avec tout professionnel découvert via ELMA.' }, { type: 'h4', text: '6.2 Application' }, { type: 'p', text: 'Le contournement peut entraîner la suspension/résiliation du compte, et vous pouvez perdre l\'accès sans remboursement dans la mesure permise par la loi.' }] },
+      { heading: '7. Conduite de l\'utilisateur (Strict) 🚦', body: [{ type: 'ul', items: ['Ne harcelez pas, ne menacez pas, n\'exploitez pas et n\'abusez pas d\'une personne.', 'Ne tentez pas d\'obtenir des coordonnées personnelles pour contourner la plateforme.', 'Ne téléchargez pas de contenu illégal, diffamatoire, haineux ou nuisible.', 'N\'abusez pas de l\'IA pour générer des instructions ou du contenu nuisible.', 'Ne décompilez pas, ne perturbez pas la plateforme et ne tentez pas un accès non autorisé.', 'Ne manipulez pas les avis, les évaluations ou l\'intégrité de la plateforme.'] }, { type: 'p', text: 'ELMA peut prendre des mesures de protection incluant la suspension ou la résiliation.' }] },
+      { heading: '8. Paiements, remboursements et frais 💳', body: [{ type: 'h4', text: '8.1 Paiements' }, { type: 'p', text: 'ELMA facilite les paiements pour les services et peut facturer des frais de plateforme. Le traitement des paiements peut impliquer des prestataires de paiement tiers.' }, { type: 'h4', text: '8.2 Remboursements/reprogrammation' }, { type: 'p', text: 'Les règles de remboursement et de reprogrammation sont régies par la politique de remboursement/annulation d\'ELMA présentée au moment du paiement. Les droits obligatoires des consommateurs s\'appliquent là où la loi l\'exige.' }, { type: 'h4', text: '8.3 Pas de responsabilité pour les défaillances de tiers' }, { type: 'p', text: 'ELMA n\'est pas responsable des défaillances ou retards causés par les passerelles de paiement, banques, réseaux ou services tiers.' }] },
+      { heading: '9. Confidentialité, données et consentement 🛡️', body: [{ type: 'h4', text: '9.1 Contrôle de la politique de confidentialité' }, { type: 'p', text: 'Votre utilisation d\'ELMA est également régie par la politique de confidentialité d\'ELMA. En cas de conflit, la politique de confidentialité régit le traitement des données.' }, { type: 'h4', text: '9.2 Consentement et divulgations spécifiques aux fonctionnalités' }, { type: 'p', text: 'ELMA peut nécessiter des consentements supplémentaires spécifiques aux fonctionnalités (ex : chat IA, fonctionnalités vocales, séances de thérapie). En utilisant ces fonctionnalités, vous acceptez les divulgations et consentements pertinents.' }, { type: 'h4', text: '9.3 Droits sur les données et demandes' }, { type: 'p', text: 'Vous pouvez demander l\'accès, la correction ou la suppression de vos données sous réserve des exigences légales et des obligations de sécurité, comme décrit dans la politique de confidentialité.' }] },
+      { heading: '10. Limitations techniques 🛠️', body: [{ type: 'p', text: 'ELMA ne garantit pas un fonctionnement ininterrompu. Vous reconnaissez que la plateforme peut être affectée par :' }, { type: 'ul', items: ['les limitations des appareils', 'les mises à jour du système d\'exploitation', 'les pannes d\'internet', 'la maintenance', 'les perturbations de services tiers'] }] },
+      { heading: '11. Propriété intellectuelle ©️', body: [{ type: 'p', text: 'ELMA et ses logos, interface utilisateur et contenu de plateforme appartiennent à ELMA ou à ses concédants de licence. Vous ne pouvez pas copier, modifier, distribuer ou exploiter la propriété intellectuelle d\'ELMA sans autorisation.' }] },
+      { heading: '12. Réputation, partage public et représentation erronée 📣', body: [{ type: 'p', text: 'Vous acceptez de ne pas :' }, { type: 'ul', items: ['publier le contenu ou les conversations d\'ELMA de manière trompeuse,', 'décrire à tort les services d\'ELMA comme un diagnostic/traitement médical,', 'diffamer ou harceler des professionnels ou des utilisateurs.'] }, { type: 'p', text: 'ELMA peut prendre des mesures pour protéger la sécurité et la réputation.' }] },
+      { heading: '13. Limitation de responsabilité (Protection maximale) ⚖️', body: [{ type: 'p', text: 'Dans toute la mesure permise par la loi :' }, { type: 'ul', items: ['ELMA n\'est pas responsable des résultats émotionnels, de la détresse ou de toute dépendance aux résultats de l\'IA.', 'ELMA n\'est pas responsable des services professionnels, des résultats cliniques ou des litiges entre utilisateurs et professionnels.', 'ELMA n\'est pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs.'] }, { type: 'p', text: 'Si la responsabilité ne peut être exclue, la responsabilité totale d\'ELMA sera limitée aux frais que vous avez payés à ELMA dans les 30 jours précédant l\'événement à l\'origine de la réclamation.' }] },
+      { heading: '14. Résiliation et actions de sécurité 🛑', body: [{ type: 'p', text: 'ELMA peut suspendre ou résilier votre compte à tout moment si nécessaire pour :' }, { type: 'ul', items: ['la sécurité', 'la conformité légale', 'la fraude suspectée', 'les violations de politique', 'l\'intégrité de la plateforme'] }] },
+      { heading: '15. Modifications des conditions 📝', body: [{ type: 'p', text: 'Nous pouvons mettre à jour ces conditions de temps en temps. Si les modifications sont importantes, nous en informerons dans l\'application ou sur le site web. L\'utilisation continue après les mises à jour signifie que vous acceptez les conditions mises à jour.' }] },
+      { heading: '16. Droit applicable et juridiction 📜', body: [{ type: 'p', text: 'Ces conditions sont régies par les lois de l\'Inde. Les tribunaux de Jaipur, Rajasthan, Inde auront une juridiction exclusive, sous réserve des protections obligatoires des consommateurs applicables.' }] },
+      { heading: '17. Reconnaissance finale ✅', body: [{ type: 'p', text: 'En utilisant ELMA, vous confirmez que :' }, { type: 'ul', items: ['vous comprenez les limites d\'ELMA et qu\'il ne s\'agit pas d\'un service d\'urgence ;', 'vous acceptez la responsabilité de vos décisions et de votre utilisation ;', 'vous utilisez la plateforme volontairement et acceptez ces conditions.'] }] },
+      { heading: 'Politique de confidentialité 🛡️', body: [{ type: 'p', text: 'Votre utilisation d\'ELMA est également régie par notre politique de confidentialité. Veuillez la consulter pour comprendre comment nous traitons vos données.' }] },
+      { heading: 'Contact 📞', body: [{ type: 'ul', items: ['Email : support@elma.ltd', 'Société : ELMA Emotion Solutions LLP', 'Adresse : ELMA Emotion Solutions LLP, Jaipur, Rajasthan, Inde'] }] },
+    ],
+  },
+  ja: {
+    title: 'プラットフォーム利用規約',
+    updated: '最終更新日：2025年12月',
+    sections: [
+      { heading: '1. ELMAの役割 🏷️', body: [{ type: 'h4', text: '1.1 ELMAとは' }, { type: 'ul', items: ['ELMAはデジタル感情ウェルネスサポートプラットフォームです：', '• AIベースの感情サポートツール、および', '• オンラインセッションのための独立した第三者メンタルウェルネス専門家（心理士など）へのアクセス。'] }, { type: 'h4', text: '1.2 ELMAでないもの' }, { type: 'ul', items: ['ELMAは以下ではありません：', '• 病院、診療所、医療提供者、または緊急サービス；', '• 精神科または医療治療提供者；', '• 危機介入サービス；', '• 認可された医療/精神科ケアの代替品；', '• 現実の人間関係、コミュニティサポート、または専門的ケアの代替品。'] }, { type: 'h4', text: '1.3 ELMAとの医師-患者関係なし' }, { type: 'p', text: 'ELMAの使用は、あなたとELMAの間に医師-患者、セラピスト-患者、信託、または類似の専門的関係を作成しません。' }] },
+      { heading: '2. 資格、年齢、アカウント ✅', body: [{ type: 'h4', text: '2.1 資格と年齢制限' }, { type: 'ul', items: ['ELMAは18歳以上のユーザーのみを対象としています。', 'アカウントを作成するか、プラットフォームを使用することにより、あなたは少なくとも18歳であることを確認します。', 'ELMAは18歳未満の方からデータを故意に収集しません。', '18歳未満のユーザーであることが判明した場合、アカウントは予告なく即座に停止または削除されます。', '未成年者がELMAにアクセスしたと思われる親または保護者は、アカウントを削除するために直ちにご連絡ください。'] }, { type: 'h4', text: '2.2 アカウントの正確さ' }, { type: 'p', text: '正確な情報を提供し、最新の状態に保つことに同意します。アカウント下のすべての活動についての責任があります。' }, { type: 'h4', text: '2.3 セキュリティ' }, { type: 'p', text: 'ログイン認証情報を機密に保つ必要があります。不正アクセスが疑われる場合は直ちにELMAに通知することに同意します。' }] },
+      { heading: '3. AIコンパニオン（ELMA AI）— 厳格な制限 🤖', body: [{ type: 'h4', text: '3.1 ELMA AIが行うこと' }, { type: 'p', text: 'ELMA AIは反省、グラウンディング、サポート的な会話、簡単なウェルネス提案などの一般的な感情ウェルネスサポートを提供します。' }, { type: 'h4', text: '3.2 ELMA AIが行わないこと' }, { type: 'ul', items: ['ELMA AIは人間ではなく医療専門家でもありません；', '医療、精神科、法律、財務、またはその他の専門的アドバイスを提供しません；', 'いかなる状態も診断、処方、治療しません；', '緊急事態での使用を意図していません。'] }, { type: 'h4', text: '3.3 AIの制限とユーザーの責任' }, { type: 'ul', items: ['AIの出力は不正確、不完全、またはあなたの状況に不適切な場合があります。', 'ELMA AIの応答は自動的に生成されます。', 'それらを解釈し行動する方法についての責任は完全にあなたにあります。', 'ELMA AIを専門的判断や緊急ヘルプの代替として利用しないでください。'] }] },
+      { heading: '4. 危機と緊急事態に関する免責事項 🚨', body: [{ type: 'h4', text: '4.1 緊急サービスではない' }, { type: 'p', text: 'ELMAは緊急事態には適していません。自分または他者を傷つけるリスクがある場合、または差し迫った危険にさらされている場合は、地域の緊急サービスまたは信頼できる人から直ちに助けを求めてください。' }, { type: 'h4', text: '4.2 危機リソース' }, { type: 'p', text: 'ELMAは便宜上、危機リソースを表示する場合がありますが、緊急対応や監視は提供しません。' }] },
+      { heading: '5. 専門家 — 第三者マーケットプレイスの役割 👩‍⚕️', body: [{ type: 'h4', text: '5.1 独立した専門家' }, { type: 'p', text: 'ELMAを通じて利用可能な心理士およびその他の専門家は独立した第三者です。彼らはELMAの従業員、代理人、または代表者ではありません。' }, { type: 'h4', text: '5.2 ELMAは臨床的判断を制御しない' }, { type: 'p', text: 'ELMAは提供される専門サービスを監督、指示、または制御せず、臨床的判断、結果、または専門的行為に責任を持ちません。' }, { type: 'h4', text: '5.3 ユーザー–専門家の関係' }, { type: 'p', text: '作成される専門的関係はあなたと専門家の間にあります。専門サービスに関するいかなる紛争も、適用法に従い、主にあなたと専門家の間にあります。' }] },
+      { heading: '6. プラットフォームのみのルール（不正回避禁止）🧭', body: [{ type: 'h4', text: '6.1 プラットフォーム外での勧誘禁止' }, { type: 'p', text: 'ELMAを通じて発見した専門家とプラットフォーム外でセッション、支払い、または継続的な関与を手配、勧誘、または受諾するためにELMAを使用しないことに同意します。' }, { type: 'h4', text: '6.2 執行' }, { type: 'p', text: '迂回はアカウントの停止/終了につながる可能性があり、法律で許可される範囲で返金なしでアクセスを失う可能性があります。' }] },
+      { heading: '7. ユーザーの行為（厳格）🚦', body: [{ type: 'ul', items: ['いかなる人も嫌がらせ、脅迫、搾取、または虐待しないでください。', 'プラットフォームを回避するために個人の連絡先を取得しようとしないでください。', '違法、名誉毀損、憎悪、または有害なコンテンツをアップロードしないでください。', '有害な指示やコンテンツを生成するためにAIを悪用しないでください。', 'リバースエンジニアリング、妨害、または不正アクセスを試みないでください。', 'レビュー、評価、またはプラットフォームの完全性を操作しないでください。'] }, { type: 'p', text: 'ELMAは停止または終了を含む保護措置を取ることがあります。' }] },
+      { heading: '8. 支払い、返金、および料金 💳', body: [{ type: 'h4', text: '8.1 支払い' }, { type: 'p', text: 'ELMAはサービスの支払いを促進し、プラットフォーム料金を請求する場合があります。支払い処理には第三者決済プロバイダーが関与する場合があります。' }, { type: 'h4', text: '8.2 返金/スケジュール変更' }, { type: 'p', text: '返金およびスケジュール変更のルールは、チェックアウト時または関連フローで提示されるELMAの返金/キャンセルポリシーによって規定されます。' }, { type: 'h4', text: '8.3 第三者の障害に対する免責' }, { type: 'p', text: 'ELMAは決済ゲートウェイ、銀行、ネットワーク、または第三者サービスによって引き起こされる障害や遅延に責任を負いません。' }] },
+      { heading: '9. プライバシー、データ、および同意 🛡️', body: [{ type: 'h4', text: '9.1 プライバシーポリシーの管理' }, { type: 'p', text: 'ELMAの使用はELMAプライバシーポリシーによっても規定されます。矛盾がある場合、プライバシーポリシーがデータ処理を規定します。' }, { type: 'h4', text: '9.2 同意と機能固有の開示' }, { type: 'p', text: 'ELMAは追加の機能固有の同意（AIチャット、音声機能、療法セッションなど）を要求する場合があります。それらの機能を使用することにより、関連する開示と同意に同意します。' }, { type: 'h4', text: '9.3 データ権利と要請' }, { type: 'p', text: 'プライバシーポリシーに説明されているように、法的要件およびセキュリティ義務に従い、データへのアクセス、修正、または削除を要請することができます。' }] },
+      { heading: '10. 技術的制限 🛠️', body: [{ type: 'p', text: 'ELMAは中断のない運用を保証しません。プラットフォームは以下の影響を受ける可能性があることを認識します：' }, { type: 'ul', items: ['デバイスの制限', 'OSのアップデート', 'インターネットの障害', 'メンテナンス', '第三者サービスの中断'] }] },
+      { heading: '11. 知的財産 ©️', body: [{ type: 'p', text: 'ELMAとそのロゴ、UI、プラットフォームコンテンツはELMAまたはライセンサーが所有しています。許可なしにELMAのIPをコピー、修正、配布、または利用することはできません。' }] },
+      { heading: '12. 評判、公開共有、および虚偽表示 📣', body: [{ type: 'p', text: '以下を行わないことに同意します：' }, { type: 'ul', items: ['ELMAのコンテンツや会話を誤解を招く方法で公開すること、', 'ELMAのサービスを医学的診断/治療として虚偽表示すること、', '専門家やユーザーを誹謗したり嫌がらせすること。'] }, { type: 'p', text: 'ELMAは安全と評判を守るために措置を取ることがあります。' }] },
+      { heading: '13. 責任の制限（最大保護）⚖️', body: [{ type: 'p', text: '法律で許可される最大限の範囲で：' }, { type: 'ul', items: ['ELMAはAIの出力への感情的結果、苦痛、または依存に責任を負いません。', 'ELMAは専門サービス、臨床的結果、またはユーザーと専門家間の紛争に責任を負いません。', 'ELMAは間接的、付随的、特別、結果的、または懲罰的損害に責任を負いません。'] }, { type: 'p', text: '責任を除外できない場合、ELMAの総責任は請求の原因となるイベントの直前30日間にELMAに支払った手数料に限定されます。' }] },
+      { heading: '14. 解約と安全措置 🛑', body: [{ type: 'p', text: 'ELMAは以下のために必要な場合、いつでもあなたのアカウントを停止または終了することがあります：' }, { type: 'ul', items: ['安全', '法的遵守', '詐欺の疑い', 'ポリシー違反', 'プラットフォームの完全性'] }] },
+      { heading: '15. 規約の変更 📝', body: [{ type: 'p', text: '随時これらの規約を更新することがあります。変更が重要な場合、アプリまたはウェブサイト内で通知します。更新後も引き続き使用することは、更新された規約への同意を意味します。' }] },
+      { heading: '16. 準拠法と管轄 📜', body: [{ type: 'p', text: 'これらの規約はインドの法律によって規定されます。インド、ラジャスタン州、ジャイプールの裁判所は、適用される強制的な消費者保護に従い、専属管轄権を持ちます。' }] },
+      { heading: '17. 最終確認 ✅', body: [{ type: 'p', text: 'ELMAを使用することで、以下を確認します：' }, { type: 'ul', items: ['ELMAの限界を理解し、緊急サービスではないこと；', '自分の決断と使用についての責任を受け入れること；', '自発的にプラットフォームを使用し、これらの規約に同意すること。'] }] },
+      { heading: 'プライバシーポリシー 🛡️', body: [{ type: 'p', text: 'ELMAの使用は私たちのプライバシーポリシーによっても規定されます。私たちがどのようにあなたのデータを処理するかを理解するためにご確認ください。' }] },
+      { heading: 'お問い合わせ 📞', body: [{ type: 'ul', items: ['メール：support@elma.ltd', '会社：ELMA Emotion Solutions LLP', '住所：ELMA Emotion Solutions LLP、ジャイプール、ラジャスタン州、インド'] }] },
+    ],
+  },
+  hi: {
+    title: 'प्लेटफॉर्म नियम और शर्तें',
+    updated: 'अंतिम अपडेट: दिसंबर 2025',
+    sections: [
+      { heading: '1. ELMA की भूमिका 🏷️', body: [{ type: 'h4', text: '1.1 ELMA क्या है' }, { type: 'ul', items: ['ELMA एक डिजिटल भावनात्मक कल्याण सहायता प्लेटफॉर्म है जो प्रदान करती है:', '• AI-आधारित भावनात्मक सहायता उपकरण, और', '• ऑनलाइन सत्रों के लिए स्वतंत्र तृतीय-पक्ष मानसिक कल्याण पेशेवरों (जैसे मनोवैज्ञानिक) तक पहुंच।'] }, { type: 'h4', text: '1.2 ELMA क्या नहीं है' }, { type: 'ul', items: ['ELMA नहीं है:', '• अस्पताल, क्लिनिक, चिकित्सा प्रदाता, या आपातकालीन सेवा;', '• मनोचिकित्सा या चिकित्सा उपचार प्रदाता;', '• संकट हस्तक्षेप सेवा;', '• लाइसेंस प्राप्त चिकित्सा/मनोचिकित्सा देखभाल का विकल्प;', '• वास्तविक जीवन संबंधों, सामुदायिक सहायता, या पेशेवर देखभाल का विकल्प।'] }, { type: 'h4', text: '1.3 ELMA के साथ कोई डॉक्टर-मरीज संबंध नहीं' }, { type: 'p', text: 'ELMA के उपयोग से आप और ELMA के बीच कोई डॉक्टर-मरीज, थेरेपिस्ट-मरीज, विश्वसनीय या समान पेशेवर संबंध नहीं बनता।' }] },
+      { heading: '2. पात्रता, आयु और खाता ✅', body: [{ type: 'h4', text: '2.1 पात्रता और आयु प्रतिबंध' }, { type: 'ul', items: ['ELMA केवल 18 वर्ष या उससे अधिक आयु के उपयोगकर्ताओं के लिए है।', 'खाता बनाकर या प्लेटफॉर्म का उपयोग करके, आप पुष्टि करते हैं कि आप कम से कम 18 वर्ष के हैं।', 'ELMA जानबूझकर 18 वर्ष से कम आयु के किसी भी व्यक्ति से डेटा एकत्र नहीं करती।', 'यदि ELMA को पता चलता है कि कोई उपयोगकर्ता 18 वर्ष से कम आयु का है, तो खाता तुरंत बिना सूचना के निलंबित या हटा दिया जाएगा।', 'माता-पिता या अभिभावक जो मानते हैं कि किसी नाबालिग ने ELMA तक पहुंच प्राप्त की है, उन्हें खाता हटाने के लिए तुरंत संपर्क करना चाहिए।'] }, { type: 'h4', text: '2.2 खाते की सटीकता' }, { type: 'p', text: 'आप सटीक जानकारी प्रदान करने और इसे अपडेट रखने के लिए सहमत हैं। आप अपने खाते के तहत सभी गतिविधियों के लिए जिम्मेदार हैं।' }, { type: 'h4', text: '2.3 सुरक्षा' }, { type: 'p', text: 'आपको लॉगिन क्रेडेंशियल गोपनीय रखने होंगे। आप ELMA को तुरंत सूचित करने के लिए सहमत हैं यदि आपको अनधिकृत पहुंच का संदेह है।' }] },
+      { heading: '3. AI साथी (ELMA AI) — सख्त सीमाएं 🤖', body: [{ type: 'h4', text: '3.1 ELMA AI क्या करती है' }, { type: 'p', text: 'ELMA AI सामान्य भावनात्मक कल्याण सहायता प्रदान करती है जैसे प्रतिबिंब, ग्राउंडिंग, सहायक बातचीत और सरल कल्याण सुझाव।' }, { type: 'h4', text: '3.2 ELMA AI क्या नहीं करती' }, { type: 'ul', items: ['ELMA AI मानव नहीं है और चिकित्सा पेशेवर नहीं है;', 'चिकित्सा, मनोचिकित्सा, कानूनी, वित्तीय या अन्य पेशेवर सलाह नहीं देती;', 'किसी भी स्थिति का निदान, निर्धारण या उपचार नहीं करती;', 'आपातस्थितियों के लिए उपयोग के लिए इरादा नहीं है।'] }, { type: 'h4', text: '3.3 AI की सीमाएं और उपयोगकर्ता की जिम्मेदारी' }, { type: 'ul', items: ['AI आउटपुट आपकी स्थिति के लिए गलत, अधूरे या अनुचित हो सकते हैं।', 'ELMA AI प्रतिक्रियाएं स्वचालित रूप से उत्पन्न होती हैं।', 'आप अकेले जिम्मेदार हैं कि आप उन्हें कैसे समझते और उन पर कार्य करते हैं।', 'आप पेशेवर निर्णय या आपातकालीन सहायता के विकल्प के रूप में ELMA AI पर निर्भर नहीं होंगे।'] }] },
+      { heading: '4. संकट और आपातकाल अस्वीकरण 🚨', body: [{ type: 'h4', text: '4.1 आपातकालीन सेवा नहीं' }, { type: 'p', text: 'ELMA आपात स्थितियों के लिए उपयुक्त नहीं है। यदि आप खुद को या दूसरों को नुकसान पहुंचाने के जोखिम में हैं, या तत्काल खतरे में हैं, तो आपको स्थानीय आपातकालीन सेवाओं या किसी विश्वसनीय व्यक्ति से तत्काल सहायता लेनी होगी।' }, { type: 'h4', text: '4.2 संकट संसाधन' }, { type: 'p', text: 'ELMA सुविधा के रूप में संकट संसाधन प्रदर्शित कर सकती है लेकिन आपातकालीन प्रतिक्रिया या निगरानी प्रदान नहीं करती।' }] },
+      { heading: '5. पेशेवर — तृतीय-पक्ष मार्केटप्लेस भूमिका 👩‍⚕️', body: [{ type: 'h4', text: '5.1 स्वतंत्र पेशेवर' }, { type: 'p', text: 'ELMA के माध्यम से उपलब्ध मनोवैज्ञानिक और अन्य पेशेवर स्वतंत्र तृतीय पक्ष हैं। वे ELMA के कर्मचारी, एजेंट या प्रतिनिधि नहीं हैं।' }, { type: 'h4', text: '5.2 ELMA नैदानिक निर्णय को नियंत्रित नहीं करती' }, { type: 'p', text: 'ELMA प्रदान की जाने वाली पेशेवर सेवाओं की निगरानी, निर्देश या नियंत्रण नहीं करती, और नैदानिक निर्णय, परिणामों, या पेशेवर आचरण के लिए जिम्मेदार नहीं है।' }, { type: 'h4', text: '5.3 उपयोगकर्ता–पेशेवर संबंध' }, { type: 'p', text: 'बनाई गई कोई भी पेशेवर संबंध आपके और पेशेवर के बीच है। पेशेवर सेवाओं के संबंध में कोई भी विवाद लागू कानून के अधीन, मुख्यतः आपके और पेशेवर के बीच है।' }] },
+      { heading: '6. केवल-प्लेटफॉर्म नियम (एंटी-सर्कमवेंशन) 🧭', body: [{ type: 'h4', text: '6.1 प्लेटफॉर्म-बाहर सॉलिसिटेशन नहीं' }, { type: 'p', text: 'आप ELMA का उपयोग ELMA के माध्यम से खोजे गए किसी भी पेशेवर के साथ प्लेटफॉर्म के बाहर सत्रों, भुगतानों, या चल रहे संबंधों को व्यवस्थित करने, आकर्षित करने या स्वीकार करने के लिए नहीं करने के लिए सहमत हैं।' }, { type: 'h4', text: '6.2 प्रवर्तन' }, { type: 'p', text: 'उल्लंघन खाते के निलंबन/समाप्ति का कारण बन सकता है, और आप कानून द्वारा अनुमत सीमा तक बिना वापसी के पहुंच खो सकते हैं।' }] },
+      { heading: '7. उपयोगकर्ता आचरण (सख्त) 🚦', body: [{ type: 'ul', items: ['किसी भी व्यक्ति को परेशान, धमकाने, शोषण या दुर्व्यवहार न करें।', 'प्लेटफॉर्म को बाईपास करने के लिए व्यक्तिगत संपर्क विवरण प्राप्त करने का प्रयास न करें।', 'अवैध, मानहानिकारक, घृणास्पद या हानिकारक सामग्री अपलोड न करें।', 'हानिकारक निर्देश या सामग्री उत्पन्न करने के लिए AI का दुरुपयोग न करें।', 'रिवर्स इंजीनियर, बाधित या अनधिकृत पहुंच का प्रयास न करें।', 'समीक्षाओं, रेटिंग या प्लेटफॉर्म की अखंडता में हेरफेर न करें।'] }, { type: 'p', text: 'ELMA निलंबन या समाप्ति सहित सुरक्षात्मक कार्रवाई कर सकती है।' }] },
+      { heading: '8. भुगतान, वापसी और शुल्क 💳', body: [{ type: 'h4', text: '8.1 भुगतान' }, { type: 'p', text: 'ELMA सेवाओं के लिए भुगतान को सुविधाजनक बनाती है और प्लेटफॉर्म शुल्क ले सकती है। भुगतान प्रसंस्करण में तृतीय-पक्ष भुगतान प्रदाता शामिल हो सकते हैं।' }, { type: 'h4', text: '8.2 वापसी/पुनर्निर्धारण' }, { type: 'p', text: 'वापसी और पुनर्निर्धारण के नियम चेकआउट पर प्रस्तुत ELMA की वापसी/रद्दीकरण नीति द्वारा शासित हैं।' }, { type: 'h4', text: '8.3 तृतीय-पक्ष विफलताओं के लिए कोई दायित्व नहीं' }, { type: 'p', text: 'ELMA भुगतान गेटवे, बैंकों, नेटवर्क, या तृतीय-पक्ष सेवाओं के कारण होने वाली विफलताओं या देरी के लिए जिम्मेदार नहीं है।' }] },
+      { heading: '9. गोपनीयता, डेटा और सहमति 🛡️', body: [{ type: 'p', text: 'ELMA के उपयोग को ELMA गोपनीयता नीति द्वारा भी नियंत्रित किया जाता है। यदि कोई टकराव है, तो गोपनीयता नीति डेटा प्रबंधन को नियंत्रित करती है।' }] },
+      { heading: '10. तकनीकी सीमाएं 🛠️', body: [{ type: 'p', text: 'ELMA निर्बाध संचालन की गारंटी नहीं देती। आप स्वीकार करते हैं कि प्लेटफॉर्म निम्न से प्रभावित हो सकता है:' }, { type: 'ul', items: ['डिवाइस की सीमाएं', 'OS अपडेट', 'इंटरनेट आउटेज', 'रखरखाव', 'तृतीय-पक्ष सेवा व्यवधान'] }] },
+      { heading: '11. बौद्धिक संपदा ©️', body: [{ type: 'p', text: 'ELMA और इसके लोगो, UI, और प्लेटफॉर्म सामग्री ELMA या लाइसेंसकर्ताओं के स्वामित्व में हैं। आप अनुमति के बिना ELMA की IP की प्रतिलिपि, संशोधन, वितरण या दोहन नहीं कर सकते।' }] },
+      { heading: '12. प्रतिष्ठा, सार्वजनिक साझाकरण और गलत प्रतिनिधित्व 📣', body: [{ type: 'p', text: 'आप निम्नलिखित नहीं करने के लिए सहमत हैं:' }, { type: 'ul', items: ['ELMA सामग्री या बातचीत को भ्रामक तरीके से प्रकाशित करना,', 'ELMA की सेवाओं को चिकित्सा निदान/उपचार के रूप में गलत तरीके से प्रस्तुत करना,', 'पेशेवरों या उपयोगकर्ताओं को मानहानि करना या परेशान करना।'] }, { type: 'p', text: 'ELMA सुरक्षा और प्रतिष्ठा की रक्षा के लिए कार्रवाई कर सकती है।' }] },
+      { heading: '13. दायित्व की सीमा (अधिकतम संरक्षण) ⚖️', body: [{ type: 'p', text: 'कानून द्वारा अनुमत अधिकतम सीमा तक:' }, { type: 'ul', items: ['ELMA भावनात्मक परिणामों, संकट, या AI आउटपुट पर किसी भी निर्भरता के लिए उत्तरदायी नहीं है।', 'ELMA पेशेवर सेवाओं, नैदानिक परिणामों, या उपयोगकर्ताओं और पेशेवरों के बीच विवादों के लिए उत्तरदायी नहीं है।', 'ELMA अप्रत्यक्ष, आकस्मिक, विशेष, परिणामी, या दंडात्मक क्षति के लिए उत्तरदायी नहीं है।'] }, { type: 'p', text: 'यदि दायित्व को बाहर नहीं किया जा सकता, तो ELMA की कुल देनदारी दावे को जन्म देने वाली घटना से तुरंत पहले 30 दिनों में आपके द्वारा ELMA को भुगतान की गई फीस तक सीमित होगी।' }] },
+      { heading: '14. समाप्ति और सुरक्षा कार्रवाइयां 🛑', body: [{ type: 'p', text: 'ELMA किसी भी समय आपके खाते को निलंबित या समाप्त कर सकती है यदि आवश्यक हो:' }, { type: 'ul', items: ['सुरक्षा के लिए', 'कानूनी अनुपालन के लिए', 'संदिग्ध धोखाधड़ी के लिए', 'नीति उल्लंघन के लिए', 'प्लेटफॉर्म अखंडता के लिए'] }] },
+      { heading: '15. शर्तों में बदलाव 📝', body: [{ type: 'p', text: 'हम समय-समय पर इन शर्तों को अपडेट कर सकते हैं। यदि परिवर्तन महत्वपूर्ण हैं, तो हम ऐप या वेबसाइट के भीतर सूचना प्रदान करेंगे।' }] },
+      { heading: '16. शासन कानून और अधिकार क्षेत्र 📜', body: [{ type: 'p', text: 'ये शर्तें भारत के कानूनों द्वारा शासित हैं। जयपुर, राजस्थान, भारत के न्यायालयों के पास विशेष अधिकार क्षेत्र होगा।' }] },
+      { heading: '17. अंतिम स्वीकृति ✅', body: [{ type: 'p', text: 'ELMA का उपयोग करके, आप पुष्टि करते हैं:' }, { type: 'ul', items: ['आप ELMA की सीमाओं को समझते हैं और यह आपातकालीन सेवा नहीं है;', 'आप अपने निर्णयों और उपयोग के लिए जिम्मेदारी स्वीकार करते हैं;', 'आप स्वेच्छा से प्लेटफॉर्म का उपयोग करते हैं और इन शर्तों से सहमत हैं।'] }] },
+      { heading: 'गोपनीयता नीति 🛡️', body: [{ type: 'p', text: 'ELMA के उपयोग को हमारी गोपनीयता नीति द्वारा भी नियंत्रित किया जाता है। हम आपके डेटा को कैसे संभालते हैं, यह समझने के लिए कृपया इसकी समीक्षा करें।' }] },
+      { heading: 'संपर्क 📞', body: [{ type: 'ul', items: ['ईमेल: support@elma.ltd', 'कंपनी: ELMA Emotion Solutions LLP', 'पता: ELMA Emotion Solutions LLP, जयपुर, राजस्थान, भारत'] }] },
+    ],
+  },
+  es: {
+    title: 'Términos y Condiciones de la Plataforma',
+    updated: 'Última Actualización: Diciembre 2025',
+    sections: [
+      { heading: '1. Rol de ELMA 🏷️', body: [{ type: 'h4', text: '1.1 Qué es ELMA' }, { type: 'ul', items: ['ELMA es una plataforma digital de apoyo al bienestar emocional que ofrece:', '• herramientas de apoyo emocional basadas en IA, y', '• acceso a profesionales independientes de bienestar mental (p.ej., psicólogos) para sesiones en línea.'] }, { type: 'h4', text: '1.2 Qué no es ELMA' }, { type: 'ul', items: ['ELMA no es:', '• un hospital, clínica, proveedor médico ni servicio de emergencias;', '• un proveedor de tratamiento psiquiátrico o médico;', '• un servicio de intervención en crisis;', '• un sustituto de la atención médica/psiquiátrica con licencia;', '• un reemplazo de las relaciones reales, el apoyo comunitario o la atención profesional.'] }, { type: 'h4', text: '1.3 Sin relación médico-paciente con ELMA' }, { type: 'p', text: 'El uso de ELMA no crea ninguna relación médico-paciente, terapeuta-paciente, fiduciaria ni profesional similar entre usted y ELMA.' }] },
+      { heading: '2. Elegibilidad, edad y cuenta ✅', body: [{ type: 'h4', text: '2.1 Elegibilidad y restricción de edad' }, { type: 'ul', items: ['ELMA está destinada únicamente a usuarios de 18 años o más.', 'Al crear una cuenta o usar la Plataforma, confirma tener al menos 18 años.', 'ELMA no recopila datos de menores de 18 años intencionalmente.', 'Si ELMA descubre que un usuario es menor de 18 años, la cuenta será suspendida o eliminada sin previo aviso.', 'Los padres o tutores que crean que un menor ha accedido a ELMA deben contactarnos de inmediato.'] }, { type: 'h4', text: '2.2 Exactitud de la cuenta' }, { type: 'p', text: 'Acepta proporcionar información precisa y mantenerla actualizada. Es responsable de toda actividad bajo su cuenta.' }, { type: 'h4', text: '2.3 Seguridad' }, { type: 'p', text: 'Debe mantener confidenciales las credenciales de inicio de sesión. Acepta notificar a ELMA de inmediato si sospecha acceso no autorizado.' }] },
+      { heading: '3. Compañero IA (ELMA AI) — Limitaciones estrictas 🤖', body: [{ type: 'h4', text: '3.1 Qué hace ELMA AI' }, { type: 'p', text: 'ELMA AI proporciona apoyo general al bienestar emocional como reflexión, anclaje, conversación de apoyo y sugerencias simples de bienestar.' }, { type: 'h4', text: '3.2 Qué no hace ELMA AI' }, { type: 'ul', items: ['ELMA AI no es humana ni es un profesional médico;', 'no proporciona asesoramiento médico, psiquiátrico, legal, financiero u otro asesoramiento profesional;', 'no diagnostica, prescribe ni trata ninguna condición;', 'no está diseñada para usarse en emergencias.'] }, { type: 'h4', text: '3.3 Limitaciones de la IA y responsabilidad del usuario' }, { type: 'ul', items: ['Los resultados de la IA pueden ser inexactos, incompletos o inapropiados para su situación.', 'Las respuestas de ELMA AI se generan automáticamente.', 'Usted es el único responsable de cómo las interpreta y actúa según ellas.', 'No dependerá de ELMA AI como sustituto del juicio profesional o ayuda de emergencia.'] }] },
+      { heading: '4. Aviso legal sobre crisis y emergencias 🚨', body: [{ type: 'h4', text: '4.1 No es un servicio de emergencia' }, { type: 'p', text: 'ELMA no es adecuada para emergencias. Si corre el riesgo de hacerse daño o de dañar a otros, o está en peligro inmediato, debe buscar ayuda inmediata de los servicios de emergencia locales o de una persona de confianza.' }, { type: 'h4', text: '4.2 Recursos de crisis' }, { type: 'p', text: 'ELMA puede mostrar recursos de crisis por conveniencia, pero no proporciona respuesta de emergencia ni monitoreo.' }] },
+      { heading: '5. Profesionales — Rol del mercado de terceros 👩‍⚕️', body: [{ type: 'p', text: 'Los psicólogos y otros profesionales disponibles a través de ELMA son terceros independientes. No son empleados, agentes ni representantes de ELMA.' }] },
+      { heading: '6. Regla solo-plataforma (Anti-elusión) 🧭', body: [{ type: 'p', text: 'Acepta no usar ELMA para organizar, solicitar o aceptar sesiones, pagos o compromisos continuos fuera de la Plataforma con cualquier profesional descubierto a través de ELMA.' }] },
+      { heading: '7. Conducta del usuario (Estricta) 🚦', body: [{ type: 'ul', items: ['No acose, amenace, explote ni abuse de ninguna persona.', 'No intente obtener datos de contacto personales para eludir la Plataforma.', 'No cargue contenido ilegal, difamatorio, odioso o dañino.', 'No abuse de la IA para generar instrucciones o contenido dañino.', 'No aplique ingeniería inversa, interrumpa ni intente acceso no autorizado.', 'No manipule reseñas, calificaciones ni la integridad de la plataforma.'] }, { type: 'p', text: 'ELMA puede tomar medidas de protección incluyendo suspensión o terminación.' }] },
+      { heading: '8. Pagos, reembolsos y cargos 💳', body: [{ type: 'p', text: 'ELMA facilita los pagos por servicios y puede cobrar tarifas de plataforma. Las reglas de reembolso y reprogramación se rigen por la política de reembolso/cancelación de ELMA.' }] },
+      { heading: '9. Privacidad, datos y consentimiento 🛡️', body: [{ type: 'p', text: 'El uso de ELMA también se rige por la Política de Privacidad de ELMA. Si hay un conflicto, la Política de Privacidad rige el manejo de datos.' }] },
+      { heading: '10. Limitaciones técnicas 🛠️', body: [{ type: 'p', text: 'ELMA no garantiza operación ininterrumpida. La plataforma puede verse afectada por:' }, { type: 'ul', items: ['limitaciones del dispositivo', 'actualizaciones del SO', 'interrupciones de internet', 'mantenimiento', 'interrupciones de servicios de terceros'] }] },
+      { heading: '11. Propiedad intelectual ©️', body: [{ type: 'p', text: 'ELMA y sus logotipos, UI y contenido de la plataforma son propiedad de ELMA o sus licenciantes. No puede copiar, modificar, distribuir ni explotar la PI de ELMA sin permiso.' }] },
+      { heading: '12. Reputación, uso compartido público y tergiversación 📣', body: [{ type: 'ul', items: ['No publicar contenido o conversaciones de ELMA de manera engañosa,', 'No tergiversar los servicios de ELMA como diagnóstico/tratamiento médico,', 'No difamar ni acosar a profesionales o usuarios.'] }] },
+      { heading: '13. Limitación de responsabilidad (Protección máxima) ⚖️', body: [{ type: 'p', text: 'En la máxima medida permitida por la ley, ELMA no es responsable de resultados emocionales, angustia, servicios profesionales, resultados clínicos ni daños indirectos o consecuentes.' }] },
+      { heading: '14. Terminación y acciones de seguridad 🛑', body: [{ type: 'p', text: 'ELMA puede suspender o terminar su cuenta en cualquier momento por seguridad, cumplimiento legal, fraude sospechado, violaciones de política o integridad de la plataforma.' }] },
+      { heading: '15. Cambios a los Términos 📝', body: [{ type: 'p', text: 'Podemos actualizar estos Términos de vez en cuando. El uso continuado después de las actualizaciones significa que acepta los Términos actualizados.' }] },
+      { heading: '16. Ley aplicable y jurisdicción 📜', body: [{ type: 'p', text: 'Estos Términos se rigen por las leyes de India. Los tribunales de Jaipur, Rajasthan, India tendrán jurisdicción exclusiva.' }] },
+      { heading: '17. Reconocimiento final ✅', body: [{ type: 'p', text: 'Al usar ELMA, confirma que entiende sus límites, acepta la responsabilidad de sus decisiones y usa la Plataforma voluntariamente.' }] },
+      { heading: 'Política de Privacidad 🛡️', body: [{ type: 'p', text: 'El uso de ELMA también se rige por nuestra Política de Privacidad. Por favor, revísela para entender cómo manejamos sus datos.' }] },
+      { heading: 'Contacto 📞', body: [{ type: 'ul', items: ['Email: support@elma.ltd', 'Empresa: ELMA Emotion Solutions LLP', 'Dirección: ELMA Emotion Solutions LLP, Jaipur, Rajasthan, India'] }] },
+    ],
+  },
+}
+
+function renderBody(items) {
+  return items.map((item, i) => {
+    if (item.type === 'p') return <p key={i} style={{ color: 'rgba(255,255,255,0.8)' }}>{item.text}</p>
+    if (item.type === 'h4') return <h4 key={i} style={{ marginTop: '1rem' }}>{item.text}</h4>
+    if (item.type === 'ul') return (
+      <ul key={i} style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
+        {item.items.map((li, j) => <li key={j}>{li}</li>)}
+      </ul>
+    )
+    return null
+  })
+}
 
 function Terms() {
+  const { lang } = useLang()
+  const c = CONTENT[lang] || CONTENT.en
+
   return (
     <main>
+      <SEO
+        title="Terms of Service — ELMA User Agreement"
+        description="ELMA Terms of Service — your rights and responsibilities as an ELMA user. Read our full user agreement, acceptable use policy, and subscription terms."
+        canonical="/terms"
+      />
       <section className="subpage">
         <div className="container">
           <header style={{ marginBottom: '2rem', textAlign: 'center', marginTop: '2rem' }}>
-            <h1>Platform Terms & Conditions <span className="emoji">📜</span></h1>
-            <p style={{ opacity: 0.8, fontStyle: 'italic' }}>Last Updated: December 2025</p>
+            <h1>{c.title} <span className="emoji">📜</span></h1>
+            <p style={{ opacity: 0.8, fontStyle: 'italic' }}>{c.updated}</p>
           </header>
 
           <div style={{ display: 'grid', gap: '1.5rem', maxWidth: '900px', margin: '0 auto' }}>
-            {/* 1. ELMA’S ROLE (WHAT ELMA IS AND IS NOT) */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>1. ELMA’s Role <span className="emoji">🏷️</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>1.1 What ELMA is</h4>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>ELMA is a digital emotional wellness support platform that offers:</li>
-                <li>• AI-based emotional support tools, and</li>
-                <li>• access to independent third-party mental wellness professionals (e.g., psychologists) for online sessions.</li>
-              </ul>
-              <h4 style={{ marginTop: '1rem' }}>1.2 What ELMA is not</h4>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>ELMA is not:</li>
-                <li>• a hospital, clinic, medical provider, or emergency service;</li>
-                <li>• a psychiatric or medical treatment provider;</li>
-                <li>• a crisis intervention service;</li>
-                <li>• a substitute for licensed medical/psychiatric care;</li>
-                <li>• a replacement for real-life relationships, community support, or professional care.</li>
-              </ul>
-              <h4 style={{ marginTop: '1rem' }}>1.3 No doctor–patient relationship with ELMA</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Your use of ELMA does not create any doctor–patient, therapist–patient, fiduciary, or similar professional relationship between you and ELMA.</p>
-            </section>
-
-            {/* 2. ELIGIBILITY, AGE, AND ACCOUNT */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>2. Eligibility, Age, and Account <span className="emoji">✅</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>2.1 Eligibility and Age Restriction</h4>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>ELMA is intended only for users who are 18 years of age or older.</li>
-                <li>By creating an account or using the Platform, you confirm that you are at least 18 years old.</li>
-                <li>ELMA does not knowingly collect data from anyone under 18.</li>
-                <li>If ELMA becomes aware that a user is under 18, the account will be immediately suspended or deleted without notice.</li>
-                <li>Parents or guardians who believe a minor has accessed ELMA should contact us immediately for account removal.</li>
-              </ul>
-              <h4 style={{ marginTop: '1rem' }}>2.2 Account accuracy</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>You agree to provide accurate information and keep it updated. You are responsible for all activity under your account.</p>
-              <h4 style={{ marginTop: '1rem' }}>2.3 Security</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>You must keep login credentials confidential. You agree to notify ELMA immediately if you suspect unauthorized access.</p>
-            </section>
-
-            {/* 3. AI COMPANION (ELMA AI) — STRICT LIMITATIONS */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>3. AI Companion (ELMA AI) — Strict Limitations <span className="emoji">🤖</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>3.1 What ELMA AI does</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA AI provides general emotional wellness support such as reflection, grounding, supportive conversation, and simple wellness suggestions.</p>
-              <h4 style={{ marginTop: '1rem' }}>3.2 What ELMA AI does not do</h4>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>ELMA AI is not human and is not a medical professional;</li>
-                <li>does not provide medical, psychiatric, legal, financial, or other professional advice;</li>
-                <li>does not diagnose, prescribe, or treat any condition;</li>
-                <li>is not intended to be used for emergencies.</li>
-              </ul>
-              <h4 style={{ marginTop: '1rem' }}>3.3 AI limitations and user responsibility</h4>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>AI outputs may be inaccurate, incomplete, or inappropriate for your situation.</li>
-                <li>ELMA AI responses are automatically generated.</li>
-                <li>You are solely responsible for how you interpret and act on them.</li>
-                <li>You will not rely on ELMA AI as a substitute for professional judgment or emergency help.</li>
-              </ul>
-            </section>
-
-            {/* 4. CRISIS AND EMERGENCY DISCLAIMER */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>4. Crisis and Emergency Disclaimer <span className="emoji">🚨</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>4.1 Not an emergency service</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA is not suitable for emergencies. If you are at risk of harming yourself or others, or in immediate danger, you must seek immediate help from local emergency services or a trusted person.</p>
-              <h4 style={{ marginTop: '1rem' }}>4.2 Crisis resources</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA may display crisis resources as a convenience but does not provide emergency response or monitoring.</p>
-            </section>
-
-            {/* 5. PROFESSIONALS (PSYCHOLOGISTS) — THIRD-PARTY MARKETPLACE ROLE */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>5. Professionals — Third-Party Marketplace Role <span className="emoji">👩‍⚕️</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>5.1 Independent professionals</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Psychologists and other professionals available through ELMA are independent third parties. They are not ELMA employees, agents, or representatives.</p>
-              <h4 style={{ marginTop: '1rem' }}>5.2 ELMA does not control clinical judgment</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA does not supervise, direct, or control the professional services provided, and is not responsible for clinical judgment, outcomes, or professional conduct.</p>
-              <h4 style={{ marginTop: '1rem' }}>5.3 User–professional relationship</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Any professional relationship created is between you and the professional. Any dispute regarding professional services is primarily between you and the professional, subject to applicable law.</p>
-            </section>
-
-            {/* 6. PLATFORM-ONLY RULE (ANTI-CIRCUMVENTION) */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>6. Platform-Only Rule (Anti-Circumvention) <span className="emoji">🧭</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>6.1 No off-platform solicitation</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>You agree not to use ELMA to arrange, solicit, or accept sessions, payments, or ongoing engagements outside the Platform with any professional discovered through ELMA.</p>
-              <h4 style={{ marginTop: '1rem' }}>6.2 Enforcement</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Circumvention may lead to account suspension/termination, and you may lose access without refund to the extent permitted by law.</p>
-            </section>
-
-            {/* 7. USER CONDUCT (STRICT) */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>7. User Conduct (Strict) <span className="emoji">🚦</span></h3>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>Do not harass, threaten, exploit, or abuse any person.</li>
-                <li>Do not attempt to obtain personal contact details to bypass the Platform.</li>
-                <li>Do not upload unlawful, defamatory, hateful, or harmful content.</li>
-                <li>Do not misuse the AI to generate harmful instructions or content.</li>
-                <li>Do not reverse engineer, disrupt, or attempt unauthorized access.</li>
-                <li>Do not manipulate reviews, ratings, or platform integrity.</li>
-              </ul>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA may take protective action including suspension or termination.</p>
-            </section>
-
-            {/* 8. PAYMENTS, REFUNDS, AND CHARGES */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>8. Payments, Refunds, and Charges <span className="emoji">💳</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>8.1 Payments</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA facilitates payments for services and may charge platform fees. Payment processing may involve third-party payment providers.</p>
-              <h4 style={{ marginTop: '1rem' }}>8.2 Refunds/rescheduling</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Refund and rescheduling rules are governed by ELMA’s refund/cancellation policy presented at checkout or in the relevant flow. Where required by law, mandatory consumer rights apply.</p>
-              <h4 style={{ marginTop: '1rem' }}>8.3 No liability for third-party failures</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA is not responsible for failures or delays caused by payment gateways, banks, networks, or third-party services.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>9. Privacy, Data, and Consent <span className="emoji">🛡️</span></h3>
-              <h4 style={{ marginTop: '1rem' }}>9.1 Privacy Policy controls</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Your use of ELMA is also governed by the ELMA Privacy Policy. If there is a conflict, the Privacy Policy governs data handling.</p>
-              <h4 style={{ marginTop: '1rem' }}>9.2 Consent and feature-specific disclosures</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA may require additional feature-specific consents (e.g., AI chat, voice features, therapy sessions). By using those features, you agree to the relevant disclosures and consents.</p>
-              <h4 style={{ marginTop: '1rem' }}>9.3 Data rights and requests</h4>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>You may request access, correction, or deletion of your data subject to legal requirements and security obligations, as described in the Privacy Policy.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>10. Technical Limitations <span className="emoji">🛠️</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA does not guarantee uninterrupted operation. You acknowledge the Platform may be affected by:</p>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>device limitations</li>
-                <li>OS updates</li>
-                <li>internet outages</li>
-                <li>maintenance</li>
-                <li>third-party service disruptions</li>
-              </ul>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>11. Intellectual Property <span className="emoji">©️</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA and its logos, UI, and platform content are owned by ELMA or licensors. You may not copy, modify, distribute, or exploit ELMA IP without permission.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>12. Reputation, Public Sharing, and Misrepresentation <span className="emoji">📣</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>You agree not to:</p>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>publish ELMA content or conversations in a misleading way,</li>
-                <li>misrepresent ELMA’s services as medical diagnosis/treatment,</li>
-                <li>defame or harass professionals or users.</li>
-              </ul>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA may take action to protect safety and reputation.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>13. Limitation of Liability (Maximum Protection) <span className="emoji">⚖️</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>To the fullest extent permitted by law:</p>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>ELMA is not liable for emotional outcomes, distress, or any reliance on AI outputs.</li>
-                <li>ELMA is not liable for professional services, clinical outcomes, or disputes between users and professionals.</li>
-                <li>ELMA is not liable for indirect, incidental, special, consequential, or punitive damages.</li>
-              </ul>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>If liability cannot be excluded, ELMA’s total liability will be limited to the fees you paid to ELMA in the 30 days immediately before the event giving rise to the claim.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>14. Termination and Safety Actions <span className="emoji">🛑</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>ELMA may suspend or terminate your account at any time if required for:</p>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>safety</li>
-                <li>legal compliance</li>
-                <li>suspected fraud</li>
-                <li>policy violations</li>
-                <li>platform integrity</li>
-              </ul>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>15. Changes to Terms <span className="emoji">📝</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>We may update these Terms from time to time. If changes are material, we will provide notice within the app or website. Continued use after updates means you accept the updated Terms.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>16. Governing Law and Jurisdiction <span className="emoji">📜</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>These Terms are governed by the laws of India. Courts of Jaipur, Rajasthan, India shall have exclusive jurisdiction, subject to mandatory consumer protections where applicable.</p>
-            </section>
-
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>17. Final Acknowledgement <span className="emoji">✅</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>By using ELMA, you confirm that:</p>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>you understand ELMA’s limits and that it is not an emergency service;</li>
-                <li>you accept responsibility for your decisions and usage;</li>
-                <li>you use the Platform voluntarily and agree to these Terms.</li>
-              </ul>
-            </section>
-
-            {/* Privacy reference */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>Privacy Policy <span className="emoji">🛡️</span></h3>
-              <p style={{ color: 'rgba(255,255,255,0.8)' }}>Your use of ELMA is also governed by our Privacy Policy. Please review it to understand how we handle your data.</p>
-            </section>
-
-            {/* Contact */}
-            <section style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
-              <h3>Contact <span className="emoji">📞</span></h3>
-              <ul style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.8 }}>
-                <li>Email: <a href="mailto:support@elma.ltd">support@elma.ltd</a></li>
-                <li>Company: ELMA Emotion Solutions LLP</li>
-                <li>Address: ELMA Emotion Solutions LLP, Jaipur, Rajasthan, India</li>
-              </ul>
-            </section>
+            {c.sections.map((sec, i) => (
+              <section key={i} style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 16, padding: '1.5rem' }}>
+                <h3>{sec.heading}</h3>
+                {renderBody(sec.body)}
+              </section>
+            ))}
           </div>
         </div>
       </section>
