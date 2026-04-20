@@ -1,5 +1,6 @@
 import React from 'react'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 const CONTENT = {
   en: {
@@ -148,6 +149,11 @@ function Terms() {
 
   return (
     <main>
+      <SEO
+        title="Terms of Service — ELMA User Agreement"
+        description="ELMA Terms of Service — your rights and responsibilities as an ELMA user. Read our full user agreement, acceptable use policy, and subscription terms."
+        canonical="/terms"
+      />
       <section className="subpage">
         <div className="container">
           <header style={{ marginBottom: '2rem', textAlign: 'center', marginTop: '2rem' }}>

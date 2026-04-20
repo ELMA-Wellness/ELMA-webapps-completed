@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, Component } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { HelmetProvider } from 'react-helmet-async'
 
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
@@ -106,6 +107,7 @@ function App() {
   }, [])
 
   return (
+    <HelmetProvider>
     <LangProvider>
     <AppErrorBoundary>
       {/* Global animated gradient — sits behind everything on every page */}
@@ -142,6 +144,7 @@ function App() {
       <LanguageSwitcher />
     </AppErrorBoundary>
     </LangProvider>
+    </HelmetProvider>
   )
 }
 
