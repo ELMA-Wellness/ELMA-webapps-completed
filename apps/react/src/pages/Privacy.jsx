@@ -1,5 +1,6 @@
 import React from 'react'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 const CONTENT = {
   en: {
@@ -392,6 +393,11 @@ function Privacy() {
 
   return (
     <main>
+      <SEO
+        title="Privacy Policy — How ELMA Protects Your Data"
+        description="ELMA Privacy Policy — how we collect, use, and safeguard your personal and emotional data. Your privacy is our priority. Read our full policy here."
+        canonical="/privacy"
+      />
       <section className="subpage">
         <div className="container">
           <header style={{ marginBottom: '2rem', textAlign: 'center', marginTop: '2rem' }}>

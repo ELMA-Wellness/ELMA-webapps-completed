@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import HoloCard from '../components/HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 /* ─── ambient orb ───────────────────────────────────────────── */
 function Orb({ style }) {
@@ -70,14 +71,6 @@ function PillarCard({ icon, title, desc, color, delay }) {
 export default function About() {
   const { t } = useLang()
 
-  useEffect(() => {
-    document.title = 'About ELMA — AI Emotional Companion Built for Human Connection'
-    const meta = document.querySelector('meta[name="description"]')
-    if (meta) {
-      meta.setAttribute('content', "ELMA is India's first AI-powered emotional companion — combining cutting-edge voice AI, emotion detection, and cognitive behavioural science to make emotional wellness accessible for everyone.")
-    }
-    return () => { document.title = 'ELMA — Your AI Emotional Companion' }
-  }, [])
 
   const heroRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
@@ -102,8 +95,25 @@ export default function About() {
     { label: t('about_t6_label'), detail: t('about_t6_detail'), icon: '🔐' },
   ]
 
+  const aboutSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    '@id': 'https://elma.ltd/about#webpage',
+    url: 'https://elma.ltd/about',
+    name: 'About ELMA — AI Emotional Companion Built for Human Connection',
+    description: "ELMA is India's first AI-powered emotional companion — voice AI, emotion detection, and cognitive behavioural science, all in one app.",
+    isPartOf: { '@id': 'https://elma.ltd/#website' },
+    about: { '@id': 'https://elma.ltd/#organization' },
+  }
+
   return (
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
+      <SEO
+        title="About ELMA — AI Emotional Companion Built for Human Connection"
+        description="Meet the team behind ELMA — India's first AI emotional companion. Voice AI + emotion science + CBT, built in Visionary India for the world. Our mission: emotional wellness for everyone."
+        canonical="/about"
+        schema={aboutSchema}
+      />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section ref={heroRef} style={{ position: 'relative', minHeight: '95vh', display: 'flex', alignItems: 'center', overflow: 'hidden', padding: 'clamp(6rem, 10vw, 9rem) 0 clamp(4rem, 7vw, 6rem)' }}>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 const CONTENT = {
   en: {
@@ -103,6 +104,11 @@ function Cancellation() {
 
   return (
     <main>
+      <SEO
+        title="Cancellation & Refund Policy — ELMA"
+        description="ELMA Cancellation & Refund Policy — how to cancel your subscription and request a refund. Transparent, fair, no hidden fees. Read the full policy here."
+        canonical="/cancellation"
+      />
       <section className="subpage">
         <div className="container">
           <header style={{ marginBottom: '2rem', textAlign: 'center', marginTop: '2rem' }}>

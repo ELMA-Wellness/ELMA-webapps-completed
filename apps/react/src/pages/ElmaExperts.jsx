@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import HoloCard from '../components/HoloCard.jsx'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
@@ -319,8 +320,24 @@ export default function ElmaExperts() {
     },
   ]
 
+  const expertsSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://elma.ltd/elma-experts#webpage',
+    url: 'https://elma.ltd/elma-experts',
+    name: 'ELMA Experts — Join Our Therapist Network',
+    description: 'Join the ELMA Expert network. Certified psychologists earn on their own schedule, reach global users, and grow their practice via AI-assisted tools.',
+    isPartOf: { '@id': 'https://elma.ltd/#website' },
+  }
+
   return (
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
+      <SEO
+        title="ELMA Experts — Join Our Therapist & Psychologist Network"
+        description="Become an ELMA Expert. Join certified therapists & psychologists earning on their own schedule. AI handles admin — you focus on healing. Apply in 5 minutes."
+        canonical="/elma-experts"
+        schema={expertsSchema}
+      />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section style={{ position: 'relative', padding: 'clamp(6rem, 12vw, 10rem) 0 clamp(4rem, 8vw, 6rem)', minHeight: '90vh', display: 'flex', alignItems: 'center' }}>

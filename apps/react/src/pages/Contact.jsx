@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLang } from '../contexts/LangContext.jsx'
+import SEO from '../components/SEO.jsx'
 import './Contact.css'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
@@ -88,8 +89,24 @@ function Contact() {
     }
   }
 
+  const contactSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    '@id': 'https://elma.ltd/contact#webpage',
+    url: 'https://elma.ltd/contact',
+    name: 'Contact ELMA — Get in Touch',
+    description: 'Reach out to the ELMA team for support, partnerships, or media enquiries.',
+    isPartOf: { '@id': 'https://elma.ltd/#website' },
+  }
+
   return (
     <section className="contact-page">
+      <SEO
+        title="Contact ELMA — Get in Touch"
+        description="Reach the ELMA team for support, partnerships, or press. Email socials@elma.ltd. Response within 24 hours. CEO & CMO contacts available for business enquiries."
+        canonical="/contact"
+        schema={contactSchema}
+      />
       <div className="contact-container">
         <div className="contact-header" data-aos="fade-up">
           <h1>{t('contact_h1')}</h1>
