@@ -1,6 +1,11 @@
 # ELMA — netlify.toml
 # Build, redirect, header, and prerender configuration
 
+[build]
+  base    = "apps/react"
+  command = "npm run build:vite"
+  publish = "apps/react/dist"
+
 # ── SPA fallback (React Router) ───────────────────────────────────────────────
 [[redirects]]
   from   = "/*"
