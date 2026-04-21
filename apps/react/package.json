@@ -34,7 +34,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
-    "puppeteer": "^24.41.0",
     "terser": "^5.46.1",
     "vite": "^5.4.10"
   }
