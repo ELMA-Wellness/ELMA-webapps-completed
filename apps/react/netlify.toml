@@ -2,14 +2,13 @@
 # Applies when Netlify base directory is set to apps/react
 
 [build]
-  command = "npm run build"
+  command = "npm run build:vite"
   publish = "dist"
 
 [build.environment]
-  # Cache puppeteer's Chromium download between Netlify builds
-  PUPPETEER_CACHE_DIR = "/opt/buildhome/.cache/puppeteer"
-  # Skip re-downloading Chrome if already cached
-  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "false"
+  # Netlify's build environment has Chrome at this path — used by prerender script
+  # when running locally with NETLIFY=true or via netlify dev
+  PUPPETEER_EXECUTABLE_PATH = "/usr/bin/google-chrome-stable"
 
 [context.deploy-preview]
   command = "npm run build:vite"

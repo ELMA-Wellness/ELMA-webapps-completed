@@ -78,8 +78,15 @@ function TherapistCard({ therapist, tFn }) {
       </div>
       <div className="tc-body">
         <p className="tc-name">{therapist.name}</p>
-        <p className="tc-spec">{therapist.spec}</p>
+        <p  className="tc-spec">{therapist.spec}</p>
         <p className="tc-lang">{therapist.lang}</p>
+        {/* <div className="tc-meta">
+          <span className="tc-rating">★ {t.rating}</span>
+          <span className="tc-sep">·</span>
+          <span className="tc-reviews">{t.reviews} reviews</span>
+          <span className="tc-sep">·</span>
+          <span className="tc-exp">{t.exp}</span>
+        </div> */}
       </div>
     </HoloCard>
   )
@@ -279,7 +286,8 @@ export function ElmaShowcaseSection({ onJoinTherapist }) {
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
             viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.6 }}
           >
-            {t('showcase_therapist_note')}
+            All therapists are licensed professionals verified by ELMA's clinical team.<br/>
+            Your data is never shared without your explicit consent.
           </motion.p>
         </div>
       </section>
