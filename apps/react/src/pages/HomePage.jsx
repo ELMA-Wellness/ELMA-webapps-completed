@@ -514,40 +514,12 @@ function HomePage() {
   const ios_app_name = 'elma-emotional-companion'
   const ios_app_id = '6756991672'
 
-  const homepageSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'What is ELMA?',
-        acceptedAnswer: { '@type': 'Answer', text: 'ELMA is a 24/7 AI emotional companion app that helps you understand your moods, track emotional patterns, and grow stronger — stigma-free and science-backed.' },
-      },
-      {
-        '@type': 'Question',
-        name: 'Is ELMA free to use?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Yes, ELMA is free to download and start using. Premium features are available via subscription.' },
-      },
-      {
-        '@type': 'Question',
-        name: 'What platforms is ELMA available on?',
-        acceptedAnswer: { '@type': 'Answer', text: 'ELMA is available on Android (Google Play) and iOS (App Store).' },
-      },
-      {
-        '@type': 'Question',
-        name: 'Is ELMA therapy or a replacement for a therapist?',
-        acceptedAnswer: { '@type': 'Answer', text: 'No — ELMA is an AI emotional companion, not a therapist. For professional support, ELMA also connects you with certified psychologists via its Expert Marketplace.' },
-      },
-    ],
-  }
-
   return (
     <>
       <SEO
         title="Your AI Emotional Companion | Be Cool. Be In Control."
         description="ELMA is your 24/7 AI emotional companion. Talk through anxiety, burnout & stress — stigma-free, science-backed. India's most empathetic AI. Free on Android & iOS."
         canonical="/"
-        schema={homepageSchema}
       />
       {/* Hero Section */}
       <HeroSection />
