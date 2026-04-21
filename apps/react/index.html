@@ -47,6 +47,7 @@
     <meta name="geo.placename" content="India" />
 
     <!-- ── Schema.org JSON-LD ─────────────────────────────────────────────── -->
+    <!-- Organization + SoftwareApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -55,49 +56,34 @@
           "@type": "Organization",
           "@id": "https://elma.ltd/#organization",
           "name": "ELMA",
-          "url": "https://elma.ltd/",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://elma.ltd/images/elma-logo.png",
-            "width": 512,
-            "height": 512
-          },
-          "description": "ELMA is a 24/7 AI emotional companion app — not therapy, not meditation. Think Strava for emotions, Soho House for your inner world.",
+          "url": "https://elma.ltd",
+          "logo": "https://elma.ltd/images/elma-logo.png",
+          "description": "AI-powered emotional wellness companion for India",
           "email": "support@elma.ltd",
-          "foundingLocation": {
-            "@type": "Place",
-            "name": "India"
-          },
           "sameAs": [
             "https://www.instagram.com/elma.ai_official",
-            "https://www.linkedin.com/company/elma-emotional-life-management-assistant",
-            "https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP",
-            "https://apps.apple.com/in/app/elma-emotional-companion/id6756991672"
-          ]
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://elma.ltd/#website",
-          "url": "https://elma.ltd/",
-          "name": "ELMA",
-          "description": "ELMA — Your AI Emotional Companion",
-          "publisher": { "@id": "https://elma.ltd/#organization" }
+            "https://www.linkedin.com/company/elma-emotional-life-management-assistant"
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "email": "support@elma.ltd",
+            "availableLanguage": ["English", "Hindi"]
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+          }
         },
         {
           "@type": "SoftwareApplication",
           "@id": "https://elma.ltd/#app",
-          "name": "ELMA",
-          "alternateName": "ELMA AI Emotional Companion",
-          "url": "https://elma.ltd/",
-          "description": "ELMA is your 24/7 AI emotional companion. Understand your moods, track your emotional patterns, and grow stronger — stigma-free, science-backed.",
+          "name": "ELMA — AI Emotional Companion",
+          "operatingSystem": "iOS, Android",
           "applicationCategory": "HealthApplication",
           "applicationSubCategory": "Emotional Wellness",
-          "operatingSystem": "Android, iOS",
+          "url": "https://elma.ltd",
           "downloadUrl": [
-            "https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP",
-            "https://apps.apple.com/in/app/elma-emotional-companion/id6756991672"
-          ],
-          "installUrl": [
             "https://play.google.com/store/apps/details?id=com.elmadevs.ElMAAPP",
             "https://apps.apple.com/in/app/elma-emotional-companion/id6756991672"
           ],
@@ -110,45 +96,69 @@
           "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": "4.9",
-            "ratingCount": "1200",
+            "ratingCount": "50000",
             "bestRating": "5",
             "worstRating": "1"
           },
-          "publisher": { "@id": "https://elma.ltd/#organization" },
-          "featureList": [
-            "Emotion Flower Wheel mood selector",
-            "Handsfree AI emotional companion",
-            "Mood Curve tracking",
-            "Energy Tempo visualization",
-            "30-day streak tracking",
-            "ELMA Diary with Face ID lock",
-            "Expert Marketplace with certified psychologists",
-            "Emotional Awareness Index"
-          ],
-          "screenshot": [
-            "https://elma.ltd/images/elma-splash.png",
-            "https://elma.ltd/images/elma-dashboard.png",
-            "https://elma.ltd/images/elma-moodflower.png"
-          ]
+          "description": "ELMA is a 24/7 AI emotional companion that helps you manage anxiety, burnout, loneliness, and relationships. Available in 8+ languages.",
+          "publisher": { "@id": "https://elma.ltd/#organization" }
         },
         {
-          "@type": "WebPage",
-          "@id": "https://elma.ltd/#webpage",
+          "@type": "WebSite",
+          "@id": "https://elma.ltd/#website",
           "url": "https://elma.ltd/",
-          "name": "ELMA — Your AI Emotional Companion | Be Cool. Be In Control.",
-          "isPartOf": { "@id": "https://elma.ltd/#website" },
-          "about": { "@id": "https://elma.ltd/#app" },
-          "description": "ELMA is your 24/7 AI emotional companion. Understand your moods, track your emotional patterns, and grow stronger — stigma-free, science-backed.",
-          "breadcrumb": {
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://elma.ltd/"
-              }
-            ]
+          "name": "ELMA",
+          "description": "ELMA — Your AI Emotional Companion",
+          "publisher": { "@id": "https://elma.ltd/#organization" }
+        }
+      ]
+    }
+    </script>
+
+    <!-- FAQPage — triggers Google FAQ rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is ELMA?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ELMA is an AI-powered emotional companion available 24/7. It helps you understand your emotions, manage anxiety and stress, and connect with certified therapists when needed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is ELMA a replacement for therapy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. ELMA is a companion that supports your emotional wellbeing daily. It can connect you with certified therapists when professional support is needed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is ELMA available in India?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. ELMA is built specifically for the Indian context, supports 8+ Indian languages, and is compliant with India's DPDP 2023 data protection law."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data private on ELMA?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. ELMA is GDPR and DPDP 2023 compliant. Your emotional data is never sold or shared. Full details in our privacy policy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does ELMA cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ELMA is free to download and use. Premium features and therapist sessions are available at affordable pricing designed for Indian users."
           }
         }
       ]
