@@ -3,7 +3,7 @@
 
 [build]
   base    = "apps/react"
-  command = "npm run build:vite"
+  command = "npm run build"
   publish = "apps/react/dist"
 
 # ── SPA fallback (React Router) ───────────────────────────────────────────────

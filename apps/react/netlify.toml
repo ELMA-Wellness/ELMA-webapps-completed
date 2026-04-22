@@ -2,7 +2,7 @@
 # Applies when Netlify base directory is set to apps/react
 
 [build]
-  command = "npm run build:vite"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
