@@ -2,8 +2,7 @@
 # Build, redirect, header, and prerender configuration
 
 [build]
-  base    = "apps/react"
-  command = "npm run build"
+  command = "npm ci && npm run build --workspace=apps/react"
   publish = "apps/react/dist"
 
 # ── SPA fallback (React Router) ───────────────────────────────────────────────
