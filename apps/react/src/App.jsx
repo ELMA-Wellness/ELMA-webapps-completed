@@ -31,6 +31,7 @@ const ElmaExperts = lazy(() => import('./pages/ElmaExperts.jsx'))
 const About = lazy(() => import('./pages/About.jsx'))
 const BlogListPage = lazy(() => import('./pages/BlogListPage.jsx'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage.jsx'))
+const FAQPage = lazy(() => import('./pages/FAQ.jsx'))
 
 // Global error boundary — prevents any single component crash from blanking the whole app
 class AppErrorBoundary extends Component {
@@ -141,6 +142,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/faq" element={<FAQPage />} />
         </Routes>
       </Suspense>
       <Footer />

@@ -43,6 +43,7 @@ const translations = {
 
     // Footer
     footer_blog: 'Blog',
+    footer_faq: 'FAQ',
     footer_privacy: 'Privacy Policy',
     footer_terms: 'Terms of Service',
     footer_contact: 'Contact',
@@ -306,6 +307,7 @@ const translations = {
     dl_sub: 'Partagez vos pensées et émotions avec notre compagnon IA émotionnel 24h/24',
 
     footer_blog: 'Blog',
+    footer_faq: 'FAQ',
     footer_privacy: 'Politique de confidentialité',
     footer_terms: "Conditions d'utilisation",
     footer_contact: 'Contact',
@@ -566,6 +568,7 @@ const translations = {
     dl_sub: '24時間365日のAI感情コンパニオンとあなたの考えや気持ちを共有しましょう',
 
     footer_blog: 'ブログ',
+    footer_faq: 'よくある質問',
     footer_privacy: 'プライバシーポリシー',
     footer_terms: '利用規約',
     footer_contact: 'お問い合わせ',
@@ -826,6 +829,7 @@ const translations = {
     dl_sub: 'हमारे 24/7 AI भावनात्मक साथी के साथ अपने विचार और मनोभाव साझा करें',
 
     footer_blog: 'ब्लॉग',
+    footer_faq: 'सामान्य प्रश्न',
     footer_privacy: 'गोपनीयता नीति',
     footer_terms: 'सेवा की शर्तें',
     footer_contact: 'संपर्क',
@@ -1086,6 +1090,7 @@ const translations = {
     dl_sub: 'Comparte tus pensamientos y emociones con nuestro compañero IA emocional 24/7',
 
     footer_blog: 'Blog',
+    footer_faq: 'Preguntas frecuentes',
     footer_privacy: 'Política de privacidad',
     footer_terms: 'Términos de servicio',
     footer_contact: 'Contacto',

@@ -12,8 +12,8 @@
     <lastmod>2026-04-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en"      href="https://elma.ltd/" />
-    <xhtml:link rel="alternate" hreflang="en-IN"   href="https://elma.ltd/" />
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/" />
+    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://elma.ltd/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/" />
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
@@ -33,6 +33,13 @@
     <lastmod>2026-04-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/faq</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
 
   <url>
@@ -64,7 +71,7 @@
   </url>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       BLOG
+       BLOG INDEX
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
@@ -72,6 +79,54 @@
     <lastmod>2026-04-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BLOG POSTS
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
+    <loc>https://elma.ltd/blog/best-ai-mental-health-apps-india</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Best AI Mental Health Apps in India 2026: An Honest Comparison</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/what-is-ai-emotional-companion</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>What Is an AI Emotional Companion? The Complete Guide</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/ai-emotional-support-vs-therapy</loc>
+    <lastmod>2026-04-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>AI Emotional Support vs Human Therapy: What's Actually Different?</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/india-mental-health-statistics</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>India's Mental Health Crisis: The Numbers, the Barriers, and What's Changing</image:title>
+    </image:image>
   </url>
 
   <url>
@@ -86,6 +141,17 @@
   </url>
 
   <url>
+    <loc>https://elma.ltd/blog/how-to-build-emotional-resilience</loc>
+    <lastmod>2026-04-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Build Emotional Resilience: 10 Science-Backed Strategies</image:title>
+    </image:image>
+  </url>
+
+  <url>
     <loc>https://elma.ltd/blog/cbt-techniques-for-daily-life</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -93,6 +159,17 @@
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
       <image:title>7 CBT Techniques You Can Use in Daily Life (No Therapist Required)</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/does-mood-tracking-help</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Does Mood Tracking Actually Help? What the Research Says</image:title>
     </image:image>
   </url>
 
@@ -130,42 +207,19 @@
   </url>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       MARKDOWN MIRRORS (for AI crawlers / LLM citation)
+       MARKDOWN MIRRORS (AI crawler / LLM citation)
   ═══════════════════════════════════════════════════════════════ -->
 
-  <url>
-    <loc>https://elma.ltd/content/blog/why-talking-to-ai-feels-easier.md</loc>
-    <lastmod>2026-04-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/content/blog/cbt-techniques-for-daily-life.md</loc>
-    <lastmod>2026-04-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/content/blog/what-is-emotional-intelligence.md</loc>
-    <lastmod>2026-04-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/content/blog/signs-of-burnout-you-are-ignoring.md</loc>
-    <lastmod>2026-04-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/content/blog/how-to-deal-with-anxiety-without-medication.md</loc>
-    <lastmod>2026-04-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
+  <url><loc>https://elma.ltd/content/blog/best-ai-mental-health-apps-india.md</loc><lastmod>2026-04-22</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/what-is-ai-emotional-companion.md</loc><lastmod>2026-04-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/ai-emotional-support-vs-therapy.md</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/india-mental-health-statistics.md</loc><lastmod>2026-04-19</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/why-talking-to-ai-feels-easier.md</loc><lastmod>2026-04-18</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/how-to-build-emotional-resilience.md</loc><lastmod>2026-04-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/cbt-techniques-for-daily-life.md</loc><lastmod>2026-04-16</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/does-mood-tracking-help.md</loc><lastmod>2026-04-15</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/what-is-emotional-intelligence.md</loc><lastmod>2026-04-14</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/signs-of-burnout-you-are-ignoring.md</loc><lastmod>2026-04-12</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/how-to-deal-with-anxiety-without-medication.md</loc><lastmod>2026-04-10</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
 </urlset>
