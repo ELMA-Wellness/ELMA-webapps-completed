@@ -1,64 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  <!-- Homepage -->
+  <!-- ═══════════════════════════════════════════════════════════════
+       CORE PAGES
+  ═══════════════════════════════════════════════════════════════ -->
+
   <url>
     <loc>https://elma.ltd/</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://elma.ltd/" />
-    <xhtml:link rel="alternate" hreflang="en-IN" href="https://elma.ltd/" />
+    <xhtml:link rel="alternate" hreflang="en"      href="https://elma.ltd/" />
+    <xhtml:link rel="alternate" hreflang="en-IN"   href="https://elma.ltd/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/" />
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>ELMA — Your AI Emotional Companion</image:title>
+    </image:image>
   </url>
 
-  <!-- About -->
   <url>
     <loc>https://elma.ltd/about</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
 
-  <!-- ELMA Experts -->
   <url>
     <loc>https://elma.ltd/elma-experts</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/contact</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/privacy</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/terms</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/cancellation</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BLOG
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
+    <loc>https://elma.ltd/blog</loc>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- Contact -->
   <url>
-    <loc>https://elma.ltd/contact</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://elma.ltd/blog/why-talking-to-ai-feels-easier</loc>
+    <lastmod>2026-04-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Why Talking to an AI About Your Feelings Can Feel Easier Than Talking to a Human</image:title>
+    </image:image>
   </url>
 
-  <!-- Privacy Policy -->
   <url>
-    <loc>https://elma.ltd/privacy</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://elma.ltd/blog/cbt-techniques-for-daily-life</loc>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>7 CBT Techniques You Can Use in Daily Life (No Therapist Required)</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/what-is-emotional-intelligence</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>What Is Emotional Intelligence? The Complete Guide (And Why It Matters More Than IQ)</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/signs-of-burnout-you-are-ignoring</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>9 Signs of Burnout You're Probably Ignoring (And What to Do About Them)</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/blog/how-to-deal-with-anxiety-without-medication</loc>
+    <lastmod>2026-04-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Deal With Anxiety Without Medication: 8 Science-Backed Techniques</image:title>
+    </image:image>
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MARKDOWN MIRRORS (for AI crawlers / LLM citation)
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
+    <loc>https://elma.ltd/content/blog/why-talking-to-ai-feels-easier.md</loc>
+    <lastmod>2026-04-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- Terms & Conditions -->
   <url>
-    <loc>https://elma.ltd/terms</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://elma.ltd/content/blog/cbt-techniques-for-daily-life.md</loc>
+    <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- Cancellation Policy -->
   <url>
-    <loc>https://elma.ltd/cancellation</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://elma.ltd/content/blog/what-is-emotional-intelligence.md</loc>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/content/blog/signs-of-burnout-you-are-ignoring.md</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/content/blog/how-to-deal-with-anxiety-without-medication.md</loc>
+    <lastmod>2026-04-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 
 </urlset>

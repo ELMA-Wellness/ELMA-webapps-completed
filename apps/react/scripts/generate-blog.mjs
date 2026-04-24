@@ -20,6 +20,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT       = join(__dirname, '..')
 const POSTS_DIR  = join(ROOT, 'src/blog/posts')
 const DIST_DIR   = join(ROOT, 'dist')
+const PUBLIC_DIR = join(ROOT, 'public')
 const BASE_URL   = 'https://elma.ltd'
 
 // ── Configure marked for clean, accessible output ────────────────────────────
@@ -363,7 +364,9 @@ writeFileSync(join(DIST_DIR, 'blog', 'index.html'), listHtml.trim())
 
 // ── Write blog manifest for React SPA ────────────────────────────────────────
 const manifest = posts.map(({ contentHtml, ...rest }) => ({ ...rest, contentHtml }))
-writeFileSync(join(DIST_DIR, 'blog-manifest.json'), JSON.stringify(manifest, null, 2))
+const manifestJson = JSON.stringify(manifest, null, 2)
+writeFileSync(join(DIST_DIR, 'blog-manifest.json'), manifestJson)
+writeFileSync(join(PUBLIC_DIR, 'blog-manifest.json'), manifestJson)
 
 // ── Update sitemap.xml ────────────────────────────────────────────────────────
 const sitemapPath    = join(DIST_DIR, 'sitemap.xml')
@@ -388,8 +391,17 @@ const updatedSitemap = sitemapContent.includes('/blog')
 
 writeFileSync(sitemapPath, updatedSitemap)
 
+// ── Keep markdown mirrors in public/content/blog/ in sync ────────────────────
+const mirrorDir = join(PUBLIC_DIR, 'content', 'blog')
+mkdirSync(mirrorDir, { recursive: true })
+for (const file of postFiles) {
+  const src = join(POSTS_DIR, file)
+  writeFileSync(join(mirrorDir, file), readFileSync(src))
+}
+
 console.log(`✓ Blog: ${posts.length} posts generated`)
 console.log(`  → dist/blog/index.html`)
 posts.forEach(p => console.log(`  → dist/blog/${p.slug}/index.html`))
-console.log(`  → dist/blog-manifest.json`)
+console.log(`  → dist/blog-manifest.json + public/blog-manifest.json`)
+console.log(`  → public/content/blog/ markdown mirrors synced`)
 console.log(`  → dist/sitemap.xml updated`)

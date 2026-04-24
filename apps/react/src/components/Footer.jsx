@@ -16,6 +16,7 @@ function Footer() {
             <img src="/images/elma-logo.png" alt="ELMA Logo" className="footer-logo-img" onError={handleLogoError} />
           </div>
           <div className="footer-links">
+            <Link to="/blog">{t('footer_blog')}</Link>
             <Link to="/privacy">{t('footer_privacy')}</Link>
             <Link to="/terms">{t('footer_terms')}</Link>
             <Link to="/contact">{t('footer_contact')}</Link>

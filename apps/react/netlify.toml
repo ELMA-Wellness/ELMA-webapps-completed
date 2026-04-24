@@ -56,3 +56,11 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
     Content-Type  = "text/plain; charset=utf-8"
+
+# ── Markdown mirrors (AI crawler / LLM citation) ──────────────────────────────
+[[headers]]
+  for = "/content/blog/*.md"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type  = "text/plain; charset=utf-8"
+    X-Robots-Tag  = "index, follow"
