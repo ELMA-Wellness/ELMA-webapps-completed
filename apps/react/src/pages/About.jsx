@@ -110,7 +110,7 @@ export default function About() {
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
       <SEO
         title="About ELMA — AI Emotional Companion Built for Human Connection"
-        description="Meet the team behind ELMA — India's first AI emotional companion. Voice AI + emotion science + CBT, built in Visionary India for the world. Our mission: emotional wellness for everyone."
+        description="Meet the team behind ELMA — India's first AI emotional companion powered by voice AI, emotion science and CBT. Our mission: emotional wellness for all."
         canonical="/about"
         schema={aboutSchema}
       />

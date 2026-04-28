@@ -64,12 +64,16 @@ function sharedHead({ title, description, canonical, image, schemaBlocks = [] })
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:image" content="${esc(fullImage)}" />
+  <meta property="og:image:alt" content="${esc(title)}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="ELMA" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@elmaai_official" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(description)}" />
   <meta name="twitter:image" content="${esc(fullImage)}" />
+  <meta name="twitter:image:alt" content="${esc(title)}" />
   <link rel="icon" type="image/png" href="/images/elma-logo.png" />
   <meta name="theme-color" content="#0D0D0D" />
   ${schemas}
@@ -230,7 +234,7 @@ const FOOTER_HTML = `
 
 // ── Generate individual post pages ────────────────────────────────────────────
 for (const post of posts) {
-  const canonical = `${BASE_URL}/blog/${post.slug}`
+  const canonical = `${BASE_URL}/blog/${post.slug}/`
 
   const blogPostingSchema = {
     '@context': 'https://schema.org',
@@ -256,7 +260,7 @@ for (const post of posts) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home',  item: BASE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Blog',  item: `${BASE_URL}/blog` },
+      { '@type': 'ListItem', position: 2, name: 'Blog',  item: `${BASE_URL}/blog/` },
       { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
     ]
   }
@@ -273,7 +277,7 @@ ${NAVBAR_HTML}
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="/">Home</a>
     <span aria-hidden="true">›</span>
-    <a href="/blog">Blog</a>
+    <a href="/blog/">Blog</a>
     <span aria-hidden="true">›</span>
     <span>${esc(post.title)}</span>
   </nav>
@@ -310,7 +314,7 @@ ${FOOTER_HTML}
 }
 
 // ── Generate blog listing page ────────────────────────────────────────────────
-const listCanonical = `${BASE_URL}/blog`
+const listCanonical = `${BASE_URL}/blog/`
 
 const blogSchema = {
   '@context': 'https://schema.org',
@@ -323,7 +327,7 @@ const blogSchema = {
 
 const postCards = posts.map(p => `
   <article class="post-card">
-    <h2><a href="/blog/${p.slug}">${esc(p.title)}</a></h2>
+    <h2><a href="/blog/${p.slug}/">${esc(p.title)}</a></h2>
     <p class="excerpt">${esc(p.description)}</p>
     <div class="card-meta">
       <div class="tags">${tagBadges(p.tags)}</div>
@@ -378,10 +382,10 @@ try { sitemapContent = readFileSync(sitemapPath, 'utf-8') } catch (_) {
 
 const blogEntries = [
   // Blog index
-  `  <url>\n    <loc>${BASE_URL}/blog</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`,
+  `  <url>\n    <loc>${BASE_URL}/blog/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`,
   // Individual posts
   ...posts.map(p =>
-    `  <url>\n    <loc>${BASE_URL}/blog/${p.slug}</loc>\n    <lastmod>${p.date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
+    `  <url>\n    <loc>${BASE_URL}/blog/${p.slug}/</loc>\n    <lastmod>${p.date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
   )
 ].join('\n')
 

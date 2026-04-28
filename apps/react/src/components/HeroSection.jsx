@@ -21,18 +21,14 @@ export function HeroSection() {
     <section className="hero-section">
 
       {/* ── Elma full-bleed backdrop — WebP with PNG fallback ───────── */}
-      <picture>
-        <source srcSet="/images/elma-hero-section.webp" type="image/webp" />
-        <img
-          src="/images/elma-hero-section.png"
-          alt=""
-          className="hero-elma-backdrop"
-          aria-hidden="true"
-          loading="eager"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </picture>
+      <img
+        src="/images/elma-hero-section.webp"
+        alt="ELMA AI companion"
+        className="hero-elma-backdrop"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
 
       {/* ── Left-to-right dark gradient overlay (text readability) ───── */}
       <div className="hero-overlay" aria-hidden="true" />

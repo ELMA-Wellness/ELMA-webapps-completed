@@ -26,7 +26,7 @@ export default function BlogPostPage() {
       .catch(() => { setNotFound(true); setLoading(false) })
   }, [slug])
 
-  if (!loading && notFound) return <Navigate to="/blog" replace />
+  if (!loading && notFound) return <Navigate to="/blog/" replace />
 
   if (loading) {
     return (
@@ -38,7 +38,7 @@ export default function BlogPostPage() {
 
   if (!post) return null
 
-  const canonical = `/blog/${post.slug}`
+  const canonical = `/blog/${post.slug}/`
 
   const blogPostingSchema = {
     '@context': 'https://schema.org',
@@ -64,7 +64,7 @@ export default function BlogPostPage() {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: BASE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${BASE_URL}/blog` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${BASE_URL}/blog/` },
       { '@type': 'ListItem', position: 3, name: post.title, item: `${BASE_URL}${canonical}` },
     ]
   }
@@ -85,7 +85,7 @@ export default function BlogPostPage() {
         <nav aria-label="Breadcrumb" style={{ fontSize: '0.85rem', color: '#8a7fa8', marginBottom: '2rem' }}>
           <Link to="/" style={{ color: '#8a7fa8' }}>Home</Link>
           <span style={{ margin: '0 0.4rem' }}>›</span>
-          <Link to="/blog" style={{ color: '#8a7fa8' }}>Blog</Link>
+          <Link to="/blog/" style={{ color: '#8a7fa8' }}>Blog</Link>
           <span style={{ margin: '0 0.4rem' }}>›</span>
           <span style={{ color: '#c8bfdf' }}>{post.title}</span>
         </nav>

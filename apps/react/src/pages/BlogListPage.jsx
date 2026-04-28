@@ -22,7 +22,7 @@ export default function BlogListPage() {
   const blogSchema = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    url: `${BASE_URL}/blog`,
+    url: `${BASE_URL}/blog/`,
     name: 'ELMA Blog — Emotional Wellness & Mental Health',
     description: 'Practical guides on anxiety, burnout, emotional intelligence, and mental health.',
     publisher: { '@type': 'Organization', name: 'ELMA', url: BASE_URL }
@@ -33,7 +33,7 @@ export default function BlogListPage() {
       <SEO
         title="Blog — Emotional Wellness, Anxiety & Mental Health Guides"
         description="Practical, science-backed guides on anxiety, burnout, emotional intelligence, CBT, and mental health — from India's AI emotional companion."
-        canonical="/blog"
+        canonical="/blog/"
         schema={blogSchema}
       />
 
@@ -66,7 +66,7 @@ export default function BlogListPage() {
             >
               <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>
                 <Link
-                  to={`/blog/${post.slug}`}
+                  to={`/blog/${post.slug}/`}
                   style={{ color: '#e0d5f5', textDecoration: 'none' }}
                   onMouseEnter={e => (e.target.style.color = '#ba92ff')}
                   onMouseLeave={e => (e.target.style.color = '#e0d5f5')}
