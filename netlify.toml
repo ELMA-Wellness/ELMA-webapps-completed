@@ -5,6 +5,36 @@
   command = "npm ci && npm run build --workspace=apps/react"
   publish = "apps/react/dist"
 
+# ── Geo-based language redirects (root only, evaluated top-to-bottom) ─────────
+[[redirects]]
+  from       = "/"
+  to         = "/ja"
+  status     = 302
+  conditions = {Country = ["JP"]}
+
+[[redirects]]
+  from       = "/"
+  to         = "/fr"
+  status     = 302
+  conditions = {Country = ["FR", "BE", "LU", "CH"]}
+
+[[redirects]]
+  from       = "/"
+  to         = "/es"
+  status     = 302
+  conditions = {Country = ["ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "BO", "PY", "UY"]}
+
+[[redirects]]
+  from       = "/"
+  to         = "/hi"
+  status     = 302
+  conditions = {Country = ["IN"]}
+
+[[redirects]]
+  from   = "/"
+  to     = "/en"
+  status = 302
+
 # ── SPA fallback (React Router) ───────────────────────────────────────────────
 [[redirects]]
   from   = "/*"

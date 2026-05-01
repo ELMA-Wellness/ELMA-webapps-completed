@@ -69,7 +69,7 @@ function PillarCard({ icon, title, desc, color, delay }) {
 
 /* ─── main page ─────────────────────────────────────────────── */
 export default function About() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
 
   const heroRef = useRef(null)
@@ -504,7 +504,7 @@ export default function About() {
                 {t('about_cta_download')}
               </a>
               <a
-                href="/elma-experts"
+                href={`/${lang}/elma-experts`}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                   border: '1px solid rgba(186,146,255,0.3)',

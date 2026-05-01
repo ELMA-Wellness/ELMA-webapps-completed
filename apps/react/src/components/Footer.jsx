@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useLang } from '../contexts/LangContext.jsx'
 
 function Footer() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   const handleLogoError = (e) => {
     e.currentTarget.src = 'https://via.placeholder.com/150x40/BA92FF/FFFFFF?text=ELMA'
@@ -16,12 +16,12 @@ function Footer() {
             <img src="/images/elma-logo.png" alt="ELMA Logo" className="footer-logo-img" onError={handleLogoError} />
           </div>
           <div className="footer-links">
-            <Link to="/blog/">{t('footer_blog')}</Link>
-            <Link to="/faq">{t('footer_faq')}</Link>
-            <Link to="/privacy">{t('footer_privacy')}</Link>
-            <Link to="/terms">{t('footer_terms')}</Link>
-            <Link to="/contact">{t('footer_contact')}</Link>
-            <Link to="/cancellation">{t('footer_cancel')}</Link>
+            <Link to={`/${lang}/blog/`}>{t('footer_blog')}</Link>
+            <Link to={`/${lang}/faq`}>{t('footer_faq')}</Link>
+            <Link to={`/${lang}/privacy`}>{t('footer_privacy')}</Link>
+            <Link to={`/${lang}/terms`}>{t('footer_terms')}</Link>
+            <Link to={`/${lang}/contact`}>{t('footer_contact')}</Link>
+            <Link to={`/${lang}/cancellation`}>{t('footer_cancel')}</Link>
           </div>
           <div className="footer-social">
             <a href="https://www.linkedin.com/company/elma-emotional-life-management-assistant" target="_blank" rel="noopener noreferrer"><i className="fab fa-linkedin"></i></a>

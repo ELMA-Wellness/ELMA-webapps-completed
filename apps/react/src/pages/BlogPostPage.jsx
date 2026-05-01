@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import SEO from '../components/SEO.jsx'
+import { useLang } from '../contexts/LangContext.jsx'
 
 const BASE_URL = 'https://elma.ltd'
 
@@ -9,7 +10,8 @@ function formatDate(iso) {
 }
 
 export default function BlogPostPage() {
-  const { slug }             = useParams()
+  const { slug } = useParams()
+  const { lang } = useLang()
   const [post, setPost]      = useState(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -26,7 +28,7 @@ export default function BlogPostPage() {
       .catch(() => { setNotFound(true); setLoading(false) })
   }, [slug])
 
-  if (!loading && notFound) return <Navigate to="/blog/" replace />
+  if (!loading && notFound) return <Navigate to={`/${lang}/blog/`} replace />
 
   if (loading) {
     return (
@@ -83,9 +85,9 @@ export default function BlogPostPage() {
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '2.5rem 1.5rem 5rem' }}>
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ fontSize: '0.85rem', color: '#8a7fa8', marginBottom: '2rem' }}>
-          <Link to="/" style={{ color: '#8a7fa8' }}>Home</Link>
+          <Link to={`/${lang}`} style={{ color: '#8a7fa8' }}>Home</Link>
           <span style={{ margin: '0 0.4rem' }}>›</span>
-          <Link to="/blog/" style={{ color: '#8a7fa8' }}>Blog</Link>
+          <Link to={`/${lang}/blog/`} style={{ color: '#8a7fa8' }}>Blog</Link>
           <span style={{ margin: '0 0.4rem' }}>›</span>
           <span style={{ color: '#c8bfdf' }}>{post.title}</span>
         </nav>
@@ -149,7 +151,7 @@ export default function BlogPostPage() {
             Voice your thoughts, track your emotional patterns, and get CBT-based support — 24/7, stigma-free.
           </p>
           <Link
-            to="/"
+            to={`/${lang}`}
             style={{
               display: 'inline-block',
               background: 'linear-gradient(135deg, #ba92ff, #90e0ef)',

@@ -438,7 +438,7 @@ function PsychologistModal({ isOpen, onClose }) {
 }
 
 function HomePage() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [waitlistOpen, setWaitlistOpen] = useState(false)
   const [psychOpen, setPsychOpen] = useState(false)
 
@@ -473,7 +473,7 @@ function HomePage() {
     setWaitlistOpen(false)
     const params = new URLSearchParams(location.search)
     if (params.has('waitlist')) {
-      navigate('/', { replace: true })
+      navigate(`/${lang}`, { replace: true })
     }
   }
 

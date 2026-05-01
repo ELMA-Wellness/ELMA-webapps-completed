@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState, Component } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useParams, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 
@@ -8,7 +8,7 @@ import Footer from './components/Footer.jsx'
 import MobileMenu from './components/MobileMenu.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/HomePage.jsx'
-import { LangProvider } from './contexts/LangContext.jsx'
+import { LangProvider, SUPPORTED_LANGS } from './contexts/LangContext.jsx'
 import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 
 const BG_GRADIENTS = [
@@ -33,7 +33,6 @@ const BlogListPage = lazy(() => import('./pages/BlogListPage.jsx'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage.jsx'))
 const FAQPage = lazy(() => import('./pages/FAQ.jsx'))
 
-// Global error boundary — prevents any single component crash from blanking the whole app
 class AppErrorBoundary extends Component {
   constructor(props) {
     super(props)
@@ -92,19 +91,51 @@ class AppErrorBoundary extends Component {
   }
 }
 
+function getClientLang() {
+  try {
+    const saved = localStorage.getItem('elma_lang')
+    if (saved && SUPPORTED_LANGS.includes(saved)) return saved
+    const code = (navigator.language || 'en').slice(0, 2).toLowerCase()
+    return SUPPORTED_LANGS.includes(code) ? code : 'en'
+  } catch {
+    return 'en'
+  }
+}
+
+// Netlify geo redirects handle this at CDN level; this is the JS fallback for dev/direct nav
+function RootRedirect() {
+  return <Navigate to={`/${getClientLang()}`} replace />
+}
+
+// Bare paths like /about or /blog/slug → /{detectedLang}/...
+function BarePathRedirect() {
+  const location = useLocation()
+  return <Navigate to={`/${getClientLang()}${location.pathname}`} replace />
+}
+
+// Validates /:lang. If the segment isn't a real lang code (e.g. /about matched as /:lang),
+// redirects to /{detectedLang}/{segment}/...
+function LangLayout() {
+  const { lang } = useParams()
+  const location = useLocation()
+
+  if (!SUPPORTED_LANGS.includes(lang)) {
+    return <Navigate to={`/${getClientLang()}${location.pathname}`} replace />
+  }
+
+  return <Outlet />
+}
+
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    // Defer AOS init so it doesn't block first paint
     const timer = setTimeout(async () => {
       try {
         const AOS = (await import('aos')).default
         await import('aos/dist/aos.css')
         AOS.init({ duration: 700, once: true })
-      } catch (_) {
-        // AOS failure is non-fatal
-      }
+      } catch (_) {}
     }, 200)
     return () => clearTimeout(timer)
   }, [])
@@ -113,7 +144,6 @@ function App() {
     <HelmetProvider>
     <LangProvider>
     <AppErrorBoundary>
-      {/* Global animated gradient — sits behind everything on every page */}
       <motion.div
         aria-hidden="true"
         style={{
@@ -130,19 +160,28 @@ function App() {
       <ScrollToTop />
       <Suspense fallback={null}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/cancellation" element={<Cancellation />} />
-          <Route path="/qr" element={<AppLanding />} />
-          <Route path="/dashboard" element={<AnalyticsDashboard/>} />
-          <Route path="/session" element={<SessionPage/>} />
-          <Route path="/elma-experts" element={<ElmaExperts />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/blog" element={<BlogListPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
-          <Route path="/faq" element={<FAQPage />} />
+          {/* Root — Netlify geo redirect fires first at CDN; this catches local dev */}
+          <Route path="/" element={<RootRedirect />} />
+
+          {/* Lang-prefixed routes: /en, /fr, /ja, /hi, /es */}
+          <Route path="/:lang" element={<LangLayout />}>
+            <Route index element={<Home />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="privacy" element={<Privacy />} />
+            <Route path="terms" element={<Terms />} />
+            <Route path="cancellation" element={<Cancellation />} />
+            <Route path="qr" element={<AppLanding />} />
+            <Route path="dashboard" element={<AnalyticsDashboard />} />
+            <Route path="session" element={<SessionPage />} />
+            <Route path="elma-experts" element={<ElmaExperts />} />
+            <Route path="about" element={<About />} />
+            <Route path="blog" element={<BlogListPage />} />
+            <Route path="blog/:slug" element={<BlogPostPage />} />
+            <Route path="faq" element={<FAQPage />} />
+          </Route>
+
+          {/* Catch bare paths without a lang prefix → redirect to /{detectedLang}/path */}
+          <Route path="*" element={<BarePathRedirect />} />
         </Routes>
       </Suspense>
       <Footer />
