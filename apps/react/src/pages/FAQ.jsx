@@ -148,7 +148,7 @@ export default function FAQPage() {
         schema={faqSchema}
       />
 
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '3rem 1.5rem 5rem' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '6rem 1.5rem 5rem' }}>
         <h1 style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#fff', marginBottom: '0.6rem' }}>
           Frequently Asked Questions
         </h1>

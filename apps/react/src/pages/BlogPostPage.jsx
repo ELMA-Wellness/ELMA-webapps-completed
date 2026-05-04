@@ -82,7 +82,7 @@ export default function BlogPostPage() {
         schema={[blogPostingSchema, breadcrumbSchema]}
       />
 
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '2.5rem 1.5rem 5rem' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '6rem 1.5rem 5rem' }}>
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ fontSize: '0.85rem', color: '#8a7fa8', marginBottom: '2rem' }}>
           <Link to={`/${lang}`} style={{ color: '#8a7fa8' }}>Home</Link>

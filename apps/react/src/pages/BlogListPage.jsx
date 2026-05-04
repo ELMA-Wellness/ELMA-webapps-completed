@@ -37,7 +37,7 @@ export default function BlogListPage() {
         schema={blogSchema}
       />
 
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '3rem 1.5rem 5rem' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '6rem 1.5rem 5rem' }}>
         <h1 style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#fff', marginBottom: '0.75rem' }}>
           ELMA Blog
         </h1>
