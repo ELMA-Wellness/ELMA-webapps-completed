@@ -2,8 +2,8 @@
 # Build, redirect, header, and prerender configuration
 
 [build]
-  command = "npm ci && npm run build --workspace=apps/react"
-  publish = "apps/react/dist"
+  command = "npm ci && npm run build"
+  publish = "dist"
 
 # ── Geo-based language redirects (root only, evaluated top-to-bottom) ─────────
 # force = true is required because index.html exists at / in the build output;
