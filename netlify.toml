@@ -8,6 +8,8 @@
 # ── Geo-based language redirects (root only, evaluated top-to-bottom) ─────────
 # force = true is required because index.html exists at / in the build output;
 # without it Netlify serves the static file and skips the redirect entirely.
+
+# Japanese — Japan
 [[redirects]]
   from       = "/"
   to         = "/ja"
@@ -15,27 +17,33 @@
   force      = true
   conditions = {Country = ["JP"]}
 
+# French — France + all French-speaking countries
 [[redirects]]
   from       = "/"
   to         = "/fr"
   status     = 302
   force      = true
-  conditions = {Country = ["FR", "BE", "LU", "CH"]}
+  conditions = {Country = [
+    "FR", "BE", "LU", "MC", "CH",
+    "SN", "CI", "CM", "ML", "BF", "NE", "GN", "TG", "BJ",
+    "CD", "CG", "CF", "GA", "RW", "BI", "TD", "DJ",
+    "KM", "MU", "MG", "SC",
+    "HT", "VU"
+  ]}
 
+# Spanish — Spain + all Spanish-speaking countries
 [[redirects]]
   from       = "/"
   to         = "/es"
   status     = 302
   force      = true
-  conditions = {Country = ["ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "BO", "PY", "UY"]}
+  conditions = {Country = [
+    "ES", "MX", "CO", "AR", "PE", "VE", "CL", "EC",
+    "GT", "CU", "BO", "DO", "HN", "PY", "SV", "NI",
+    "CR", "PA", "UY", "GQ", "PR"
+  ]}
 
-[[redirects]]
-  from       = "/"
-  to         = "/hi"
-  status     = 302
-  force      = true
-  conditions = {Country = ["IN"]}
-
+# Default → English (covers India, US, UK, AU, IN, and everything else)
 [[redirects]]
   from   = "/"
   to     = "/en"
