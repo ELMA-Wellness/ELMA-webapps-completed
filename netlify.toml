@@ -6,34 +6,41 @@
   publish = "apps/react/dist"
 
 # ── Geo-based language redirects (root only, evaluated top-to-bottom) ─────────
+# force = true is required because index.html exists at / in the build output;
+# without it Netlify serves the static file and skips the redirect entirely.
 [[redirects]]
   from       = "/"
   to         = "/ja"
   status     = 302
+  force      = true
   conditions = {Country = ["JP"]}
 
 [[redirects]]
   from       = "/"
   to         = "/fr"
   status     = 302
+  force      = true
   conditions = {Country = ["FR", "BE", "LU", "CH"]}
 
 [[redirects]]
   from       = "/"
   to         = "/es"
   status     = 302
+  force      = true
   conditions = {Country = ["ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "BO", "PY", "UY"]}
 
 [[redirects]]
   from       = "/"
   to         = "/hi"
   status     = 302
+  force      = true
   conditions = {Country = ["IN"]}
 
 [[redirects]]
   from   = "/"
   to     = "/en"
   status = 302
+  force  = true
 
 # ── SPA fallback (React Router) ───────────────────────────────────────────────
 [[redirects]]
