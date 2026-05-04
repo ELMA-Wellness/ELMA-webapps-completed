@@ -24,7 +24,7 @@ export default function SessionLobby({
   sessionCode = "69a54abd29c99c56303ea5f6",
   userId = "696f408b2ff51b82b1cee0e6",
   role = "patient",
-  therapist = { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" },
+  therapist,
   sessionMeta = { durationMins: 50 },
   onJoined,
 }) {
