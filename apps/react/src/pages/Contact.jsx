@@ -4,7 +4,7 @@ import SEO from '../components/SEO.jsx'
 import './Contact.css'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
-const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || ''
 
 function Contact() {
   const { t } = useLang()
@@ -56,6 +56,10 @@ function Contact() {
     const form = e.currentTarget
     if (!validate()) return
 
+    if (!WEB3FORMS_ACCESS_KEY) {
+      setSubmitError('Form service not configured. Please contact us directly at ydk@elma.ltd')
+      return
+    }
     setSending(true)
     setSubmitError('')
     const data = {

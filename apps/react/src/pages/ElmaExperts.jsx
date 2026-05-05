@@ -5,7 +5,7 @@ import { useLang } from '../contexts/LangContext.jsx'
 import SEO from '../components/SEO.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
-const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '81727855-9c6b-4474-abd0-9fb03150fe7f'
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || ''
 
 /* ─── ambient orb ───────────────────────────────────────────── */
 function Orb({ style }) {
@@ -153,6 +153,10 @@ function JoinForm() {
     const license = licenseRef.current?.value.trim() || ''
     const speciality = specialityRef.current?.value.trim() || ''
     if (!name || !email || !license) return
+    if (!WEB3FORMS_ACCESS_KEY) {
+      setError('Form service not configured. Please email us directly at ydk@elma.ltd')
+      return
+    }
     setSending(true)
     setError('')
     const timestamp = new Date().toISOString()
