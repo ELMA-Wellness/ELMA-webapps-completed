@@ -5,7 +5,7 @@ import { useLang } from '../contexts/LangContext.jsx'
 import SEO from '../components/SEO.jsx'
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
-const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || ''
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'e6bef4ca-d675-42df-879b-b735fab5f423'
 
 /* ─── ambient orb ───────────────────────────────────────────── */
 function Orb({ style }) {
