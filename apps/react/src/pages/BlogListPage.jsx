@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/SEO.jsx'
+import { useLang } from '../contexts/LangContext.jsx'
 
 const BASE_URL = 'https://elma.ltd'
 
@@ -9,6 +10,7 @@ function formatDate(iso) {
 }
 
 export default function BlogListPage() {
+  const { lang } = useLang()
   const [posts, setPosts]   = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -66,7 +68,7 @@ export default function BlogListPage() {
             >
               <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>
                 <Link
-                  to={`/blog/${post.slug}/`}
+                  to={`/${lang}/blog/${post.slug}/`}
                   style={{ color: '#e0d5f5', textDecoration: 'none' }}
                   onMouseEnter={e => (e.target.style.color = '#ba92ff')}
                   onMouseLeave={e => (e.target.style.color = '#e0d5f5')}

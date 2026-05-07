@@ -4,17 +4,20 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <!-- ═══════════════════════════════════════════════════════════════
-       CORE PAGES
+       CORE PAGES — canonical /en/, hreflang for all languages
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
-    <loc>https://elma.ltd/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/" />
-    <xhtml:link rel="alternate" hreflang="en-IN"     href="https://elma.ltd/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/" />
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/" />
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
       <image:title>ELMA — Your AI Emotional Companion</image:title>
@@ -22,50 +25,74 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/about</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/about</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/about" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/about" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/about" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/about" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/about" />
   </url>
 
   <url>
-    <loc>https://elma.ltd/elma-experts</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/elma-experts</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/elma-experts" />
   </url>
 
   <url>
-    <loc>https://elma.ltd/faq</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/faq</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/faq" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/faq" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/faq" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/faq" />
   </url>
 
   <url>
-    <loc>https://elma.ltd/contact</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/contact</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/contact" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/contact" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/contact" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/contact" />
   </url>
 
   <url>
-    <loc>https://elma.ltd/privacy</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/privacy</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://elma.ltd/terms</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/terms</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://elma.ltd/cancellation</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/cancellation</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -75,10 +102,12 @@
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
-    <loc>https://elma.ltd/blog/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <loc>https://elma.ltd/en/blog/</loc>
+    <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/blog/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/blog/" />
   </url>
 
   <!-- ═══════════════════════════════════════════════════════════════
@@ -86,7 +115,51 @@
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
-    <loc>https://elma.ltd/blog/best-ai-mental-health-apps-india/</loc>
+    <loc>https://elma.ltd/en/blog/how-to-deal-with-loneliness/</loc>
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Deal With Loneliness: Why Half of Us Feel It and What Actually Helps</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/how-to-stop-overthinking/</loc>
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Stop Overthinking: 9 Techniques That Actually Work</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/relationship-anxiety/</loc>
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Relationship Anxiety: Why You Overthink Your Relationship and How to Stop</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/social-anxiety-india/</loc>
+    <lastmod>2026-05-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Social Anxiety in India: Why It's More Common Than You Think (And What Helps)</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/best-ai-mental-health-apps-india/</loc>
     <lastmod>2026-04-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -97,7 +170,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/what-is-ai-emotional-companion/</loc>
+    <loc>https://elma.ltd/en/blog/what-is-ai-emotional-companion/</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -108,7 +181,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/ai-emotional-support-vs-therapy/</loc>
+    <loc>https://elma.ltd/en/blog/ai-emotional-support-vs-therapy/</loc>
     <lastmod>2026-04-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -119,7 +192,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/india-mental-health-statistics/</loc>
+    <loc>https://elma.ltd/en/blog/india-mental-health-statistics/</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -130,7 +203,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/why-talking-to-ai-feels-easier/</loc>
+    <loc>https://elma.ltd/en/blog/why-talking-to-ai-feels-easier/</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -141,7 +214,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/how-to-build-emotional-resilience/</loc>
+    <loc>https://elma.ltd/en/blog/how-to-build-emotional-resilience/</loc>
     <lastmod>2026-04-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -152,7 +225,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/cbt-techniques-for-daily-life/</loc>
+    <loc>https://elma.ltd/en/blog/cbt-techniques-for-daily-life/</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -163,7 +236,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/does-mood-tracking-help/</loc>
+    <loc>https://elma.ltd/en/blog/does-mood-tracking-help/</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -174,7 +247,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/what-is-emotional-intelligence/</loc>
+    <loc>https://elma.ltd/en/blog/what-is-emotional-intelligence/</loc>
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -185,7 +258,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/signs-of-burnout-you-are-ignoring/</loc>
+    <loc>https://elma.ltd/en/blog/signs-of-burnout-you-are-ignoring/</loc>
     <lastmod>2026-04-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -196,7 +269,7 @@
   </url>
 
   <url>
-    <loc>https://elma.ltd/blog/how-to-deal-with-anxiety-without-medication/</loc>
+    <loc>https://elma.ltd/en/blog/how-to-deal-with-anxiety-without-medication/</loc>
     <lastmod>2026-04-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -210,6 +283,10 @@
        MARKDOWN MIRRORS (AI crawler / LLM citation)
   ═══════════════════════════════════════════════════════════════ -->
 
+  <url><loc>https://elma.ltd/content/blog/how-to-deal-with-loneliness.md</loc><lastmod>2026-05-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/how-to-stop-overthinking.md</loc><lastmod>2026-05-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/relationship-anxiety.md</loc><lastmod>2026-05-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://elma.ltd/content/blog/social-anxiety-india.md</loc><lastmod>2026-05-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://elma.ltd/content/blog/best-ai-mental-health-apps-india.md</loc><lastmod>2026-04-22</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://elma.ltd/content/blog/what-is-ai-emotional-companion.md</loc><lastmod>2026-04-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://elma.ltd/content/blog/ai-emotional-support-vs-therapy.md</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
