@@ -518,8 +518,8 @@ function HomePage() {
     <>
       <SEO
         title="Your AI Emotional Companion | Be Cool. Be In Control."
-        description="ELMA is your 24/7 AI emotional companion. Talk through anxiety, burnout & stress — stigma-free, science-backed. India's most empathetic AI. Free on Android & iOS."
-        canonical="/"
+        description="ELMA — India's 24/7 AI emotional companion. Talk through anxiety, burnout & stress, stigma-free, science-backed. Download free on Android & iOS."
+        canonical="/en/"
       />
       {/* Hero Section */}
       <HeroSection />

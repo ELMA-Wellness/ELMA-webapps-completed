@@ -396,7 +396,7 @@ function Privacy() {
       <SEO
         title="Privacy Policy — How ELMA Protects Your Data"
         description="ELMA Privacy Policy — how we collect, use, and safeguard your personal and emotional data. Your privacy is our priority. Read our full policy here."
-        canonical="/privacy"
+        canonical="/en/privacy"
       />
       <section className="subpage">
         <div className="container">

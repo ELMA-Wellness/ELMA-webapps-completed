@@ -13,7 +13,7 @@
 [[redirects]]
   from       = "/"
   to         = "/ja"
-  status     = 302
+  status     = 301
   force      = true
   conditions = {Country = ["JP"]}
 
@@ -21,7 +21,7 @@
 [[redirects]]
   from       = "/"
   to         = "/fr"
-  status     = 302
+  status     = 301
   force      = true
   conditions = {Country = [
     "FR", "BE", "LU", "MC", "CH",
@@ -35,7 +35,7 @@
 [[redirects]]
   from       = "/"
   to         = "/es"
-  status     = 302
+  status     = 301
   force      = true
   conditions = {Country = [
     "ES", "MX", "CO", "AR", "PE", "VE", "CL", "EC",

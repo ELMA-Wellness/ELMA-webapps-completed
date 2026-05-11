@@ -59,7 +59,7 @@ export function HeroSection() {
           <motion.h1
             className="hero-headline"
             aria-label={`${t('hero_line1')} ${t('hero_line2')} ${t('hero_line3')} ${t('hero_line4')}`}
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 1, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease }}
           >

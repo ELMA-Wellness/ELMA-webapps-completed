@@ -108,7 +108,7 @@ function Contact() {
       <SEO
         title="Contact ELMA — Get in Touch"
         description="Reach the ELMA team for support, partnerships, or press. Email socials@elma.ltd. Response within 24 hours. CEO & CMO contacts available for business enquiries."
-        canonical="/contact"
+        canonical="/en/contact"
         schema={contactSchema}
       />
       <div className="contact-container">
@@ -221,7 +221,7 @@ function Contact() {
                 <i className="fab fa-linkedin"></i>
                 <div className="contact-item-content">
                   <h4>{t('contact_linkedin_h4')}</h4>
-                  <p><a href="http://linkedin.com/company/elma-emotional-life-management-assistant" target="_blank" rel="noreferrer">{t('contact_linkedin_p')}</a></p>
+                  <p><a href="https://www.linkedin.com/company/elma-emotional-life-management-assistant" target="_blank" rel="noreferrer">{t('contact_linkedin_p')}</a></p>
                 </div>
               </div>
               <div className="contact-item">

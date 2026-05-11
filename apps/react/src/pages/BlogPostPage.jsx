@@ -40,7 +40,7 @@ export default function BlogPostPage() {
 
   if (!post) return null
 
-  const canonical = `/blog/${post.slug}/`
+  const canonical = `/en/blog/${post.slug}/`
 
   const blogPostingSchema = {
     '@context': 'https://schema.org',

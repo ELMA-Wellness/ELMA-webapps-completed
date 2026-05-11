@@ -35,7 +35,7 @@ export default function BlogListPage() {
       <SEO
         title="Blog — Emotional Wellness, Anxiety & Mental Health Guides"
         description="Practical, science-backed guides on anxiety, burnout, emotional intelligence, CBT, and mental health — from India's AI emotional companion."
-        canonical="/blog/"
+        canonical="/en/blog/"
         schema={blogSchema}
       />
 

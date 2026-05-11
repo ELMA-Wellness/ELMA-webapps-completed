@@ -152,7 +152,7 @@ function Terms() {
       <SEO
         title="Terms of Service — ELMA User Agreement"
         description="ELMA Terms of Service — your rights and responsibilities as an ELMA user. Read our full user agreement, acceptable use policy, and subscription terms."
-        canonical="/terms"
+        canonical="/en/terms"
       />
       <section className="subpage">
         <div className="container">
