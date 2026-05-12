@@ -14,17 +14,7 @@ import { useSearchParams } from "react-router-dom";
  */
 
 
-const THERAPIST_INFO = {
-  name: "Dr. Sarah Mitchell",
-  credentials: "PhD",
-  specialties: ["Anxiety", "Relationships"],
-  avatarInitials: "SM",
-};
 
-const SESSION_META = {
-  durationMins: 50,
-  startTime: "10:00 AM",
-};
 
 export default function App() {
   const [screen, setScreen] = useState("lobby");   // lobby | waiting | live | ended
@@ -32,36 +22,54 @@ export default function App() {
   const [sessionDuration, setSessionDuration] = useState(0);
   const sessionStartRef = useRef(null);
 
-  const getSessionQueryParams = () => {
-    const url = new URL(window.location.href);
-    const params = url.searchParams;
+    const [params] = useSearchParams();
 
     const sessionCode = params.get("sessionCode");
     const userId = params.get("userId");
     const role = params.get("role");
+    const name = params.get("name")
+    const profession=params.get("profession")
+    const startTime = params.get("startTime");
 
-    return {
-      sessionCode,
-      userId,
-      role,
-    };
-  }
+    const skills =
+  JSON.parse(
+    decodeURIComponent(params.get("skills") || "[]")
+  );
 
- 
-  const {
-      sessionCode,
-      userId,
-      role,
-    }= getSessionQueryParams();
-  
+    
+
 
   
+
+
+  const getInitials = (name = "") => {
+    return name?.trim()
+      .split(" ")
+      .filter(Boolean)
+      .map(word => word[0].toUpperCase())
+      .join("");
+  };
+
+
+
 
 
   const SESSION_CONFIG = {
-    sessionCode: sessionCode || "69a54abd29c99c56303ea5f6",
-    userId: userId || "696f408b2ff51b82b1cee0e6",
+    sessionCode: sessionCode,
+    userId: userId ,
     role: role,           // "patient" | "therapist"
+  };
+
+  const THERAPIST_INFO = {
+    name: name,
+    credentials: profession,
+    specialties: skills,
+    avatarInitials: getInitials(name),
+  };
+
+  const SESSION_META = {
+    durationMins: 45,
+    startTime: startTime,
   };
 
   // ── Lobby → Waiting ──────────────────────────────────────────────────────

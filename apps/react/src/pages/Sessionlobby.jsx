@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { MicIcon, CamIcon, Avatar } from "./Icons";
 import { webRTCManager } from "../config/webrtcmanger";
 
-const TOTAL_SECONDS = 4 * 60 + 32;
 
 function CountdownTimer({ seconds }) {
   const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
@@ -25,21 +24,28 @@ export default function SessionLobby({
   userId = "696f408b2ff51b82b1cee0e6",
   role = "patient",
   therapist = { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" },
-  sessionMeta = { durationMins: 50 },
+  sessionMeta = { durationMins: 50,startTime },
   onJoined,
 }) {
-  const [timeLeft, setTimeLeft]           = useState(TOTAL_SECONDS);
-  const [micActive, setMicActive]         = useState(false);
-  const [camActive, setCamActive]         = useState(false);
-  const [micError, setMicError]           = useState(null);
-  const [camError, setCamError]           = useState(null);
+  const targetTime = new Date(sessionMeta.startTime).getTime();
+  const TOTAL_SECONDS = Math.max(
+    0,
+    Math.floor((targetTime - Date.now()) / 1000)
+  );
+  const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
+  const [micActive, setMicActive] = useState(false);
+  const [camActive, setCamActive] = useState(false);
+  const [micError, setMicError] = useState(null);
+  const [camError, setCamError] = useState(null);
   const [camPermission, setCamPermission] = useState("idle");
-  const [joining, setJoining]             = useState(false);
-  const [joinError, setJoinError]         = useState(null);
+  const [joining, setJoining] = useState(false);
+  const [joinError, setJoinError] = useState(null);
 
-  const videoRef     = useRef(null);
-  const streamRef    = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const micStreamRef = useRef(null);
+
+  
 
   // Countdown timer
   useEffect(() => {
@@ -88,7 +94,7 @@ export default function SessionLobby({
         streamRef.current = s;
         if (videoRef.current) {
           videoRef.current.srcObject = s;
-          videoRef.current.play().catch(() => {});
+          videoRef.current.play().catch(() => { });
         }
         setCamPermission("granted");
         setCamActive(true);
@@ -335,17 +341,23 @@ export default function SessionLobby({
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 17, fontWeight: 700, color: "#2d1f5e" }}>
                       {therapist.name},{" "}
-                      <span style={{ fontWeight: 400, fontSize: 14 }}>{therapist.credentials}</span>
+                      {
+                        role === 'patient' &&
+
+                        (<span style={{ fontWeight: 400, fontSize: 14 }}>{therapist.credentials}</span>)}
                     </div>
                     <div style={{ fontSize: 12, color: "#22c55e", marginTop: 3, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" /></svg>
                       RCI Verified
                     </div>
-                    <div style={{ display: "flex", gap: 7, marginTop: 10, flexWrap: "wrap" }}>
-                      {therapist.specialties.map((s, i) => (
-                        <span key={s} className="specialty-tag" style={{ background: i === 0 ? "#7c4ddb" : "#ede8fb", color: i === 0 ? "white" : "#5a3db5" }}>{s}</span>
-                      ))}
-                    </div>
+                    {
+                      role === 'patient' &&
+
+                      (<div style={{ display: "flex", gap: 7, marginTop: 10, flexWrap: "wrap" }}>
+                        {therapist.specialties.map((s, i) => (
+                          <span key={s} className="specialty-tag" style={{ background: i === 0 ? "#7c4ddb" : "#ede8fb", color: i === 0 ? "white" : "#5a3db5" }}>{s}</span>
+                        ))}
+                      </div>)}
                   </div>
                 </div>
 

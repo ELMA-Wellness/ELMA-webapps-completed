@@ -1,4 +1,4 @@
-const WEBSOCKET_URL = 'wss://elma-wellness-v2.onrender.com'; // Replace with your WebSocket server URL
+const WEBSOCKET_URL = 'wss://elma-dsb6fne7c0bqezaj.centralindia-01.azurewebsites.net/';
 const ICE_SERVERS = [
   {
     urls: "stun:stun.relay.metered.ca:80",
