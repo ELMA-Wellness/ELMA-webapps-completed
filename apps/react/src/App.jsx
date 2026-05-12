@@ -182,6 +182,8 @@ function App() {
 
           {/* Catch bare paths without a lang prefix → redirect to /{detectedLang}/path */}
           <Route path="*" element={<BarePathRedirect />} />
+                      <Route path="/session" element={<SessionPage />} />
+
         </Routes>
       </Suspense>
       <Footer />
