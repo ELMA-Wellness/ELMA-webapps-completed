@@ -517,9 +517,9 @@ function HomePage() {
   return (
     <>
       <SEO
-        title="Your AI Emotional Companion | Be Cool. Be In Control."
         description="ELMA — India's 24/7 AI emotional companion. Talk through anxiety, burnout & stress, stigma-free, science-backed. Download free on Android & iOS."
-        canonical="/en/"
+        canonical={`/${lang}/`}
+        hreflangBase="/"
       />
       {/* Hero Section */}
       <HeroSection />

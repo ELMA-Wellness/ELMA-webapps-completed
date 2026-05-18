@@ -64,3 +64,43 @@
     Cache-Control = "public, max-age=86400"
     Content-Type  = "text/plain; charset=utf-8"
     X-Robots-Tag  = "index, follow"
+
+# ── Redirects ─────────────────────────────────────────────────────────────────
+# Root to English — collapses the JS redirect hop that Ahrefs flags as a chain.
+# Geo redirects (set in Netlify dashboard) run before this and take priority.
+[[redirects]]
+  from   = "/"
+  to     = "/en/"
+  status = 301
+
+# Bare paths without lang prefix → English (catches bot crawls missing the JS redirect)
+[[redirects]]
+  from   = "/about"
+  to     = "/en/about"
+  status = 301
+
+[[redirects]]
+  from   = "/blog/*"
+  to     = "/en/blog/:splat"
+  status = 301
+
+[[redirects]]
+  from   = "/faq"
+  to     = "/en/faq"
+  status = 301
+
+[[redirects]]
+  from   = "/contact"
+  to     = "/en/contact"
+  status = 301
+
+[[redirects]]
+  from   = "/elma-experts"
+  to     = "/en/elma-experts"
+  status = 301
+
+# SPA fallback — must be last
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
