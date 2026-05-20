@@ -16,17 +16,23 @@ import { webRTCManager } from "../config/webrtcmanger";
 export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
   const selfVideoRef = useRef(null);
 
+  const cameraon=localStorage.getItem('cameraon')
+  const micon=localStorage.getItem('micon')
+
+
   const [chatMsg, setChatMsg]         = useState("");
   const [messages, setMessages]       = useState([]);
   const [sessionSecs, setSessionSecs] = useState(0);
-  const [muted, setMuted]             = useState(false);
-  const [camOff, setCamOff]           = useState(false);
+  const [micActive, setMicActive]     = useState(micon);
+  const [camActive, setCamActive]     = useState(cameraon);
+  const [localStream, setLocalStream] = useState(null);
   const [connState, setConnState]     = useState("connecting");
   const chatEndRef                    = useRef(null);
   const[chatOpen,setIsChatOpen]=useState(false)
 
   const toggleChat=()=>{
     setIsChatOpen((prev)=>!prev)
+    
   }
 
   // Defaults
@@ -48,6 +54,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   useEffect(() => {
     // Local stream → show in PiP
     webRTCManager.onLocalStreamChanged = (stream) => {
+      setLocalStream(stream);
       if (selfVideoRef.current) {
         selfVideoRef.current.srcObject = stream;
         if (stream) selfVideoRef.current.play().catch(() => {});
@@ -77,25 +84,31 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     };
 
     return () => {
-      // Clear only if still assigned to us (avoid overwriting next screen's callbacks)
-      if (webRTCManager.onLocalStreamChanged)    webRTCManager._onLocalStreamChanged    = null;
-      if (webRTCManager.onRemoteStreamChanged)   webRTCManager._onRemoteStreamChanged   = null;
-      if (webRTCManager.onMessagesChanged)       webRTCManager._onMessagesChanged       = null;
-      if (webRTCManager.onConnectionStateChanged)webRTCManager._onConnectionStateChanged= null;
+      webRTCManager._onLocalStreamChanged    = null;
+      webRTCManager._onRemoteStreamChanged   = null;
+      webRTCManager._onMessagesChanged       = null;
+      webRTCManager._onConnectionStateChanged= null;
       webRTCManager.onPeerDisconnect = null;
     };
   }, [onPeerJoined]);
 
+  useEffect(() => {
+    if (selfVideoRef.current && localStream) {
+      selfVideoRef.current.srcObject = localStream;
+      selfVideoRef.current.play().catch(() => {});
+    }
+  }, [localStream, camActive]);
+
   const handleToggleMic = () => {
-    const next = !muted;
-    setMuted(next);
-    webRTCManager.toggleMute(next);
+    const next = !micActive;
+    setMicActive(next);
+    webRTCManager.toggleMute(!next);
   };
 
   const handleToggleCam = () => {
-    const next = !camOff;
-    setCamOff(next);
-    webRTCManager.toggleCamera(next);
+    const next = !camActive;
+    setCamActive(next);
+    webRTCManager.toggleCamera(!next);
   };
 
   const handleLeave = () => {
@@ -322,8 +335,8 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
             {/* Controls */}
             <div className="sw-controls-bar">
               {[
-                { icon: <MicIcon muted={muted} size={18} />, label: muted ? "Unmute" : "Mute", onClick: handleToggleMic, active: !muted },
-                { icon: <CamIcon off={camOff} size={18} />, label: "Camera", onClick: handleToggleCam, active: !camOff },
+                { icon: <MicIcon muted={!micActive} size={18} />, label: micActive ? "Mute" : "Unmute", onClick: handleToggleMic, active: micActive },
+                { icon: <CamIcon off={!camActive} size={18} />, label: "Camera", onClick: handleToggleCam, active: camActive },
                 { icon:  <ChatIcon size={18} />, label: "Chat", onClick: toggleChat, active: chatOpen },
               ].map(({ icon, label, onClick, active }, i) => (
                 <div key={i} className="ctrl-item">
@@ -339,20 +352,22 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
             {/* PiP self-view */}
             <div className="sw-pip">
-              {!camOff ? (
-                <video ref={selfVideoRef} autoPlay muted playsInline
-                  style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: "block" }} />
-              ) : (
-                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,.3)" }}>
+              <video 
+                ref={selfVideoRef} autoPlay muted playsInline
+                style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: camActive ? "block" : "none" }} 
+              />
+              {!camActive && (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#1a1030", color: "rgba(255,255,255,.3)" }}>
                   <CamIcon off size={22} />
                 </div>
               )}
               <div style={{ position: "absolute", top: 5, right: 6, background: "rgba(0,0,0,.55)", color: "white", fontSize: 9, borderRadius: 5, padding: "2px 6px", fontWeight: 600 }}>You</div>
-              {muted && (
-                <div style={{ position: "absolute", bottom: 5, right: 5, background: "#e53935", borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
-                  <MicIcon muted size={8} />
-                </div>
-              )}
+              
+              {/* Mic indicator */}
+              <div style={{ position: "absolute", bottom: 5, left: 5, background: micActive ? "rgba(34,197,94,.85)" : "rgba(220,38,38,.85)", borderRadius: 20, padding: "3px 8px", display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: "white", fontWeight: 600 }}>
+                <MicIcon muted={!micActive} size={8} />
+                {micActive ? "Mic On" : "Mic Off"}
+              </div>
             </div>
           </div>
 

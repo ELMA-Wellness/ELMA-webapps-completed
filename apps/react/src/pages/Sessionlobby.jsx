@@ -24,7 +24,7 @@ export default function SessionLobby({
   userId = "696f408b2ff51b82b1cee0e6",
   role = "patient",
   therapist = { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" },
-  sessionMeta = { durationMins: 50,startTime },
+  sessionMeta = { durationMins: 50, startTime },
   onJoined,
 }) {
   const targetTime = new Date(sessionMeta.startTime).getTime();
@@ -45,7 +45,7 @@ export default function SessionLobby({
   const streamRef = useRef(null);
   const micStreamRef = useRef(null);
 
-  
+
 
   // Countdown timer
   useEffect(() => {
@@ -120,6 +120,9 @@ export default function SessionLobby({
 
     try {
       await webRTCManager.initialize(sessionCode, userId, role);
+      localStorage.setItem('cameraon',camActive)
+      localStorage.setItem('micon',micActive)
+
       onJoined?.();
     } catch (err) {
       setJoinError(
@@ -346,7 +349,7 @@ export default function SessionLobby({
 
                         (<span style={{ fontWeight: 400, fontSize: 14 }}>{therapist.credentials}</span>)}
                     </div>
-                    
+
                     {
                       role === 'patient' &&
 
@@ -378,9 +381,19 @@ export default function SessionLobby({
                   ))}
                 </div>
                 <div className="privacy-card">
-                  <div style={{ fontWeight: 700, fontSize: 13, color: "#2d1f5e", marginBottom: 12 }}>✅ Session Rules</div>
-                  {[["✅", "HIPAA compliant"], ["✅", "Confidential session"], ["🚫", "No third-party access"]].map(([icon, text]) => (
-                    <div key={text} className="privacy-item"><span style={{ fontSize: 15 }}>{icon}</span>{text}</div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: "#2d1f5e", marginBottom: 12 }}>
+                    🛡️ Session Rules
+                  </div>
+
+                  {[
+                    ["🔐", "HIPAA compliant"],
+                    ["🤝", "Confidential session"],
+                    ["🚷", "No third-party access"]
+                  ].map(([icon, text]) => (
+                    <div key={text} className="privacy-item">
+                      <span style={{ fontSize: 15 }}>{icon}</span>
+                      {text}
+                    </div>
                   ))}
                 </div>
               </div>
