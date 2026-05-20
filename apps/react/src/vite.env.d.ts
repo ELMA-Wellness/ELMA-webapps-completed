@@ -10,6 +10,4 @@ interface ImportMetaEnv {
   readonly VITE_APP_LAUNCHED : string;
 }
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+

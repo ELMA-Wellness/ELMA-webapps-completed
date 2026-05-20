@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBejQqWxd6Q4dHx41RqZW0BUk1wiC6sFKE",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "elma-react-native-app.firebaseapp.com",
   projectId: "elma-react-native-app",
   storageBucket: "elma-react-native-app.appspot.com",
