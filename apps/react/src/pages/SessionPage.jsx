@@ -131,6 +131,7 @@ export default function App() {
           sessionMeta={SESSION_META}
           onLeave={handleLeaveWaiting}
           onPeerJoined={handlePeerJoined}
+          role={SESSION_CONFIG.role}
         />
       )}
 

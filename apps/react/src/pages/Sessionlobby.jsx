@@ -346,10 +346,7 @@ export default function SessionLobby({
 
                         (<span style={{ fontWeight: 400, fontSize: 14 }}>{therapist.credentials}</span>)}
                     </div>
-                    <div style={{ fontSize: 12, color: "#22c55e", marginTop: 3, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" /></svg>
-                      RCI Verified
-                    </div>
+                    
                     {
                       role === 'patient' &&
 

@@ -13,7 +13,7 @@ import { webRTCManager } from "../config/webrtcmanger";
  *   onLeave       – () => void
  *   onPeerJoined  – (remoteStream) => void
  */
-export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined }) {
+export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
   const selfVideoRef = useRef(null);
 
   const [chatMsg, setChatMsg]         = useState("");
@@ -23,6 +23,11 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   const [camOff, setCamOff]           = useState(false);
   const [connState, setConnState]     = useState("connecting");
   const chatEndRef                    = useRef(null);
+  const[chatOpen,setIsChatOpen]=useState(false)
+
+  const toggleChat=()=>{
+    setIsChatOpen((prev)=>!prev)
+  }
 
   // Defaults
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
@@ -255,6 +260,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
                 <span style={{ width: 7, height: 7, borderRadius: "50%", background: connColor, display: "inline-block" }} />
                 {connLabel}
               </span>
+              
               {th.specialties.map(s => (
                 <span key={s} style={{ background: "#ede8fb", color: "#5a3db5", borderRadius: 20, padding: "2px 11px", fontSize: 11, fontWeight: 600 }}>{s}</span>
               ))}
@@ -294,7 +300,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               Waiting for <strong>{th.name}</strong> to join…
             </div>
             <div style={{ fontSize: 13, color: "#7c6aaa", textAlign: "center", marginBottom: 20, maxWidth: 400, lineHeight: 1.6 }}>
-              She'll join soon. Your session is private and encrypted.
+              {role==='therapist' ? 'Client': 'Therapist'}'ll join soon. Your session is private and encrypted.
             </div>
 
             {/* Animated dots */}
@@ -318,8 +324,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               {[
                 { icon: <MicIcon muted={muted} size={18} />, label: muted ? "Unmute" : "Mute", onClick: handleToggleMic, active: !muted },
                 { icon: <CamIcon off={camOff} size={18} />, label: "Camera", onClick: handleToggleCam, active: !camOff },
-                { icon: <ChatIcon size={18} />, label: "Chat", onClick: () => {}, active: true },
-                { icon: <DotsIcon size={18} />, label: "More", onClick: () => {}, active: true },
+                { icon:  <ChatIcon size={18} />, label: "Chat", onClick: toggleChat, active: chatOpen },
               ].map(({ icon, label, onClick, active }, i) => (
                 <div key={i} className="ctrl-item">
                   <button onClick={onClick} style={ctrlBtn(active)}>{icon}</button>
@@ -354,13 +359,21 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
           {/* RIGHT: Chat + Info */}
           <div className="sw-chat-panel">
             {/* Chat header */}
-            <div style={{ padding: "13px 16px 10px", borderBottom: "1.5px solid #f0ebff", display: "flex", alignItems: "center", gap: 8 }}>
+            {
+              chatOpen &&
+            
+            (<div style={{ padding: "13px 16px 10px", borderBottom: "1.5px solid #f0ebff", display: "flex", alignItems: "center", gap: 8 }}>
               <ChatIcon size={14} />
               <span style={{ fontWeight: 700, fontSize: 13, color: "#2d1f5e" }}>Chat</span>
               <span style={{ marginLeft: "auto", fontSize: 11, color: "#9889c8" }}>Messages are encrypted</span>
-            </div>
+            </div>)}
 
             {/* Messages */}
+            {
+              chatOpen &&
+
+              (<>
+            
             <div className="chat-messages">
               {messages.length === 0 && (
                 <div style={{ textAlign: "center", color: "#c0b8da", fontSize: 12, marginTop: 20 }}>
@@ -391,6 +404,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               />
               <button className="send-btn" onClick={sendMsg}><SendIcon size={12} /></button>
             </div>
+            </>)}
 
             {/* Session Info */}
             <div className="info-section">
