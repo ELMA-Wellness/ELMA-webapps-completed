@@ -33,8 +33,10 @@ export default function SessionLobby({
     Math.floor((targetTime - Date.now()) / 1000)
   );
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
+  // Load initial states from localStorage, defaulting to true if not set
   const [micActive, setMicActive] = useState(false);
   const [camActive, setCamActive] = useState(false);
+
   const [micError, setMicError] = useState(null);
   const [camError, setCamError] = useState(null);
   const [camPermission, setCamPermission] = useState("idle");
@@ -54,6 +56,13 @@ export default function SessionLobby({
     return () => clearInterval(t);
   }, [timeLeft]);
 
+  // Initialize webRTCManager with initial mic/cam states
+  useEffect(() => {
+    // These calls ensure webRTCManager's internal state matches the UI's initial state
+    webRTCManager.toggleMute(!micActive);
+    webRTCManager.toggleCamera(!camActive);
+  }, [micActive, camActive]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -65,6 +74,7 @@ export default function SessionLobby({
   const toggleMic = async () => {
     if (micActive) {
       micStreamRef.current?.getTracks().forEach(t => t.stop());
+      webRTCManager.toggleMute(true); // Mute mic
       micStreamRef.current = null;
       setMicActive(false);
     } else {
@@ -72,6 +82,7 @@ export default function SessionLobby({
       try {
         const s = await navigator.mediaDevices.getUserMedia({ audio: true });
         micStreamRef.current = s;
+        webRTCManager.toggleMute(false); // Unmute mic
         setMicActive(true);
       } catch (e) {
         setMicError(e.name === "NotAllowedError"
@@ -84,6 +95,7 @@ export default function SessionLobby({
   const toggleCam = async () => {
     if (camActive) {
       streamRef.current?.getTracks().forEach(t => t.stop());
+      webRTCManager.toggleCamera(true); // Turn off camera
       streamRef.current = null;
       if (videoRef.current) videoRef.current.srcObject = null;
       setCamActive(false);
@@ -91,6 +103,7 @@ export default function SessionLobby({
       setCamError(null);
       try {
         const s = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, frameRate: 30 } });
+        webRTCManager.toggleCamera(false); // Turn on camera
         streamRef.current = s;
         if (videoRef.current) {
           videoRef.current.srcObject = s;
@@ -119,9 +132,9 @@ export default function SessionLobby({
     if (videoRef.current) videoRef.current.srcObject = null;
 
     try {
-      await webRTCManager.initialize(sessionCode, userId, role);
-      localStorage.setItem('cameraon',camActive)
-      localStorage.setItem('micon',micActive)
+      localStorage.setItem('camActive', JSON.stringify(camActive));
+      localStorage.setItem('micActive', JSON.stringify(micActive));
+      await webRTCManager.initialize(sessionCode, userId, role, micActive, camActive);
 
       onJoined?.();
     } catch (err) {
@@ -287,7 +300,7 @@ export default function SessionLobby({
                   style={{ width: "100%", height: "100%", objectFit: "cover", display: camActive ? "block" : "none", transform: "scaleX(-1)" }}
                 />
                 {!camActive && (
-                  <div style={{ position: "absolute", inset: 0, background: camError ? "linear-gradient(160deg,#4a1a1a,#2d0f0f)" : "linear-gradient(160deg,#2d1f5e,#1a1030)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 20, textAlign: "center" }}>
+                  <div style={{ position: "absolute", inset: 0, background: camError ? "linear-gradient(160deg,#4a1a1a,#2d0f0f)" : "linear-gradient(160deg,#2d1f5e,#1a1030)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, padding: 20, textAlign: "center", borderRadius: 14 }}>
                     {camError ? (
                       <><span style={{ fontSize: 28 }}>⚠️</span><span style={{ fontSize: 12, color: "rgba(255,160,160,.9)", fontWeight: 500, lineHeight: 1.5 }}>{camError}</span></>
                     ) : (
