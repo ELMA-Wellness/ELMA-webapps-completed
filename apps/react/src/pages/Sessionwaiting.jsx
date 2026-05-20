@@ -16,8 +16,8 @@ import { webRTCManager } from "../config/webrtcmanger";
 export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
   const selfVideoRef = useRef(null);
 
-  const cameraon=localStorage.getItem('cameraon')
-  const micon=localStorage.getItem('micon')
+  const cameraon=localStorage.getItem('camActive')
+  const micon=localStorage.getItem('micActive')
 
 
   const [chatMsg, setChatMsg]         = useState("");
@@ -32,7 +32,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
   const toggleChat=()=>{
     setIsChatOpen((prev)=>!prev)
-    
+
   }
 
   // Defaults
