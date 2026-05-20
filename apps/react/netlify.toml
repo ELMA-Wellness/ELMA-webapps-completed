@@ -9,7 +9,7 @@
   # Netlify's build environment has Chrome at this path — used by prerender script
   # when running locally with NETLIFY=true or via netlify dev
   PUPPETEER_EXECUTABLE_PATH = "/usr/bin/google-chrome-stable"
-  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIza"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
 [context.deploy-preview]
   command = "npm run build:vite"
