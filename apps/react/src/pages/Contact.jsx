@@ -7,7 +7,7 @@ const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'e6bef4ca-d675-42df-879b-b735fab5f423'
 
 function Contact() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const nameRef = useRef(null)
   const emailRef = useRef(null)
   const subjectRef = useRef(null)
@@ -108,7 +108,8 @@ function Contact() {
       <SEO
         title="Contact ELMA — Get in Touch"
         description="Reach the ELMA team for support, partnerships, or press. Email socials@elma.ltd. Response within 24 hours. CEO & CMO contacts available for business enquiries."
-        canonical="/en/contact"
+        canonical={`/${lang}/contact`}
+        hreflangBase="/contact"
         schema={contactSchema}
       />
       <div className="contact-container">

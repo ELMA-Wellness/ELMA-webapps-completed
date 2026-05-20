@@ -4,12 +4,12 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <!-- ═══════════════════════════════════════════════════════════════
-       CORE PAGES — canonical /en/, hreflang for all languages
+       HOME — all language variants, each self-canonical via hreflang
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
     <loc>https://elma.ltd/en/</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/" />
@@ -25,8 +25,64 @@
   </url>
 
   <url>
+    <loc>https://elma.ltd/hi/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/fr/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/es/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/ja/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/" />
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ABOUT
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
     <loc>https://elma.ltd/en/about</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/about" />
@@ -38,8 +94,64 @@
   </url>
 
   <url>
+    <loc>https://elma.ltd/hi/about</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/about" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/about" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/about" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/about" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/about" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/fr/about</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/about" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/about" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/about" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/about" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/about" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/es/about</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/about" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/about" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/about" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/about" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/about" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/ja/about</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/about" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/about" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/about" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/about" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/about" />
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ELMA EXPERTS
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
     <loc>https://elma.ltd/en/elma-experts</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/elma-experts" />
@@ -51,8 +163,64 @@
   </url>
 
   <url>
+    <loc>https://elma.ltd/hi/elma-experts</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/elma-experts" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/fr/elma-experts</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/elma-experts" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/es/elma-experts</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/elma-experts" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/ja/elma-experts</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/elma-experts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/elma-experts" />
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FAQ
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
     <loc>https://elma.ltd/en/faq</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/faq" />
@@ -64,8 +232,64 @@
   </url>
 
   <url>
+    <loc>https://elma.ltd/hi/faq</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/faq" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/faq" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/faq" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/faq" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/fr/faq</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/faq" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/faq" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/faq" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/faq" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/es/faq</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/faq" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/faq" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/faq" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/faq" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/ja/faq</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/faq" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/faq" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/faq" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/faq" />
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       CONTACT
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
     <loc>https://elma.ltd/en/contact</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/contact" />
@@ -77,22 +301,78 @@
   </url>
 
   <url>
+    <loc>https://elma.ltd/hi/contact</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/contact" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/contact" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/contact" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/contact" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/fr/contact</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/contact" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/contact" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/contact" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/contact" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/es/contact</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/contact" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/contact" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/contact" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/contact" />
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/ja/contact</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/contact" />
+    <xhtml:link rel="alternate" hreflang="hi"        href="https://elma.ltd/hi/contact" />
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://elma.ltd/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="es"        href="https://elma.ltd/es/contact" />
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://elma.ltd/ja/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://elma.ltd/en/contact" />
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LEGAL (English-only — not translated)
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
     <loc>https://elma.ltd/en/privacy</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/terms</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/cancellation</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -103,7 +383,7 @@
 
   <url>
     <loc>https://elma.ltd/en/blog/</loc>
-    <lastmod>2026-05-05</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en"        href="https://elma.ltd/en/blog/" />
@@ -111,7 +391,7 @@
   </url>
 
   <!-- ═══════════════════════════════════════════════════════════════
-       BLOG POSTS
+       BLOG POSTS (English only)
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
@@ -278,6 +558,5 @@
       <image:title>How to Deal With Anxiety Without Medication: 8 Science-Backed Techniques</image:title>
     </image:image>
   </url>
-
 
 </urlset>

@@ -111,7 +111,8 @@ export default function About() {
       <SEO
         title="About ELMA — AI Emotional Companion Built for Human Connection"
         description="Meet the team behind ELMA — India's first AI emotional companion powered by voice AI, emotion science and CBT. Our mission: emotional wellness for all."
-        canonical="/en/about"
+        canonical={`/${lang}/about`}
+        hreflangBase="/about"
         schema={aboutSchema}
       />
 

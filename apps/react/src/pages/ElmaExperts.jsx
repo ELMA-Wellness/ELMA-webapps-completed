@@ -339,7 +339,8 @@ export default function ElmaExperts() {
       <SEO
         title="ELMA Experts — Join Our Therapist & Psychologist Network"
         description="Become an ELMA Expert. Join certified therapists & psychologists earning on their own schedule. AI handles admin — you focus on healing. Apply in 5 minutes."
-        canonical="/en/elma-experts"
+        canonical={`/${lang}/elma-experts`}
+        hreflangBase="/elma-experts"
         schema={expertsSchema}
       />
 

@@ -107,7 +107,8 @@ function Cancellation() {
       <SEO
         title="Cancellation & Refund Policy — ELMA"
         description="ELMA Cancellation & Refund Policy — how to cancel your subscription and request a refund. Transparent, fair, no hidden fees. Read the full policy here."
-        canonical="/en/cancellation"
+        canonical={`/${lang}/cancellation`}
+        hreflangBase="/cancellation"
       />
       <section className="subpage">
         <div className="container">

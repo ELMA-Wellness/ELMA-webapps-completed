@@ -1,4 +1,5 @@
 import SEO from '../components/SEO.jsx'
+import { useLang } from '../contexts/LangContext.jsx'
 
 const BASE_URL = 'https://elma.ltd'
 
@@ -139,12 +140,14 @@ const faqSchema = {
 }
 
 export default function FAQPage() {
+  const { lang } = useLang()
   return (
     <>
       <SEO
         title="FAQ — Everything About ELMA, the AI Emotional Companion App"
         description="Answers to every question about ELMA: what it is, how it works, ELMA Experts, privacy, pricing, and more."
-        canonical="/en/faq"
+        canonical={`/${lang}/faq`}
+        hreflangBase="/faq"
         schema={faqSchema}
       />
 

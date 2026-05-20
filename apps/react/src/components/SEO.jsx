@@ -3,15 +3,13 @@ import { Helmet } from 'react-helmet-async'
 const BASE_URL = 'https://elma.ltd'
 const DEFAULT_IMAGE = `${BASE_URL}/images/elma-og-cover.png`
 const SITE_NAME = 'ELMA'
+const SUPPORTED_LANGS = ['en', 'hi', 'fr', 'es', 'ja']
 
-/**
- * Drop-in SEO component for every page.
- * Overrides the index.html defaults with page-specific values.
- */
 export default function SEO({
   title,
   description,
   canonical,
+  hreflangBase = null,
   image = DEFAULT_IMAGE,
   type = 'website',
   schema = null,
@@ -25,6 +23,14 @@ export default function SEO({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={fullCanonical} />
+
+      {/* hreflang — generated when hreflangBase is provided (path without lang prefix, e.g. '/about') */}
+      {hreflangBase !== null && SUPPORTED_LANGS.map(l => (
+        <link key={l} rel="alternate" hrefLang={l} href={`${BASE_URL}/${l}${hreflangBase}`} />
+      ))}
+      {hreflangBase !== null && (
+        <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}/en${hreflangBase}`} />
+      )}
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
