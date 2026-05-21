@@ -20,11 +20,14 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
   const remoteVideoRef = useRef(null);
   const selfVideoRef   = useRef(null);
 
+  const initialMicActive = localStorage.getItem('micActive') === 'true';
+  const initialCamActive = localStorage.getItem('camActive') === 'true';
+
   const [chatMsg, setChatMsg]         = useState("");
   const [messages, setMessages]       = useState([]);
   const [sessionSecs, setSessionSecs] = useState(0);
-  const [muted, setMuted]             = useState(false);
-  const [camOff, setCamOff]           = useState(false);
+  const [muted, setMuted]             = useState(!initialMicActive);
+  const [camOff, setCamOff]           = useState(!initialCamActive);
   const [chatOpen, setChatOpen]       = useState(true);
   const [connState, setConnState]     = useState("connected");
   const [peerLeft, setPeerLeft]       = useState(false);
@@ -95,12 +98,14 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
     const next = !muted;
     setMuted(next);
     webRTCManager.toggleMute(next);
+    localStorage.setItem('micActive', String(!next));
   };
 
   const handleToggleCam = () => {
     const next = !camOff;
     setCamOff(next);
     webRTCManager.toggleCamera(next);
+    localStorage.setItem('camActive', String(!next));
   };
 
   const handleLeave = () => {

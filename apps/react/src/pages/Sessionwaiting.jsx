@@ -17,8 +17,9 @@ import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
 export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
   const selfVideoRef = useRef(null);
 
-  const cameraon=localStorage.getItem('camActive')
-  const micon=localStorage.getItem('micActive')
+  // LocalStorage returns strings. We must convert them to booleans.
+  const cameraon = localStorage.getItem('camActive') === 'true';
+  const micon    = localStorage.getItem('micActive') === 'true';
 
 
   const [chatMsg, setChatMsg]         = useState("");
@@ -107,12 +108,14 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     const next = !micActive;
     setMicActive(next);
     webRTCManager.toggleMute(!next);
+    localStorage.setItem('micActive', String(next));
   };
 
   const handleToggleCam = () => {
     const next = !camActive;
     setCamActive(next);
     webRTCManager.toggleCamera(!next);
+    localStorage.setItem('camActive', String(next));
   };
 
   const handleLeave = () => {
