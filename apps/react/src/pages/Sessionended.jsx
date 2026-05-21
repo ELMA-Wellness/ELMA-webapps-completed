@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getInitials } from "../utils/helper";
 
 const StarIcon = ({ filled, size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -25,7 +26,7 @@ const CheckBadge = ({ size = 22 }) => (
   </svg>
 );
 
-export default function SessionEnded({ duration = 52, onDone, onBookAgain }) {
+export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,role,professtion }) {
   const [rating, setRating]       = useState(0);
   const [hovered, setHovered]     = useState(0);
   const [feedback, setFeedback]   = useState("");
@@ -270,24 +271,31 @@ export default function SessionEnded({ duration = 52, onDone, onBookAgain }) {
         <div className="se-card">
           {/* Title */}
           <h1 className="se-title">Session Ended</h1>
-          <p className="se-subtitle">Your session with Dr. Sarah Mitchell has ended.</p>
+          <p className="se-subtitle">Your session with {name} has ended.</p>
 
           {/* Doctor avatar */}
           <div className="se-avatar-wrap">
-            <div className="se-avatar-initials">SM</div>
+            <div className="se-avatar-initials">{getInitials(name)}</div>
             <div className="se-badge">
               <CheckBadge size={22} />
             </div>
           </div>
 
           {/* Doctor info */}
-          <div className="se-doctor-name">Dr. Sarah Mitchell, <span style={{ fontWeight: 400, fontSize: 16 }}>PhD</span></div>
+          {
+            role==='patient' &&
+          
+          (<div className="se-doctor-name">{name}, <span style={{ fontWeight: 400, fontSize: 16 }}>{professtion}</span></div>)}
           <div className="se-duration">Duration: {duration} mins</div>
 
           <div className="se-divider" />
 
           {/* Star rating */}
-          <div className="se-stars">
+          {
+            role==='patient' &&
+          
+          
+          (<div className="se-stars">
             {[1, 2, 3, 4, 5].map(star => (
               <button
                 key={star}
@@ -300,18 +308,28 @@ export default function SessionEnded({ duration = 52, onDone, onBookAgain }) {
                 <StarIcon size={28} filled={(hovered || rating) >= star} />
               </button>
             ))}
-          </div>
-          <div className="se-rating-hint">
+          </div>)}
+          {
+            role==='patient' &&
+          
+          
+          
+          (<div className="se-rating-hint">
             {rating === 1 && "Poor — we're sorry to hear that."}
             {rating === 2 && "Fair — we'll work to improve."}
             {rating === 3 && "Good — thanks for the feedback!"}
             {rating === 4 && "Very good — glad you had a positive experience!"}
             {rating === 5 && "Excellent — so happy to hear that! 🎉"}
             {rating === 0 && hovered > 0 && `Rate ${hovered} star${hovered > 1 ? "s" : ""}`}
-          </div>
+          </div>)}
 
           {/* Action buttons */}
-          <div className="se-actions">
+          {
+            role==='patient' &&
+          
+          
+          
+          (<div className="se-actions">
             <button className="btn-rate" onClick={() => handleRate(rating || 5)}>
               <StarIcon size={15} filled /> Rate
             </button>
@@ -324,7 +342,7 @@ export default function SessionEnded({ duration = 52, onDone, onBookAgain }) {
             <button className="btn-outline" onClick={onDone}>
               Done
             </button>
-          </div>
+          </div>)}
 
           {/* Feedback box */}
           {showFeedback && !submitted && (

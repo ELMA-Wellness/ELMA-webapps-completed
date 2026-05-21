@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, DotsIcon, Avatar, SignalIcon, ExpandIcon,  } from "./Icons";
+import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, DotsIcon, Avatar, SignalIcon, ExpandIcon, } from "./Icons";
 import { webRTCManager } from "../config/webrtcmanger";
 import { Timestamp } from "firebase/firestore";
-import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
+import { getInitials, formatFirebaseTimestamp } from "../utils/helper";
 
 
 
@@ -18,20 +18,22 @@ import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
  */
 export default function SessionLive({ therapist, sessionMeta, remoteStream: initialRemoteStream, onLeave }) {
   const remoteVideoRef = useRef(null);
-  const selfVideoRef   = useRef(null);
+  const selfVideoRef = useRef(null);
 
   const initialMicActive = localStorage.getItem('micActive') === 'true';
   const initialCamActive = localStorage.getItem('camActive') === 'true';
 
-  const [chatMsg, setChatMsg]         = useState("");
-  const [messages, setMessages]       = useState([]);
+  const [chatMsg, setChatMsg] = useState("");
+  const [messages, setMessages] = useState([]);
   const [sessionSecs, setSessionSecs] = useState(0);
-  const [muted, setMuted]             = useState(!initialMicActive);
-  const [camOff, setCamOff]           = useState(!initialCamActive);
-  const [chatOpen, setChatOpen]       = useState(true);
-  const [connState, setConnState]     = useState("connected");
-  const [peerLeft, setPeerLeft]       = useState(false);
+  const [muted, setMuted] = useState(!initialMicActive);
+  const [camOff, setCamOff] = useState(!initialCamActive);
+  const [chatOpen, setChatOpen] = useState(true);
+  const [connState, setConnState] = useState("connected");
+  const [peerLeft, setPeerLeft] = useState(false);
   const [localStream, setLocalStream] = useState(null);
+  const [remoteMuted, setRemoteMuted] = useState(false);
+  const [remoteCamOff, setRemoteCamOff] = useState(false);
   const [remoteStream, setRemoteStream] = useState(initialRemoteStream || null);
   const [pipExpanded, setPipExpanded] = useState(false);
   const chatEndRef = useRef(null);
@@ -56,7 +58,7 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
       setLocalStream(stream);
       if (selfVideoRef.current) {
         selfVideoRef.current.srcObject = stream;
-        if (stream) selfVideoRef.current.play().catch(() => {});
+        if (stream) selfVideoRef.current.play().catch(() => { });
       }
     };
 
@@ -64,8 +66,13 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
       setRemoteStream(stream);
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = stream;
-        if (stream) remoteVideoRef.current.play().catch(() => {});
+        if (stream) remoteVideoRef.current.play().catch(() => { });
       }
+    };
+
+    webRTCManager.onRemoteMediaStateChanged = (state) => {
+      setRemoteMuted(!state.micEnabled);
+      setRemoteCamOff(!state.cameraEnabled);
     };
 
     webRTCManager.onMessagesChanged = (msgs) => setMessages(msgs);
@@ -78,19 +85,29 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
     };
 
     return () => {
-      webRTCManager._onLocalStreamChanged    = null;
-      webRTCManager._onRemoteStreamChanged   = null;
-      webRTCManager._onMessagesChanged       = null;
-      webRTCManager._onConnectionStateChanged= null;
-      webRTCManager.onPeerDisconnect         = null;
+      webRTCManager._onLocalStreamChanged = null;
+      webRTCManager._onRemoteStreamChanged = null;
+      webRTCManager._onMessagesChanged = null;
+      webRTCManager._onConnectionStateChanged = null;
+      webRTCManager.onRemoteMediaStateChanged = null;
+      webRTCManager.onPeerDisconnect = null;
     };
+  }, []);
+
+  // Broadcast initial state on mount
+  useEffect(() => {
+    webRTCManager.sendMessage({
+      type: "media_state_update",
+      micEnabled: !muted,
+      cameraEnabled: !camOff,
+    });
   }, []);
 
   // Attach initial remote stream on mount
   useEffect(() => {
     if (initialRemoteStream && remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = initialRemoteStream;
-      remoteVideoRef.current.play().catch(() => {});
+      remoteVideoRef.current.play().catch(() => { });
     }
   }, [initialRemoteStream]);
 
@@ -99,6 +116,11 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
     setMuted(next);
     webRTCManager.toggleMute(next);
     localStorage.setItem('micActive', String(!next));
+    webRTCManager.sendMessage({
+      type: "media_state_update",
+      micEnabled: !next,
+      cameraEnabled: !camOff,
+    })
   };
 
   const handleToggleCam = () => {
@@ -106,6 +128,11 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
     setCamOff(next);
     webRTCManager.toggleCamera(next);
     localStorage.setItem('camActive', String(!next));
+     webRTCManager.sendMessage({
+      type: "media_state_update",
+      micEnabled: !muted,
+      cameraEnabled: !next,
+    })
   };
 
   const handleLeave = () => {
@@ -327,7 +354,7 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
 
         {/* ── REMOTE VIDEO (full bleed) ── */}
         <div className="sl-remote-wrap">
-          {remoteStream && !peerLeft ? (
+          {remoteStream && !peerLeft && !remoteCamOff ? (
             <video
               ref={remoteVideoRef}
               autoPlay playsInline
@@ -337,11 +364,16 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
             <div className="sl-remote-placeholder">
               <div style={{ position: "relative" }}>
                 <Avatar size={96} initials={th.avatarInitials} extraStyle={{ border: "3px solid rgba(255,255,255,.15)" }} />
+                {remoteMuted && (
+                  <div style={{ position: "absolute", bottom: 4, right: 4, background: "#e53935", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #0d0a1a" }}>
+                    <MicIcon muted size={14} />
+                  </div>
+                )}
               </div>
               <div style={{ color: "rgba(255,255,255,.6)", fontSize: 14, textAlign: "center", fontWeight: 500 }}>
-                {peerLeft ? "Connection interrupted…" : "Connecting to therapist…"}
+                {peerLeft ? "Connection interrupted…" : remoteCamOff ? `${th.name} has turned off their camera` : "Connecting to therapist…"}
               </div>
-              {!peerLeft && (
+              {!peerLeft && !remoteCamOff && (
                 <div style={{ color: "rgba(255,255,255,.35)", fontSize: 12, animation: "reconnecting 1.5s infinite" }}>
                   Please wait
                 </div>
@@ -411,12 +443,12 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
               )}
               {messages.map((m, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, alignSelf: m.role==='patient' ? "flex-end" : "flex-start" }}>
-                    {m.role==='therapist' && <Avatar size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none", }} />}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, alignSelf: m.role === 'patient' ? "flex-end" : "flex-start" }}>
+                    {m.role === 'therapist' && <Avatar size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none", }} />}
                     <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m?.senderName}</span>
                     <span style={{ fontSize: 10, color: "#c0b8da" }}>{formatFirebaseTimestamp(m?.createdAt)}</span>
                   </div>
-                  <div className={m.role==='patient' ? "msg-bubble-self" : "msg-bubble-other"}>{m.text}</div>
+                  <div className={m.role === 'patient' ? "msg-bubble-self" : "msg-bubble-other"}>{m.text}</div>
                 </div>
               ))}
               <div ref={chatEndRef} />

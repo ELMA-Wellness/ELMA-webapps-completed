@@ -150,6 +150,9 @@ export default function App() {
           duration={sessionDuration || 52}
           onDone={handleDone}
           onBookAgain={handleBookAgain}
+          name={THERAPIST_INFO.name}
+          role={role}
+          profession={profession}
         />
       )}
     </>
