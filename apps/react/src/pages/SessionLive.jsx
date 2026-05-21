@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, DotsIcon, Avatar, SignalIcon, ExpandIcon,  } from "./Icons";
 import { webRTCManager } from "../config/webrtcmanger";
+import { Timestamp } from "firebase/firestore";
+import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
+
+
+
+
 /**
  * SessionLive – the actual video call screen.
  * 
@@ -342,7 +348,7 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
         {/* ── PEER LEFT BANNER ── */}
         {peerLeft && (
           <div className="peer-left-banner">
-            ⚠️ Dr. {th.name.split(" ").pop()} has disconnected. Waiting for reconnection…
+            ⚠️ {th.name.split(" ").pop()} has disconnected. Waiting for reconnection…
           </div>
         )}
 
@@ -403,9 +409,9 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
               {messages.map((m, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, alignSelf: m.role==='patient' ? "flex-end" : "flex-start" }}>
-                    {m.role==='therapist' && <Avatar size={20} initials={th.avatarInitials} extraStyle={{ border: "none" }} />}
-                    <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m.isSelf ? "You" : th.name.split(" ")[0]}</span>
-                    <span style={{ fontSize: 10, color: "#c0b8da" }}>{m.time}</span>
+                    {m.role==='therapist' && <Avatar size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none", }} />}
+                    <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m?.senderName}</span>
+                    <span style={{ fontSize: 10, color: "#c0b8da" }}>{formatFirebaseTimestamp(m?.createdAt)}</span>
                   </div>
                   <div className={m.role==='patient' ? "msg-bubble-self" : "msg-bubble-other"}>{m.text}</div>
                 </div>

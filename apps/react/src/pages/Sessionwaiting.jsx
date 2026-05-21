@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, DotsIcon, Avatar } from "./Icons";
 import { webRTCManager } from "../config/webrtcmanger";
+import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
 
 /**
  * SessionWaiting
@@ -29,6 +30,8 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   const [connState, setConnState]     = useState("connecting");
   const chatEndRef                    = useRef(null);
   const[chatOpen,setIsChatOpen]=useState(false)
+
+  console.log("messages",messages)
 
   const toggleChat=()=>{
     setIsChatOpen((prev)=>!prev)
@@ -70,6 +73,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
     // Chat
     webRTCManager.onMessagesChanged = (msgs) => {
+      console.log(msgs)
       setMessages(msgs);
     };
 
@@ -398,9 +402,9 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               {messages.map((m, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, alignSelf: m.role==='therapist' ? "flex-end" : "flex-start" }}>
-                    {m.role==='therapist' && <Avatar size={22} initials={th.avatarInitials} extraStyle={{ border: "none" }} />}
-                    <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m.isSelf ? "You" : th.name}</span>
-                    <span style={{ fontSize: 10, color: "#c0b8da" }}>{m.time}</span>
+                    <Avatar size={22} initials={  getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
+                    <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m?.senderName}</span>
+                    <span style={{ fontSize: 10, color: "#c0b8da" }}>{formatFirebaseTimestamp(m?.createdAt)}</span>
                   </div>
                   <div className={m.role==='patient' ? "msg-bubble-self" : "msg-bubble-other"}>{m.text}</div>
                 </div>
