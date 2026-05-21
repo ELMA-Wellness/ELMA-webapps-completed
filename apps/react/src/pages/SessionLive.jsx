@@ -71,6 +71,7 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
     };
 
     webRTCManager.onRemoteMediaStateChanged = (state) => {
+      console.log("state",state)
       setRemoteMuted(!state.micEnabled);
       setRemoteCamOff(!state.cameraEnabled);
     };

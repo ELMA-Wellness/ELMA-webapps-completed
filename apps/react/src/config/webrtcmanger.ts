@@ -422,7 +422,8 @@ class WebRTCManager {
         break;
       }
 
-      case 'media_state_update': {
+      case 'media_state_updated': {
+        console.log("case falling")
         this._onRemoteMediaStateChanged?.({
           micEnabled: msg.micEnabled,
           cameraEnabled: msg.cameraEnabled
