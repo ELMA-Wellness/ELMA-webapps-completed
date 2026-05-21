@@ -381,8 +381,6 @@ export default function SessionLive({ therapist, sessionMeta, remoteStream: init
           {[
             { icon: <MicIcon muted={muted} size={20} />, label: muted ? "Unmute" : "Mute", onClick: handleToggleMic, muted: muted },
             { icon: <CamIcon off={camOff} size={20} />, label: camOff ? "Cam Off" : "Camera", onClick: handleToggleCam, muted: camOff },
-            { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>, label: "Audio", onClick: () => {}, muted: false },
-            { icon: <DotsIcon size={20} />, label: "More", onClick: () => {}, muted: false },
           ].map(({ icon, label, onClick, muted: isM }, i) => (
             <div key={i} className="ctrl-wrap">
               <button onClick={onClick} className={`ctrl-btn ${isM ? "ctrl-btn-muted" : "ctrl-btn-active"}`}>{icon}</button>
