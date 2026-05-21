@@ -1,0 +1,106 @@
+# ELMA — apps/react/netlify.toml
+# Applies when Netlify base directory is set to apps/react
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Netlify's build environment has Chrome at this path — used by prerender script
+  # when running locally with NETLIFY=true or via netlify dev
+  PUPPETEER_EXECUTABLE_PATH = "/usr/bin/google-chrome-stable"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
+[context.deploy-preview]
+  command = "npm run build:vite"
+
+[context.branch-deploy]
+  command = "npm run build:vite"
+
+# ── Security & SEO headers (all pages) ───────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options            = "SAMEORIGIN"
+    X-Content-Type-Options     = "nosniff"
+    X-XSS-Protection           = "1; mode=block"
+    Referrer-Policy            = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), microphone=(self), geolocation=(self)"
+    Strict-Transport-Security  = "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://fonts.googleapis.com https://api.web3forms.com https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https:; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data: https:; img-src 'self' data: blob: https:; connect-src 'self' https: wss: wss://elma-dsb6fne7c0bqezaj.centralindia-01.azurewebsites.net https://api.web3forms.com https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://raw.githubusercontent.com; frame-ancestors 'none';"
+# ── Static asset caching (hashed filenames — safe to cache forever) ──────────
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ── Static files ──────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type  = "application/xml; charset=utf-8"
+
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type  = "text/plain; charset=utf-8"
+
+# ── Markdown mirrors (AI crawler / LLM citation) ──────────────────────────────
+[[headers]]
+  for = "/content/blog/*.md"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type  = "text/plain; charset=utf-8"
+    X-Robots-Tag  = "index, follow"
+
+# ── Redirects ─────────────────────────────────────────────────────────────────
+# Root to English — collapses the JS redirect hop that Ahrefs flags as a chain.
+# Geo redirects (set in Netlify dashboard) run before this and take priority.
+[[redirects]]
+  from   = "/"
+  to     = "/en/"
+  status = 301
+
+# Bare paths without lang prefix → English (catches bot crawls missing the JS redirect)
+[[redirects]]
+  from   = "/about"
+  to     = "/en/about"
+  status = 301
+
+[[redirects]]
+  from   = "/blog/*"
+  to     = "/en/blog/:splat"
+  status = 301
+
+[[redirects]]
+  from   = "/faq"
+  to     = "/en/faq"
+  status = 301
+
+[[redirects]]
+  from   = "/contact"
+  to     = "/en/contact"
+  status = 301
+
+[[redirects]]
+  from   = "/elma-experts"
+  to     = "/en/elma-experts"
+  status = 301
+
+# SPA fallback — must be last
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

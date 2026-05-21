@@ -1,4 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { addData } from "../firebase/firestore";
 
 
@@ -123,6 +124,10 @@ const AppLanding = () => {
 
     // Pre-launch Coming Soon UI
     return (
+        <>
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
         <div style={styles.page}>
             <div style={styles.hero}>
                 <div style={styles.left}>
@@ -173,6 +178,7 @@ const AppLanding = () => {
                 <p>© {new Date().getFullYear()} ELMA Wellness. All rights reserved.</p>
             </footer>
         </div>
+        </>
     );
 };
 

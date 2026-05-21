@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, DotsIcon, Avatar } from "./Icons";
 import { webRTCManager } from "../config/webrtcmanger";
+import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
 
 /**
  * SessionWaiting
@@ -13,16 +14,30 @@ import { webRTCManager } from "../config/webrtcmanger";
  *   onLeave       – () => void
  *   onPeerJoined  – (remoteStream) => void
  */
-export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined }) {
+export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
   const selfVideoRef = useRef(null);
+
+  // LocalStorage returns strings. We must convert them to booleans.
+  const cameraon = localStorage.getItem('camActive') === 'true';
+  const micon    = localStorage.getItem('micActive') === 'true';
+
 
   const [chatMsg, setChatMsg]         = useState("");
   const [messages, setMessages]       = useState([]);
   const [sessionSecs, setSessionSecs] = useState(0);
-  const [muted, setMuted]             = useState(false);
-  const [camOff, setCamOff]           = useState(false);
+  const [micActive, setMicActive]     = useState(micon);
+  const [camActive, setCamActive]     = useState(cameraon);
+  const [localStream, setLocalStream] = useState(null);
   const [connState, setConnState]     = useState("connecting");
   const chatEndRef                    = useRef(null);
+  const[chatOpen,setIsChatOpen]=useState(false)
+
+  console.log("messages",messages)
+
+  const toggleChat=()=>{
+    setIsChatOpen((prev)=>!prev)
+
+  }
 
   // Defaults
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
@@ -43,6 +58,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   useEffect(() => {
     // Local stream → show in PiP
     webRTCManager.onLocalStreamChanged = (stream) => {
+      setLocalStream(stream);
       if (selfVideoRef.current) {
         selfVideoRef.current.srcObject = stream;
         if (stream) selfVideoRef.current.play().catch(() => {});
@@ -58,6 +74,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
     // Chat
     webRTCManager.onMessagesChanged = (msgs) => {
+      console.log(msgs)
       setMessages(msgs);
     };
 
@@ -72,25 +89,33 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     };
 
     return () => {
-      // Clear only if still assigned to us (avoid overwriting next screen's callbacks)
-      if (webRTCManager.onLocalStreamChanged)    webRTCManager._onLocalStreamChanged    = null;
-      if (webRTCManager.onRemoteStreamChanged)   webRTCManager._onRemoteStreamChanged   = null;
-      if (webRTCManager.onMessagesChanged)       webRTCManager._onMessagesChanged       = null;
-      if (webRTCManager.onConnectionStateChanged)webRTCManager._onConnectionStateChanged= null;
+      webRTCManager._onLocalStreamChanged    = null;
+      webRTCManager._onRemoteStreamChanged   = null;
+      webRTCManager._onMessagesChanged       = null;
+      webRTCManager._onConnectionStateChanged= null;
       webRTCManager.onPeerDisconnect = null;
     };
   }, [onPeerJoined]);
 
+  useEffect(() => {
+    if (selfVideoRef.current && localStream) {
+      selfVideoRef.current.srcObject = localStream;
+      selfVideoRef.current.play().catch(() => {});
+    }
+  }, [localStream, camActive]);
+
   const handleToggleMic = () => {
-    const next = !muted;
-    setMuted(next);
-    webRTCManager.toggleMute(next);
+    const next = !micActive;
+    setMicActive(next);
+    webRTCManager.toggleMute(!next);
+    localStorage.setItem('micActive', String(next));
   };
 
   const handleToggleCam = () => {
-    const next = !camOff;
-    setCamOff(next);
-    webRTCManager.toggleCamera(next);
+    const next = !camActive;
+    setCamActive(next);
+    webRTCManager.toggleCamera(!next);
+    localStorage.setItem('camActive', String(next));
   };
 
   const handleLeave = () => {
@@ -255,6 +280,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
                 <span style={{ width: 7, height: 7, borderRadius: "50%", background: connColor, display: "inline-block" }} />
                 {connLabel}
               </span>
+              
               {th.specialties.map(s => (
                 <span key={s} style={{ background: "#ede8fb", color: "#5a3db5", borderRadius: 20, padding: "2px 11px", fontSize: 11, fontWeight: 600 }}>{s}</span>
               ))}
@@ -294,7 +320,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               Waiting for <strong>{th.name}</strong> to join…
             </div>
             <div style={{ fontSize: 13, color: "#7c6aaa", textAlign: "center", marginBottom: 20, maxWidth: 400, lineHeight: 1.6 }}>
-              She'll join soon. Your session is private and encrypted.
+              {role==='therapist' ? 'Client': 'Therapist'}'ll join soon. Your session is private and encrypted.
             </div>
 
             {/* Animated dots */}
@@ -316,10 +342,9 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
             {/* Controls */}
             <div className="sw-controls-bar">
               {[
-                { icon: <MicIcon muted={muted} size={18} />, label: muted ? "Unmute" : "Mute", onClick: handleToggleMic, active: !muted },
-                { icon: <CamIcon off={camOff} size={18} />, label: "Camera", onClick: handleToggleCam, active: !camOff },
-                { icon: <ChatIcon size={18} />, label: "Chat", onClick: () => {}, active: true },
-                { icon: <DotsIcon size={18} />, label: "More", onClick: () => {}, active: true },
+                { icon: <MicIcon muted={!micActive} size={18} />, label: micActive ? "Mute" : "Unmute", onClick: handleToggleMic, active: micActive },
+                { icon: <CamIcon off={!camActive} size={18} />, label: "Camera", onClick: handleToggleCam, active: camActive },
+                { icon:  <ChatIcon size={18} />, label: "Chat", onClick: toggleChat, active: chatOpen },
               ].map(({ icon, label, onClick, active }, i) => (
                 <div key={i} className="ctrl-item">
                   <button onClick={onClick} style={ctrlBtn(active)}>{icon}</button>
@@ -334,33 +359,43 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
             {/* PiP self-view */}
             <div className="sw-pip">
-              {!camOff ? (
-                <video ref={selfVideoRef} autoPlay muted playsInline
-                  style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: "block" }} />
-              ) : (
-                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,.3)" }}>
+              <video 
+                ref={selfVideoRef} autoPlay muted playsInline
+                style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: camActive ? "block" : "none" }} 
+              />
+              {!camActive && (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#1a1030", color: "rgba(255,255,255,.3)" }}>
                   <CamIcon off size={22} />
                 </div>
               )}
               <div style={{ position: "absolute", top: 5, right: 6, background: "rgba(0,0,0,.55)", color: "white", fontSize: 9, borderRadius: 5, padding: "2px 6px", fontWeight: 600 }}>You</div>
-              {muted && (
-                <div style={{ position: "absolute", bottom: 5, right: 5, background: "#e53935", borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
-                  <MicIcon muted size={8} />
-                </div>
-              )}
+              
+              {/* Mic indicator */}
+              <div style={{ position: "absolute", bottom: 5, left: 5, background: micActive ? "rgba(34,197,94,.85)" : "rgba(220,38,38,.85)", borderRadius: 20, padding: "3px 8px", display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: "white", fontWeight: 600 }}>
+                <MicIcon muted={!micActive} size={8} />
+                {micActive ? "Mic On" : "Mic Off"}
+              </div>
             </div>
           </div>
 
           {/* RIGHT: Chat + Info */}
           <div className="sw-chat-panel">
             {/* Chat header */}
-            <div style={{ padding: "13px 16px 10px", borderBottom: "1.5px solid #f0ebff", display: "flex", alignItems: "center", gap: 8 }}>
+            {
+              chatOpen &&
+            
+            (<div style={{ padding: "13px 16px 10px", borderBottom: "1.5px solid #f0ebff", display: "flex", alignItems: "center", gap: 8 }}>
               <ChatIcon size={14} />
               <span style={{ fontWeight: 700, fontSize: 13, color: "#2d1f5e" }}>Chat</span>
               <span style={{ marginLeft: "auto", fontSize: 11, color: "#9889c8" }}>Messages are encrypted</span>
-            </div>
+            </div>)}
 
             {/* Messages */}
+            {
+              chatOpen &&
+
+              (<>
+            
             <div className="chat-messages">
               {messages.length === 0 && (
                 <div style={{ textAlign: "center", color: "#c0b8da", fontSize: 12, marginTop: 20 }}>
@@ -370,9 +405,9 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               {messages.map((m, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, alignSelf: m.role==='therapist' ? "flex-end" : "flex-start" }}>
-                    {m.role==='therapist' && <Avatar size={22} initials={th.avatarInitials} extraStyle={{ border: "none" }} />}
-                    <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m.isSelf ? "You" : th.name}</span>
-                    <span style={{ fontSize: 10, color: "#c0b8da" }}>{m.time}</span>
+                    <Avatar size={22} initials={  getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
+                    <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m?.senderName}</span>
+                    <span style={{ fontSize: 10, color: "#c0b8da" }}>{formatFirebaseTimestamp(m?.createdAt)}</span>
                   </div>
                   <div className={m.role==='patient' ? "msg-bubble-self" : "msg-bubble-other"}>{m.text}</div>
                 </div>
@@ -391,6 +426,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               />
               <button className="send-btn" onClick={sendMsg}><SendIcon size={12} /></button>
             </div>
+            </>)}
 
             {/* Session Info */}
             <div className="info-section">

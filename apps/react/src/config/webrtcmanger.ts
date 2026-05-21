@@ -1,4 +1,4 @@
-const WEBSOCKET_URL = 'wss://elma-wellness-v2.onrender.com'; // Replace with your WebSocket server URL
+const WEBSOCKET_URL = 'wss://elma-dsb6fne7c0bqezaj.centralindia-01.azurewebsites.net/';
 const ICE_SERVERS = [
   {
     urls: "stun:stun.relay.metered.ca:80",
@@ -27,6 +27,7 @@ const ICE_SERVERS = [
 type Role = 'patient' | 'therapist';
 type StreamCallback = (stream: MediaStream | null) => void;
 type MessagesCallback = (messages: any[]) => void;
+type MediaStateCallback = (state: { micEnabled: boolean, cameraEnabled: boolean }) => void;
 
 class WebRTCManager {
   pc: RTCPeerConnection | null = null;
@@ -75,6 +76,12 @@ class WebRTCManager {
   set onMessagesChanged(cb: MessagesCallback | null) {
     this._onMessagesChanged = cb;
     if (cb) cb(this.messages); // replay current value
+  }
+
+  private _onRemoteMediaStateChanged: MediaStateCallback | null = null;
+  get onRemoteMediaStateChanged() { return this._onRemoteMediaStateChanged; }
+  set onRemoteMediaStateChanged(cb: MediaStateCallback | null) {
+    this._onRemoteMediaStateChanged = cb;
   }
 
   private _onConnectionStateChanged: ((state: string) => void) | null = null;
@@ -412,6 +419,15 @@ class WebRTCManager {
       case 'chat_history': {
         this.messages = [...msg.messages];
         this._onMessagesChanged?.(this.messages);
+        break;
+      }
+
+      case 'media_state_updated': {
+        console.log("case falling")
+        this._onRemoteMediaStateChanged?.({
+          micEnabled: msg.micEnabled,
+          cameraEnabled: msg.cameraEnabled
+        });
         break;
       }
 
