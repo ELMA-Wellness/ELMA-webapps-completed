@@ -1,10 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import SessionLobby from "./Sessionlobby";
 import SessionWaiting from "./Sessionwaiting";
 import SessionLive from "./SessionLive";
 import SessionEnded from "./Sessionended";
 import { webRTCManager } from "../config/webrtcmanger";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
+import CompleteSessionConfirmationModal from "../components/modals/CompleteSessionConfirmation";
+import { updateById } from "../firebase/firestore";
+import { isSessionExpired } from "../utils/helper";
+import SessionExpiredWeb from "./SessionExpired";
 
 /**
  * Session flow:
@@ -22,24 +26,24 @@ export default function App() {
   const [sessionDuration, setSessionDuration] = useState(0);
   const sessionStartRef = useRef(null);
 
-    const [params] = useSearchParams();
+  const [params] = useSearchParams();
 
-    const sessionCode = params.get("sessionCode");
-    const userId = params.get("userId");
-    const role = params.get("role");
-    const name = params.get("name")
-    const profession=params.get("profession")
-    const startTime = params.get("startTime");
+  const sessionCode = params.get("sessionCode");
+  const userId = params.get("userId");
+  const role = params.get("role");
+  const name = params.get("name")
+  const profession = params.get("profession")
+  const startTime = params.get("startTime");
 
-    const skills =
-  JSON.parse(
-    decodeURIComponent(params.get("skills") || "[]")
-  );
-
-    
+  const skills =
+    JSON.parse(
+      decodeURIComponent(params.get("skills") || "[]")
+    );
 
 
-  
+
+
+
 
 
   const getInitials = (name = "") => {
@@ -56,7 +60,7 @@ export default function App() {
 
   const SESSION_CONFIG = {
     sessionCode: sessionCode,
-    userId: userId ,
+    userId: userId,
     role: role,           // "patient" | "therapist"
   };
 
@@ -71,6 +75,14 @@ export default function App() {
     durationMins: 45,
     startTime: startTime,
   };
+
+  useEffect(() => {
+  const unsubscribe = webRTCManager.onRemoteSessionChanged(() => {
+    setScreen("ended");
+  });
+
+  return () => unsubscribe?.();
+}, []);
 
   // ── Lobby → Waiting ──────────────────────────────────────────────────────
   const handleLobbyJoined = () => {
@@ -112,6 +124,31 @@ export default function App() {
     setScreen("lobby");
   };
 
+  const onMarkComplete = async () => {
+    await updateById('bookings', sessionCode, {
+      status: "completed",
+      sessionCompleted: true
+
+    })
+    setScreen('lobby')
+
+  }
+
+  const onSkip = () => {
+    setScreen('lobby')
+  }
+  if (role === 'patient' && screen === 'ended') {
+    return <CompleteSessionConfirmationModal
+      onMarkAsComplete={onMarkComplete}
+      onSkip={onSkip}
+      visible />
+  }
+
+  if(isSessionExpired(startTime)){
+    return (
+      <Navigate to={'/session/expired'}/>
+    )
+  }
   return (
     <>
       {screen === "lobby" && (

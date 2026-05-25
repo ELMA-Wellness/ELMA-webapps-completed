@@ -62,7 +62,39 @@ class WebRTCManager {
   // When a listener is assigned, it is immediately called with the current
   // value so components that register late never miss an update.
 
+
+  private _onRemoteSessionChanged: any;
+  private remoteSessionListeners: Array<() => void> = [];
+
+  onRemoteSessionChanged(cb: () => void) {
+    this.remoteSessionListeners.push(cb);
+    return () => {
+      this.remoteSessionListeners = this.remoteSessionListeners.filter(fn => fn !== cb);
+    };
+  }
+
+  private emitRemoteSessionChanged() {
+    this.remoteSessionListeners.forEach(cb => cb());
+  }
+
+
+
+
+
+
+
+
+
+
   private _onRemoteStreamChanged: StreamCallback | null = null;
+
+
+
+
+
+
+
+
   get onRemoteStreamChanged() { return this._onRemoteStreamChanged; }
   set onRemoteStreamChanged(cb: StreamCallback | null) {
     this._onRemoteStreamChanged = cb;
@@ -105,9 +137,9 @@ class WebRTCManager {
   }
 
   async initialize(
-    sessionCode: string='69a54abd29c99c56303ea5f6',
-    userId: string='696f408b2ff51b82b1cee0e6',
-    role: Role='patient',
+    sessionCode: string = '69a54abd29c99c56303ea5f6',
+    userId: string = '696f408b2ff51b82b1cee0e6',
+    role: Role = 'patient',
     micEnabled = false,
     cameraEnabled = false,
     initialStream: MediaStream | null = null
@@ -192,7 +224,7 @@ class WebRTCManager {
   }
 
   /** Call this to end the session from the local side. */
-  hangup(navigate = false) {
+  hangup(navigate = false, cb = () => { }) {
     this._intentionalClose = true;
 
     if (this._reconnectTimer) {
@@ -244,13 +276,15 @@ class WebRTCManager {
     this._onMessagesChanged = null;
     this._onConnectionStateChanged = null;
     this.onPeerDisconnect = null;
+    cb()
 
     if (navigate) {
-      if(this.role==='patient'){
-     // router.replace('/experts/sessionend');
+      if (this.role === 'patient') {
+
+        // router.replace('/experts/sessionend');
       }
-      else{
-       // router.replace('/experts/drsessionend')
+      else {
+        // router.replace('/experts/drsessionend')
       }
     }
   }
@@ -636,7 +670,7 @@ class WebRTCManager {
       case 'peer_disconnected': {
         // Remote peer is gone (temporary). Keep local media alive and wait for rejoin.
         console.log('[WS] Peer disconnected/left');
-        
+
         this.remoteStream?.getTracks().forEach(t => t.stop());
         this.remoteStream = null;
         this._onRemoteStreamChanged?.(null);
@@ -648,19 +682,22 @@ class WebRTCManager {
         break;
       }
 
-      case 'peer-unavailable':{
-        
-        
+      case 'peer-unavailable': {
+
+
         break;
       }
 
       case 'peer_joined': {
-       
+
         break;
       }
 
       case 'session_ended': {
+
+
         this.hangup(true);
+         this.emitRemoteSessionChanged();
         break;
       }
 
@@ -673,7 +710,7 @@ class WebRTCManager {
     if (!this.pc) return;
     if (this.role !== 'therapist') return;
     if (this._isMakingOffer) return;
-    
+
 
     this._isMakingOffer = true;
     try {

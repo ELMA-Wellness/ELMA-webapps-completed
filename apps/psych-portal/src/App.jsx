@@ -48,6 +48,8 @@ export default function App() {
         {/* LOGIN */}
         <Route path="/auth/sign-in" element={<PsychAuthSignIn />} />
 
+a
+
          <Route path="/auth/reset-pwd" element={<ResetPassword />} />
 
         <Route path="/time-slot" element={<TherapistTimeSelector/>} />

@@ -42,6 +42,7 @@ export default function SessionLive({
   sessionMeta,
   remoteStream: initialRemoteStream,
   onLeave,
+  role
 }) {
   /* ── defaults ─────────────────────────────────────────────────────────── */
   const th = therapist || {
@@ -530,12 +531,20 @@ export default function SessionLive({
               <span className="ctrl-lbl">{label}</span>
             </div>
           ))}
-          <div className="ctrl-wrap" style={{ marginLeft: 8 }}>
+          {
+
+            role==='therapist' && (
+                <div className="ctrl-wrap" style={{ marginLeft: 8 }}>
             <button className="ctrl-btn-leave" onClick={handleLeave}>
               <PhoneOff size={16} /> End Call
             </button>
             <span className="ctrl-lbl" style={{ visibility: "hidden" }}>·</span>
           </div>
+              
+            )
+            
+          }
+        
         </div>
 
         {/* ── CHAT OVERLAY ── */}

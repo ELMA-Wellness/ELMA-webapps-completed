@@ -24,3 +24,12 @@ export const formatFirebaseTimestamp = (timestamp: any)=> {
     hour12: true,
   }).format(date);
 };
+
+export const isSessionExpired = (startTime: string | number | Date) => {
+  if (!startTime) return true;
+
+  const start = new Date(startTime);
+  const expiry = new Date(start.getTime() + 45 * 60 * 1000);
+
+  return new Date() > expiry;
+};

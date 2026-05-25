@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/HomePage.jsx'
 import { LangProvider, SUPPORTED_LANGS } from './contexts/LangContext.jsx'
 import LanguageSwitcher from './components/LanguageSwitcher.jsx'
+import SessionExpiredWeb from './pages/SessionExpired.tsx'
 
 const BG_GRADIENTS = [
   'linear-gradient(135deg, #07050f 0%, #1a0a38 45%, #050d1a 100%)',
@@ -156,37 +157,57 @@ function App() {
         animate={{ background: BG_GRADIENTS }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <Navbar onToggleMenu={() => setMobileOpen(true)} />
-      <ScrollToTop />
-      <Suspense fallback={null}>
-        <Routes>
-          {/* Root — Netlify geo redirect fires first at CDN; this catches local dev */}
-          <Route path="/" element={<RootRedirect />} />
+     
+    <Suspense fallback={null}>
+  <Routes>
 
-          {/* Lang-prefixed routes: /en, /fr, /ja, /hi, /es */}
-          <Route path="/:lang" element={<LangLayout />}>
-            <Route index element={<Home />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="privacy" element={<Privacy />} />
-            <Route path="terms" element={<Terms />} />
-            <Route path="cancellation" element={<Cancellation />} />
-            <Route path="qr" element={<AppLanding />} />
-            <Route path="dashboard" element={<AnalyticsDashboard />} />
-            <Route path="session" element={<SessionPage />} />
-            <Route path="elma-experts" element={<ElmaExperts />} />
-            <Route path="about" element={<About />} />
-            <Route path="blog" element={<BlogListPage />} />
-            <Route path="blog/:slug" element={<BlogPostPage />} />
-            <Route path="faq" element={<FAQPage />} />
-          </Route>
+    {/* Session expired WITHOUT layout */}
+    <Route path="/session/expired" element={<SessionExpiredWeb />} />
 
-          {/* Catch bare paths without a lang prefix → redirect to /{detectedLang}/path */}
-          <Route path="*" element={<BarePathRedirect />} />
-                      <Route path="/session" element={<SessionPage />} />
+    {/* Routes WITH layout */}
+    <Route
+      path="*"
+      element={
+        <>
+          <Navbar onToggleMenu={() => setMobileOpen(true)} />
+          <ScrollToTop />
 
-        </Routes>
-      </Suspense>
-      <Footer />
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+
+            <Route path="/:lang" element={<LangLayout />}>
+              <Route index element={<Home />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="privacy" element={<Privacy />} />
+              <Route path="terms" element={<Terms />} />
+              <Route path="cancellation" element={<Cancellation />} />
+              <Route path="qr" element={<AppLanding />} />
+              <Route path="dashboard" element={<AnalyticsDashboard />} />
+              <Route path="session" element={<SessionPage />} />
+              <Route path="elma-experts" element={<ElmaExperts />} />
+              <Route path="about" element={<About />} />
+              <Route path="blog" element={<BlogListPage />} />
+              <Route path="blog/:slug" element={<BlogPostPage />} />
+              <Route path="faq" element={<FAQPage />} />
+            </Route>
+
+            <Route path="/session" element={<SessionPage />} />
+            <Route path="*" element={<BarePathRedirect />} />
+             <Footer />
+          </Routes>
+
+         
+          <MobileMenu
+            isOpen={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+          />
+          <LanguageSwitcher />
+        </>
+      }
+    />
+  </Routes>
+</Suspense>
+     
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
       <LanguageSwitcher />
     </AppErrorBoundary>

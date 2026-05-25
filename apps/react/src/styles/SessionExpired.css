@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;400;600;700;800&display=swap');
+
+/* ===== CSS Variables ===== */
+:root {
+  --bg-deep: #120826;
+  --bg-mid: #1e0a3c;
+  --bg-violet: #2d0f5e;
+  --orb-pink: #c026d3;
+  --orb-magenta: #a21caf;
+  --glass-bg: rgba(138, 75, 210, 0.30);
+  --glass-border: rgba(196, 132, 255, 0.25);
+  --glass-inner: rgba(160, 100, 230, 0.22);
+  --orbit-stroke: rgba(180, 130, 255, 0.45);
+  --dot-color: rgba(220, 170, 255, 0.8);
+  --btn-from: #e879f9;
+  --btn-to: #be185d;
+  --text-white: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.72);
+  --text-faint: rgba(255, 255, 255, 0.50);
+  --heart-color: rgba(255, 180, 230, 0.75);
+}
+
+/* ===== Root / Full Screen ===== */
+.se-root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 85% 55% at 50% 115%, #c026d3 0%, #7e22ce 28%, transparent 65%),
+    radial-gradient(ellipse 60% 45% at 50% 110%, #e879f9 0%, transparent 55%),
+    linear-gradient(175deg, #120826 0%, #1c0838 35%, #2a0d55 65%, #1e0a40 100%);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* ===== Background Atmospheric Effects ===== */
+.se-bg-orb {
+  position: absolute;
+  bottom: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 320px;
+  background: radial-gradient(ellipse at center, rgba(192, 38, 211, 0.55) 0%, rgba(126, 34, 206, 0.3) 40%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: se-orb-pulse 4s ease-in-out infinite;
+}
+
+.se-bg-orb-secondary {
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  height: 200px;
+  background: radial-gradient(ellipse at center, rgba(232, 121, 249, 0.4) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: se-orb-pulse 4s ease-in-out infinite 0.8s;
+}
+
+@keyframes se-orb-pulse {
+  0%, 100% { opacity: 0.8; transform: translateX(-50%) scaleY(1); }
+  50% { opacity: 1; transform: translateX(-50%) scaleY(1.06); }
+}
+
+/* ===== Card ===== */
+.se-card {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 40px 36px;
+  max-width: 420px;
+  width: 90%;
+  animation: se-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes se-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Logo ===== */
+.se-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 40px;
+  animation: se-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+.se-logo-text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 46px;
+  color: var(--text-white);
+  letter-spacing: 1px;
+  text-shadow:
+    0 0 30px rgba(232, 121, 249, 0.6),
+    0 0 60px rgba(192, 38, 211, 0.3);
+  line-height: 1;
+}
+
+.se-logo-heart {
+  font-size: 18px;
+  color: #f0abfc;
+  margin-top: -12px;
+  text-shadow: 0 0 12px rgba(240, 171, 252, 0.7);
+}
+
+/* ===== Orbit Container ===== */
+.se-orbit-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 36px;
+  animation: se-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+/* Orbit rings */
+.se-orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px dashed var(--orbit-stroke);
+  pointer-events: none;
+}
+
+.se-orbit-ring--outer {
+  width: 172px;
+  height: 172px;
+  animation: se-orbit-spin 18s linear infinite;
+}
+
+.se-orbit-ring--inner {
+  width: 126px;
+  height: 126px;
+  animation: se-orbit-spin 12s linear infinite reverse;
+  border-color: rgba(196, 132, 255, 0.3);
+  border-style: dashed;
+}
+
+@keyframes se-orbit-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Orbit dots */
+.se-orbit-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(220, 170, 255, 0.85);
+  box-shadow: 0 0 8px rgba(220, 170, 255, 0.7);
+}
+
+.se-orbit-dot--1 {
+  top: -3.5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.se-orbit-dot--2 {
+  bottom: -3.5px;
+  right: 18px;
+  width: 5px;
+  height: 5px;
+}
+
+/* Clock circle */
+.se-clock-circle {
+  position: relative;
+  z-index: 5;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid var(--glass-border);
+  box-shadow:
+    0 0 40px rgba(192, 38, 211, 0.35),
+    0 0 80px rgba(126, 34, 206, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== Content ===== */
+.se-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  animation: se-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+.se-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-white);
+  margin: 0 0 12px;
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+}
+
+.se-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.se-divider-heart {
+  font-size: 16px;
+  color: var(--heart-color);
+  margin: 0 0 16px;
+  text-shadow: 0 0 10px rgba(240, 171, 252, 0.5);
+}
+
+.se-help-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-faint);
+  margin: 0 0 14px;
+}
+
+/* ===== Button ===== */
+.se-btn-support {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 34px;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #e879f9 0%, #d946ef 40%, #c026d3 100%);
+  color: var(--text-white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  box-shadow:
+    0 4px 20px rgba(192, 38, 211, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.se-btn-support::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
+  border-radius: inherit;
+}
+
+.se-btn-support:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 28px rgba(192, 38, 211, 0.65),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  filter: brightness(1.06);
+}
+
+.se-btn-support:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+/* ===== Footer ===== */
+.se-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 32px;
+  animation: se-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.se-footer-heart {
+  font-size: 14px;
+  color: var(--heart-color);
+  text-shadow: 0 0 8px rgba(240, 171, 252, 0.5);
+}
+
+.se-footer-text {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-faint);
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .se-card {
+    padding: 40px 24px 28px;
+  }
+  .se-logo-text {
+    font-size: 42px;
+  }
+  .se-title {
+    font-size: 22px;
+  }
+}
