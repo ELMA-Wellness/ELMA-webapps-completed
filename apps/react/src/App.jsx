@@ -159,52 +159,51 @@ function App() {
       />
      
       <Suspense fallback={null}>
-  <Routes>
+      <Routes>
 
-    {/* No layout */}
-    <Route path="/session/expired" element={<SessionExpiredWeb />} />
+  {/* Without layout */}
+  <Route path="/session/expired" element={<SessionExpiredWeb />} />
 
-    {/* Layout wrapper */}
-    <Route
-      path="*"
-      element={
-        <>
-          <Navbar onToggleMenu={() => setMobileOpen(true)} />
-          <ScrollToTop />
-          <Outlet />
-          <Footer />
+  {/* Layout */}
+  <Route
+    element={
+      <>
+        <Navbar onToggleMenu={() => setMobileOpen(true)} />
+        <ScrollToTop />
+        <Outlet />
+        <Footer />
 
-          <MobileMenu
-            isOpen={mobileOpen}
-            onClose={() => setMobileOpen(false)}
-          />
-          <LanguageSwitcher />
-        </>
-      }
-    >
-      <Route path="/" element={<RootRedirect />} />
+        <MobileMenu
+          isOpen={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+        />
+        <LanguageSwitcher />
+      </>
+    }
+  >
+    <Route path="/" element={<RootRedirect />} />
 
-      <Route path="/:lang" element={<LangLayout />}>
-        <Route index element={<Home />} />
-        <Route path="contact" element={<Contact />} />
-        <Route path="privacy" element={<Privacy />} />
-        <Route path="terms" element={<Terms />} />
-        <Route path="cancellation" element={<Cancellation />} />
-        <Route path="qr" element={<AppLanding />} />
-        <Route path="dashboard" element={<AnalyticsDashboard />} />
-        <Route path="session" element={<SessionPage />} />
-        <Route path="elma-experts" element={<ElmaExperts />} />
-        <Route path="about" element={<About />} />
-        <Route path="blog" element={<BlogListPage />} />
-        <Route path="blog/:slug" element={<BlogPostPage />} />
-        <Route path="faq" element={<FAQPage />} />
-      </Route>
-
-      <Route path="/session" element={<SessionPage />} />
-      <Route path="*" element={<BarePathRedirect />} />
+    <Route path="/:lang" element={<LangLayout />}>
+      <Route index element={<Home />} />
+      <Route path="contact" element={<Contact />} />
+      <Route path="privacy" element={<Privacy />} />
+      <Route path="terms" element={<Terms />} />
+      <Route path="cancellation" element={<Cancellation />} />
+      <Route path="qr" element={<AppLanding />} />
+      <Route path="dashboard" element={<AnalyticsDashboard />} />
+      <Route path="session" element={<SessionPage />} />
+      <Route path="elma-experts" element={<ElmaExperts />} />
+      <Route path="about" element={<About />} />
+      <Route path="blog" element={<BlogListPage />} />
+      <Route path="blog/:slug" element={<BlogPostPage />} />
+      <Route path="faq" element={<FAQPage />} />
     </Route>
 
-  </Routes>
+    <Route path="/session" element={<SessionPage />} />
+    <Route path="*" element={<BarePathRedirect />} />
+  </Route>
+
+</Routes>
 </Suspense>
      
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
