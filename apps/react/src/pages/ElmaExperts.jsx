@@ -267,12 +267,12 @@ function JoinForm() {
 
 /* ─── main page ─────────────────────────────────────────────── */
 export default function ElmaExperts() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   useEffect(() => {
-    document.title = 'ELMA Experts — Join the AI-Powered Emotional Wellness Network'
+    document.title = 'ELMA Experts — Earn From Home as a Psychologist | Online Therapy Portal India'
     const meta = document.querySelector('meta[name="description"]')
-    if (meta) meta.setAttribute('content', 'ELMA Experts are certified psychologists and counselling therapists who partner with ELMA AI to deliver personalised, data-informed emotional wellness care at scale.')
+    if (meta) meta.setAttribute('content', 'Psychologists and counsellors: earn from home giving online therapy sessions via ELMA Experts. Flexible schedule, motivated clients, AI handles admin. Apply in 5 minutes.')
     return () => { document.title = 'ELMA — Your AI Emotional Companion' }
   }, [])
 
@@ -324,21 +324,90 @@ export default function ElmaExperts() {
     },
   ]
 
-  const expertsSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': 'https://elma.ltd/elma-experts#webpage',
-    url: 'https://elma.ltd/elma-experts',
-    name: 'ELMA Experts — Join Our Therapist Network',
-    description: 'Join the ELMA Expert network. Certified psychologists earn on their own schedule, reach global users, and grow their practice via AI-assisted tools.',
-    isPartOf: { '@id': 'https://elma.ltd/#website' },
-  }
+  const expertsSchema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': 'https://elma.ltd/en/elma-experts#webpage',
+      url: 'https://elma.ltd/en/elma-experts',
+      name: 'ELMA Experts — Earn From Home as a Psychologist | Online Therapy Portal India',
+      description: 'Psychologists and counsellors: earn from home giving online therapy sessions via ELMA Experts. Flexible schedule, motivated clients, AI handles admin. Apply in 5 minutes.',
+      isPartOf: { '@id': 'https://elma.ltd/#website' },
+      keywords: 'psychologist earn from home, online therapy portal India, work from home psychologist India, give online therapy sessions, join therapy platform India, earn as counsellor India',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'JobPosting',
+      title: 'Online Therapist / Psychologist — ELMA Experts Network',
+      description: 'Join the ELMA Experts network and earn from home giving online therapy sessions. Flexible hours, motivated clients, AI-assisted tools. For licensed psychologists and certified counsellors.',
+      hiringOrganization: {
+        '@type': 'Organization',
+        name: 'ELMA',
+        sameAs: 'https://elma.ltd',
+        logo: 'https://elma.ltd/images/elma-logo.png',
+      },
+      jobLocationType: 'TELECOMMUTE',
+      applicantLocationRequirements: { '@type': 'Country', name: 'IN' },
+      employmentType: 'CONTRACTOR',
+      datePosted: '2026-01-01',
+      validThrough: '2027-01-01',
+      qualifications: 'M.A./M.Sc./M.Phil. in Psychology; Licensed or Certified Therapist',
+      skills: 'CBT, counselling, psychotherapy, online therapy, mental health',
+      url: 'https://elma.ltd/en/elma-experts',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Can I give online therapy sessions from home as a psychologist in India?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Licensed psychologists and certified counsellors in India can give online therapy sessions from home using platforms like ELMA Experts. You need an M.A./M.Sc. in Psychology minimum, a stable internet connection, and video call software. ELMA Experts handles client discovery, scheduling, and payments.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How much can a psychologist earn from home in India?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Home-based psychologists in India typically earn ₹15,000–₹1,50,000 per month depending on experience, sessions per week, and platform mix. Early-career practitioners earn ₹600–₹1,200 per session; experienced specialists earn ₹2,500–₹7,000 per session. Working 15–20 sessions/week at mid-career rates yields ₹90,000–₹2,40,000/month.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Do I need RCI registration to give online counselling sessions?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'RCI (Rehabilitation Council of India) registration is required if you are practising as a clinical psychologist with clinical populations. For general counselling work, an M.A./M.Sc. in Psychology and membership with a professional association is sufficient. Check the specific requirements of each platform you apply to.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is ELMA Experts and how is it different from other therapy platforms?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'ELMA Experts is an AI-first mental wellness network. ELMA\'s AI companion provides daily emotional support to users; when a user needs professional help, they\'re connected to a verified ELMA Expert. This means practitioners receive pre-qualified, motivated clients who have already done emotional self-work — reducing dropout and making sessions more clinically focused.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I join ELMA Experts as a psychologist?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Apply via the form on the ELMA Experts page (elma.ltd/en/elma-experts). Provide your name, email, phone, license/registration number, and speciality. Applications take approximately 5 minutes. The ELMA team reviews credentials and contacts you within a few working days.',
+          },
+        },
+      ],
+    },
+  ]
 
   return (
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
       <SEO
-        title="ELMA Experts — Join Our Therapist & Psychologist Network"
-        description="Become an ELMA Expert. Join certified therapists & psychologists earning on their own schedule. AI handles admin — you focus on healing. Apply in 5 minutes."
+        title="ELMA Experts — Earn From Home as a Psychologist | Online Therapy Portal India"
+        description="Psychologists &amp; counsellors: give online therapy sessions from home. Earn on your schedule, receive motivated clients, and let AI handle admin. Apply in 5 minutes."
         canonical={`/${lang}/elma-experts`}
         hreflangBase="/elma-experts"
         schema={expertsSchema}

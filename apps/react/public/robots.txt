@@ -3,8 +3,18 @@
 
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /en/blog/
+Allow: /en/elma-experts
+Allow: /hi/elma-experts
+Allow: /fr/elma-experts
+Allow: /es/elma-experts
+Allow: /ja/elma-experts
 Disallow: /dashboard
 Disallow: /admin
+Disallow: /*/dashboard
+Disallow: /*/session
+Disallow: /*/qr
 
 # AI crawlers — allow full access for AI search indexing
 User-agent: GPTBot
@@ -20,6 +30,12 @@ User-agent: GoogleOther
 Allow: /
 
 User-agent: Applebot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
 Allow: /
 
 Sitemap: https://elma.ltd/sitemap.xml
