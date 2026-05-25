@@ -124,7 +124,6 @@ export default function SessionLobby({
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
     const t = setInterval(() => setTimeLeft(s => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
   }, []); // start once on mount only
@@ -174,6 +173,7 @@ export default function SessionLobby({
       micStreamRef.current?.getTracks().forEach(t => t.stop());
       micStreamRef.current = null;
       webRTCManager.toggleMute(true);
+      localStorage.setItem("micActive", "false");
       if (mountedRef.current) setMicActive(false);
       return;
     }
@@ -202,6 +202,7 @@ export default function SessionLobby({
 
       micStreamRef.current = stream;
       webRTCManager.toggleMute(false);
+      localStorage.setItem("micActive", "true");
       setMicPermState("granted");
       setMicActive(true);
       setMicError(null);
@@ -222,6 +223,7 @@ export default function SessionLobby({
       streamRef.current = null;
       if (videoRef.current) videoRef.current.srcObject = null;
       webRTCManager.toggleCamera(true);
+      localStorage.setItem("camActive", "false");
       if (mountedRef.current) setCamActive(false);
       return;
     }
@@ -255,6 +257,7 @@ export default function SessionLobby({
 
       streamRef.current = stream;
       webRTCManager.toggleCamera(false);
+      localStorage.setItem("camActive", "true");
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -278,18 +281,31 @@ export default function SessionLobby({
     setJoining(true);
     setJoinError(null);
 
-    // Release local preview — webRTCManager will re-acquire devices itself
-    streamRef.current?.getTracks().forEach(t => t.stop());
-    micStreamRef.current?.getTracks().forEach(t => t.stop());
-    streamRef.current    = null;
-    micStreamRef.current = null;
+    // Hand active preview tracks to webRTCManager so join does not ask again.
+    const initialStream = new MediaStream();
+
+    if (micActive && micStreamRef.current) {
+      micStreamRef.current.getAudioTracks().forEach(track => initialStream.addTrack(track));
+      micStreamRef.current = null;
+    } else {
+      micStreamRef.current?.getTracks().forEach(t => t.stop());
+      micStreamRef.current = null;
+    }
+
+    if (camActive && streamRef.current) {
+      streamRef.current.getVideoTracks().forEach(track => initialStream.addTrack(track));
+      streamRef.current = null;
+    } else {
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
     if (videoRef.current) videoRef.current.srcObject = null;
 
     try {
-      localStorage.setItem("camActive", JSON.stringify(camActive));
-      localStorage.setItem("micActive", JSON.stringify(micActive));
+      localStorage.setItem("camActive", String(camActive));
+      localStorage.setItem("micActive", String(micActive));
 
-      await webRTCManager.initialize(sessionCode, userId, role, micActive, camActive);
+      await webRTCManager.initialize(sessionCode, userId, role, micActive, camActive, initialStream);
       onJoined?.();
     } catch (err) {
       if (!mountedRef.current) return;

@@ -89,10 +89,10 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     };
 
     return () => {
-      webRTCManager._onLocalStreamChanged    = null;
-      webRTCManager._onRemoteStreamChanged   = null;
-      webRTCManager._onMessagesChanged       = null;
-      webRTCManager._onConnectionStateChanged= null;
+      webRTCManager.onLocalStreamChanged     = null;
+      webRTCManager.onRemoteStreamChanged    = null;
+      webRTCManager.onMessagesChanged        = null;
+      webRTCManager.onConnectionStateChanged = null;
       webRTCManager.onPeerDisconnect = null;
     };
   }, [onPeerJoined]);
@@ -104,18 +104,30 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     }
   }, [localStream, camActive]);
 
-  const handleToggleMic = () => {
+  const handleToggleMic = async () => {
     const next = !micActive;
-    setMicActive(next);
-    webRTCManager.toggleMute(!next);
-    localStorage.setItem('micActive', String(next));
+    try {
+      await webRTCManager.toggleMute(!next);
+      setMicActive(next);
+      localStorage.setItem('micActive', String(next));
+    } catch (err) {
+      console.error('[Waiting] Failed to toggle microphone:', err);
+      setMicActive(false);
+      localStorage.setItem('micActive', 'false');
+    }
   };
 
-  const handleToggleCam = () => {
+  const handleToggleCam = async () => {
     const next = !camActive;
-    setCamActive(next);
-    webRTCManager.toggleCamera(!next);
-    localStorage.setItem('camActive', String(next));
+    try {
+      await webRTCManager.toggleCamera(!next);
+      setCamActive(next);
+      localStorage.setItem('camActive', String(next));
+    } catch (err) {
+      console.error('[Waiting] Failed to toggle camera:', err);
+      setCamActive(false);
+      localStorage.setItem('camActive', 'false');
+    }
   };
 
   const handleLeave = () => {
