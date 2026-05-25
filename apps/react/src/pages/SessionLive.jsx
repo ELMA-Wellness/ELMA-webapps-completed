@@ -63,8 +63,8 @@ export default function SessionLive({
   const camOffRef = useRef(false);
 
   /* ── state ────────────────────────────────────────────────────────────── */
-  const initialMicActive = localStorage.getItem("micActive") !== "false";
-  const initialCamActive = localStorage.getItem("camActive") !== "false";
+  const initialMicActive = localStorage.getItem("micActive") === "true";
+  const initialCamActive = localStorage.getItem("camActive") === "true";
 
   const [chatMsg,     setChatMsg]     = useState("");
   const [messages,    setMessages]    = useState([]);
@@ -170,56 +170,39 @@ export default function SessionLive({
    * (remote always has the latest snapshot, no stale "mic off" confusion).  */
   useEffect(() => {
     broadcastMediaState(!muted, !camOff);
-  }, [muted, camOff]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [muted, camOff]);
 
   /* ── toggles ──────────────────────────────────────────────────────────── */
-  const handleToggleMic = () => {
-    const nowMuted = !mutedRef.current;
-    setMuted(nowMuted);
-    localStorage.setItem("micActive", String(!nowMuted));
-    webRTCManager.toggleMute(nowMuted);
+  const handleToggleMic = async () => {
+    const shouldEnable = mutedRef.current;
+
+    try {
+      await webRTCManager.toggleMute(!shouldEnable);
+      setMuted(!shouldEnable);
+      localStorage.setItem("micActive", String(shouldEnable));
+    } catch (err) {
+      console.error("SessionLive: failed to toggle microphone -", err);
+      setMuted(true);
+      localStorage.setItem("micActive", "false");
+    }
     // broadcastMediaState fires via the [muted, camOff] useEffect
   };
 
   const handleToggleCam = async () => {
-    const nowOff = !camOffRef.current;
+    const shouldEnable = camOffRef.current;
+    const nowOff = !shouldEnable;
     setCamOff(nowOff);
-    localStorage.setItem("camActive", String(!nowOff));
+    localStorage.setItem("camActive", String(shouldEnable));
 
-    if (!nowOff) {
-      // Turning ON – check if the track was permanently ended by the browser/OS
-      const stream     = webRTCManager.localStream || localStream;
-      const videoTrack = stream?.getVideoTracks()[0];
-
-      if (videoTrack && videoTrack.readyState === "ended") {
-        // FIX 4: re-acquire and replace sender track
-        try {
-          const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
-          const newTrack  = newStream.getVideoTracks()[0];
-
-          const sender = webRTCManager.peerConnection
-            ?.getSenders()
-            .find((s) => s.track?.kind === "video");
-          if (sender) await sender.replaceTrack(newTrack);
-
-          const audioTracks   = stream ? stream.getAudioTracks() : [];
-          const rebuiltStream = new MediaStream([newTrack, ...audioTracks]);
-          webRTCManager.localStream = rebuiltStream;  // keep manager in sync
-          setLocalStream(rebuiltStream);               // triggers FIX 1 effect
-        } catch (err) {
-          console.error("SessionLive: failed to re-acquire camera –", err);
-        }
-      } else if (videoTrack) {
-        videoTrack.enabled = true;
-      }
-    } else {
-      // Turning OFF – disable track (keeps it warm for fast re-enable)
-      const videoTrack = (webRTCManager.localStream || localStream)
-        ?.getVideoTracks()[0];
-      if (videoTrack) videoTrack.enabled = false;
+    try {
+      await webRTCManager.toggleCamera(nowOff);
+      setLocalStream(webRTCManager.localStream);
+    } catch (err) {
+      console.error("SessionLive: failed to toggle camera -", err);
+      setCamOff(true);
+      localStorage.setItem("camActive", "false");
+      setLocalStream(webRTCManager.localStream);
     }
-
-    webRTCManager.toggleCamera(nowOff);
     // broadcastMediaState fires via the [muted, camOff] useEffect
   };
 

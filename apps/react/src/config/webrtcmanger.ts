@@ -28,6 +28,7 @@ type Role = 'patient' | 'therapist';
 type StreamCallback = (stream: MediaStream | null) => void;
 type MessagesCallback = (messages: any[]) => void;
 type MediaStateCallback = (state: { micEnabled: boolean, cameraEnabled: boolean }) => void;
+type LocalMediaKind = 'audio' | 'video';
 
 class WebRTCManager {
   pc: RTCPeerConnection | null = null;
@@ -38,6 +39,10 @@ class WebRTCManager {
   userId: string | null = null;
   role: Role = 'patient';
   messages: any[] = [];
+  private _micEnabled = false;
+  private _cameraEnabled = false;
+  private _audioTransceiver: RTCRtpTransceiver | null = null;
+  private _videoTransceiver: RTCRtpTransceiver | null = null;
 
   // ─── ICE candidate queue (buffer until remoteDescription is set) ──────────
   private _pendingCandidates: RTCIceCandidate[] = [];
@@ -95,9 +100,20 @@ class WebRTCManager {
 
   // ─── Public API ───────────────────────────────────────────────────────────
 
-  async initialize(sessionCode: string='69a54abd29c99c56303ea5f6', userId: string='696f408b2ff51b82b1cee0e6', role: Role='patient'): Promise<void> {
+  get peerConnection() {
+    return this.pc;
+  }
+
+  async initialize(
+    sessionCode: string='69a54abd29c99c56303ea5f6',
+    userId: string='696f408b2ff51b82b1cee0e6',
+    role: Role='patient',
+    micEnabled = false,
+    cameraEnabled = false,
+    initialStream: MediaStream | null = null
+  ): Promise<void> {
     // Prevent double-initialization
-    if (this.localStream) {
+    if (this.pc || this.ws) {
       console.warn('[WebRTC] Already initialized. Call hangup() first.');
       return;
     }
@@ -106,28 +122,69 @@ class WebRTCManager {
     this.sessionCode = sessionCode;
     this.userId = userId;
     this.role = role;
+    this._micEnabled = micEnabled;
+    this._cameraEnabled = cameraEnabled;
+    this.localStream = new MediaStream();
+    this._adoptInitialTracks(initialStream, micEnabled, cameraEnabled);
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: { width: 640, height: 480, frameRate: 30 },
-      });
-      this.localStream = stream;
-      this._onLocalStreamChanged?.(stream);
+      if (micEnabled && !this._getLiveLocalTrack('audio')) {
+        await this._enableLocalKind('audio');
+      }
+      if (cameraEnabled && !this._getLiveLocalTrack('video')) {
+        await this._enableLocalKind('video');
+      }
+      this._onLocalStreamChanged?.(this.localStream);
     } catch (err) {
       console.error('[WebRTC] getUserMedia failed:', err);
+      this.localStream?.getTracks().forEach(t => t.stop());
+      this.localStream = null;
       throw err;
     }
 
     this._connectWebSocket();
   }
 
-  toggleMute(isMuted: boolean) {
-    this.localStream?.getAudioTracks().forEach(t => { t.enabled = !isMuted; });
+  async toggleMute(isMuted: boolean) {
+    await this.setMicrophoneEnabled(!isMuted);
   }
 
-  toggleCamera(isOff: boolean) {
-    this.localStream?.getVideoTracks().forEach(t => { t.enabled = !isOff; });
+  async toggleCamera(isOff: boolean) {
+    await this.setCameraEnabled(!isOff);
+  }
+
+  async setMicrophoneEnabled(enabled: boolean) {
+    if (!this._isSessionActive()) {
+      this._micEnabled = enabled;
+      return;
+    }
+
+    if (enabled) {
+      await this._enableLocalKind('audio');
+    } else {
+      await this._disableLocalKind('audio');
+    }
+
+    this._micEnabled = enabled;
+    this._onLocalStreamChanged?.(this.localStream);
+    this._broadcastMediaState();
+  }
+
+  async setCameraEnabled(enabled: boolean) {
+    if (!this._isSessionActive()) {
+      this._cameraEnabled = enabled;
+      return;
+    }
+
+    if (enabled) {
+      await this._enableLocalKind('video');
+    } else {
+      await this._disableLocalKind('video');
+    }
+
+    this._cameraEnabled = enabled;
+    this._onLocalStreamChanged?.(this.localStream);
+    this._broadcastMediaState();
   }
 
   sendChatMessage(text: string) {
@@ -171,6 +228,10 @@ class WebRTCManager {
     this._wsReconnectAttempts = 0;
     this._isMakingOffer = false;
     this._awaitingAnswer = false;
+    this._micEnabled = false;
+    this._cameraEnabled = false;
+    this._audioTransceiver = null;
+    this._videoTransceiver = null;
 
     // Notify listeners of null streams
     this._onLocalStreamChanged?.(null);
@@ -196,6 +257,145 @@ class WebRTCManager {
 
   // ─── Private: WebSocket ───────────────────────────────────────────────────
 
+  private _isSessionActive() {
+    return Boolean(this.pc || this.ws || this.sessionCode);
+  }
+
+  private _ensureLocalStream() {
+    if (!this.localStream) {
+      this.localStream = new MediaStream();
+    }
+    return this.localStream;
+  }
+
+  private _adoptInitialTracks(stream: MediaStream | null, micEnabled: boolean, cameraEnabled: boolean) {
+    if (!stream) return;
+
+    const localStream = this._ensureLocalStream();
+    const audioTrack = stream.getAudioTracks().find(t => t.readyState === 'live');
+    const videoTrack = stream.getVideoTracks().find(t => t.readyState === 'live');
+
+    if (micEnabled && audioTrack) {
+      audioTrack.enabled = true;
+      localStream.addTrack(audioTrack);
+    }
+
+    if (cameraEnabled && videoTrack) {
+      videoTrack.enabled = true;
+      localStream.addTrack(videoTrack);
+    }
+  }
+
+  private _getLiveLocalTrack(kind: LocalMediaKind) {
+    return this.localStream
+      ?.getTracks()
+      .find(t => t.kind === kind && t.readyState === 'live') ?? null;
+  }
+
+  private async _enableLocalKind(kind: LocalMediaKind) {
+    const existingTrack = this._getLiveLocalTrack(kind);
+    if (existingTrack) {
+      existingTrack.enabled = true;
+      await this._replaceSenderTrack(kind, existingTrack);
+      return;
+    }
+
+    const mediaStream = kind === 'audio'
+      ? await navigator.mediaDevices.getUserMedia({ audio: true })
+      : await this._getCameraStreamWithFallback();
+
+    const track = kind === 'audio'
+      ? mediaStream.getAudioTracks()[0]
+      : mediaStream.getVideoTracks()[0];
+
+    if (!track) {
+      mediaStream.getTracks().forEach(t => t.stop());
+      throw new Error(`No ${kind} track was returned by getUserMedia.`);
+    }
+
+    this._removeLocalTracks(kind, true);
+    track.enabled = true;
+    this._ensureLocalStream().addTrack(track);
+    mediaStream.getTracks().forEach(t => {
+      if (t !== track) t.stop();
+    });
+    await this._replaceSenderTrack(kind, track);
+  }
+
+  private async _disableLocalKind(kind: LocalMediaKind) {
+    await this._replaceSenderTrack(kind, null);
+    this._removeLocalTracks(kind, true);
+  }
+
+  private _removeLocalTracks(kind: LocalMediaKind, shouldStop: boolean) {
+    if (!this.localStream) return;
+
+    this.localStream.getTracks()
+      .filter(t => t.kind === kind)
+      .forEach(track => {
+        this.localStream?.removeTrack(track);
+        track.enabled = false;
+        if (shouldStop) track.stop();
+      });
+  }
+
+  private async _getCameraStreamWithFallback() {
+    try {
+      return await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30 } },
+      });
+    } catch (err: any) {
+      if (err?.name === 'OverconstrainedError' || err?.name === 'ConstraintNotSatisfiedError') {
+        return await navigator.mediaDevices.getUserMedia({ video: true });
+      }
+      throw err;
+    }
+  }
+
+  private _getLocalTransceiver(kind: LocalMediaKind) {
+    return kind === 'audio' ? this._audioTransceiver : this._videoTransceiver;
+  }
+
+  private _setLocalTransceiver(kind: LocalMediaKind, transceiver: RTCRtpTransceiver) {
+    if (kind === 'audio') {
+      this._audioTransceiver = transceiver;
+    } else {
+      this._videoTransceiver = transceiver;
+    }
+  }
+
+  private _createLocalTransceiver(kind: LocalMediaKind, track: MediaStreamTrack | null) {
+    if (!this.pc) return null;
+
+    const init: RTCRtpTransceiverInit = { direction: 'sendrecv' };
+    if (track && this.localStream) {
+      init.streams = [this.localStream];
+    }
+
+    const transceiver = this.pc.addTransceiver(track ?? kind, init);
+    this._setLocalTransceiver(kind, transceiver);
+    return transceiver;
+  }
+
+  private async _replaceSenderTrack(kind: LocalMediaKind, track: MediaStreamTrack | null) {
+    if (!this.pc) return;
+
+    const transceiver = this._getLocalTransceiver(kind) ?? this._createLocalTransceiver(kind, track);
+    if (!transceiver) return;
+
+    await transceiver.sender.replaceTrack(track);
+  }
+
+  private _broadcastMediaState() {
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+
+    this._sendWS({
+      type: 'media_state_updated',
+      micEnabled: this._micEnabled,
+      cameraEnabled: this._cameraEnabled,
+    });
+  }
+
   private _connectWebSocket() {
     if (!this.sessionCode) return;
 
@@ -212,6 +412,7 @@ class WebRTCManager {
         userId: this.userId,
         role: this.role,
       });
+      this._broadcastMediaState();
     };
 
     this.ws.onmessage = async (event) => {
@@ -276,22 +477,22 @@ class WebRTCManager {
     this._pendingCandidates = [];
     this._isMakingOffer = false;
     this._awaitingAnswer = false;
+    this._audioTransceiver = null;
+    this._videoTransceiver = null;
 
     // Use a simple, widely compatible config: only iceServers.
     this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
-    // Attach local media using modern addTrack API (supported by react-native-webrtc).
-    if (this.localStream) {
-      const tracks = this.localStream.getTracks();
-      console.log('[PC] Adding local tracks:', tracks.map(t => `${t.kind}:${t.id}`));
-      tracks.forEach(track => {
-        try {
-          this.pc?.addTrack(track, this.localStream!);
-        } catch (err) {
-          console.error('[PC] addTrack error:', err);
-        }
-      });
-    }
+    const audioTrack = this._getLiveLocalTrack('audio');
+    const videoTrack = this._getLiveLocalTrack('video');
+    console.log('[PC] Local media state:', {
+      micEnabled: this._micEnabled,
+      cameraEnabled: this._cameraEnabled,
+      audioTrack: audioTrack?.id ?? null,
+      videoTrack: videoTrack?.id ?? null,
+    });
+    this._createLocalTransceiver('audio', audioTrack);
+    this._createLocalTransceiver('video', videoTrack);
 
     // ICE candidate → send to remote
     this.pc.onicecandidate = (event) => {
