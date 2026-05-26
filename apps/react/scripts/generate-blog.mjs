@@ -298,10 +298,15 @@ ${NAVBAR_HTML}
     </div>
   </article>
 
-  <aside class="cta-banner" aria-label="Download ELMA">
-    <h3>Try ELMA — Your AI Emotional Companion</h3>
+  <aside class="cta-banner" aria-label="${post.cta === 'experts' ? 'Join ELMA Experts' : 'Download ELMA'}">
+    ${post.cta === 'experts'
+      ? `<h3>Join the ELMA Experts Network</h3>
+    <p>Licensed psychologists and certified counsellors — earn on your schedule, reach motivated clients, and let AI handle the admin. Apply in 5 minutes.</p>
+    <a href="/en/elma-experts" class="cta-btn">Apply as an Expert →</a>`
+      : `<h3>Try ELMA — Your AI Emotional Companion</h3>
     <p>Voice your thoughts, track your emotional patterns, and get CBT-based support — 24/7, stigma-free.</p>
-    <a href="/" class="cta-btn">Download Free on Android &amp; iOS</a>
+    <a href="/" class="cta-btn">Download Free on Android &amp; iOS</a>`
+    }
   </aside>
 </main>
 ${FOOTER_HTML}

@@ -88,6 +88,45 @@ Target audience: GenZ and Millennials in India and globally.
     Date: 2026-04-10 | 7 min read | Tags: anxiety, anxiety relief, mental health India
     Summary: 8 medication-free anxiety techniques: 4-7-8 breathing, physiological sigh, PMR, 5-4-3-2-1 grounding, worry scheduling, cognitive reappraisal, stimuli management, exercise. Crisis resource included.
 
+### Psychologist & Therapist-Targeting Articles (B2B, for mental health professionals)
+
+12. [How Psychologists Can Earn From Home in India: A Complete 2026 Guide](https://elma.ltd/blog/how-psychologists-earn-from-home-india/)
+    Date: 2026-05-25 | 10 min read | Tags: psychologist earn from home, work from home psychologist India, online counselling income
+    Summary: Comprehensive guide for Indian psychologists and counsellors on all home-based income streams — direct sessions, AI-first platforms, EAP networks, online courses, supervision. Includes realistic income ranges by experience level and step-by-step setup checklist. ELMA Experts featured as primary AI-first platform.
+
+13. [Best Online Therapy Platforms for Psychologists in India 2026: An Honest Comparison](https://elma.ltd/blog/best-online-therapy-platforms-psychologists-india/)
+    Date: 2026-05-25 | 9 min read | Tags: online therapy platform psychologist India, therapist portal India, best platform for therapists India
+    Summary: Detailed platform-by-platform comparison for Indian psychologists: YourDOST, iCall, 1to1help EAP, Practo Consult, BetterHelp, and ELMA Experts. Covers rates, client quality, volume, onboarding time, and fit for different career stages. Includes comparison table and recommended portfolio strategies.
+
+14. [How to Start Your Online Counselling Practice in India: A Step-by-Step Guide](https://elma.ltd/blog/how-to-start-online-counselling-practice-india/)
+    Date: 2026-05-25 | 11 min read | Tags: start online counselling practice India, online therapy practice setup India, virtual therapy practice India
+    Summary: 7-step guide covering RCI credential requirements, scope of practice definition, legal/financial setup, technical infrastructure, client acquisition, pricing strategy, and clinical protocols specific to online work. Timeline expectations included.
+
+15. [Work From Home as a Psychologist in India: Real Earning Options in 2026](https://elma.ltd/blog/work-from-home-psychologist-earning-platforms/)
+    Date: 2026-05-25 | 8 min read | Tags: work from home psychologist India, psychologist home practice, earn money psychologist online India
+    Summary: Practical income breakdown — direct sessions, platform work, EAP, group sessions, courses, supervision. Realistic income ranges by experience level. Home setup guide and time management recommendations for solo practitioners.
+
+16. [How to Give Online Therapy Sessions in India: A Complete Setup Guide](https://elma.ltd/blog/how-to-give-online-therapy-sessions-india/)
+    Date: 2026-05-25 | 9 min read | Tags: how to give online therapy sessions India, online counselling session setup, give therapy sessions online India
+    Summary: Technical and clinical setup guide — video platforms, hardware, physical space, telehealth-specific informed consent, intake assessment, session structure, crisis protocols online, handling technical failures. Includes script for crisis response during video sessions.
+
+17. [Online Therapy Portal for Psychologists in India: What to Look For](https://elma.ltd/blog/psychologist-online-session-portal-india/)
+    Date: 2026-05-25 | 7 min read | Tags: online therapy portal psychologist India, portal for online counselling India, join therapy platform India
+    Summary: Guide to evaluating therapy portals — marketplace vs curated network vs EAP vs AI-first. What to ask before joining any platform. Red flags to avoid. ELMA Experts featured as AI-first option with pre-qualified clients.
+
+---
+
+## ELMA Experts — For Mental Health Professionals
+
+ELMA Experts is the practitioner-facing arm of ELMA. Licensed psychologists and certified counsellors join to receive pre-qualified, motivated clients from ELMA's AI companion ecosystem.
+
+- **Page:** https://elma.ltd/en/elma-experts
+- **Who can apply:** M.A./M.Sc. Psychology minimum; licensed psychologists; certified therapists; RCI-registered practitioners
+- **Model:** AI companion provides ongoing support; practitioners handle escalations and structured sessions
+- **Benefit:** Clients arrive already doing emotional work — lower dropout, more focused sessions
+- **Application time:** 5 minutes
+- **Keywords this page answers:** "earn from home as psychologist India", "psychologist online portal India", "join online therapy platform India", "work from home counsellor India", "give online therapy sessions India"
+
 ---
 
 ## Markdown Mirrors
@@ -106,6 +145,12 @@ Base URL: https://elma.ltd/content/blog/{slug}.md
 - https://elma.ltd/content/blog/what-is-emotional-intelligence.md
 - https://elma.ltd/content/blog/signs-of-burnout-you-are-ignoring.md
 - https://elma.ltd/content/blog/how-to-deal-with-anxiety-without-medication.md
+- https://elma.ltd/content/blog/how-psychologists-earn-from-home-india.md
+- https://elma.ltd/content/blog/best-online-therapy-platforms-psychologists-india.md
+- https://elma.ltd/content/blog/how-to-start-online-counselling-practice-india.md
+- https://elma.ltd/content/blog/work-from-home-psychologist-earning-platforms.md
+- https://elma.ltd/content/blog/how-to-give-online-therapy-sessions-india.md
+- https://elma.ltd/content/blog/psychologist-online-session-portal-india.md
 
 ---
 
