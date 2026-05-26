@@ -178,6 +178,7 @@ export default function App() {
           sessionMeta={SESSION_META}
           remoteStream={remoteStream}
           onLeave={handleLeaveCall}
+          role={role}
         />
       )}
 
