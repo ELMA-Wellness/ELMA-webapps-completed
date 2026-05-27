@@ -42,7 +42,8 @@ export default function SessionLive({
   sessionMeta,
   remoteStream: initialRemoteStream,
   onLeave,
-  role
+  role,
+  name,
 }) {
   /* ── defaults ─────────────────────────────────────────────────────────── */
   const th = therapist || {
@@ -54,6 +55,10 @@ export default function SessionLive({
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
   const remoteParticipantName = role === "therapist" ? "Client" : th.name;
   const remoteParticipantInitials = role === "therapist" ? "CL" : th.avatarInitials;
+  // Own initials for the self-preview PiP.
+  // For therapists the URL "name" param is their own name. For patients "name" is
+  // the therapist's name (for display), so we can't derive patient initials from it.
+  const selfInitials = role === "therapist" ? th.avatarInitials : "";
 
   /* ── refs ─────────────────────────────────────────────────────────────── */
   // Plain refs so useEffect can always find the current DOM node
@@ -107,12 +112,11 @@ export default function SessionLive({
   }
 
   /* ── FIX 1: self preview ──────────────────────────────────────────────── *
-   * Runs after React commits the DOM, so selfVideoRef.current is guaranteed  *
-   * to point to the live <video> element whenever camOff === false.          */
+   * Video element is always in DOM (hidden via CSS when camOff), so we can   *
+   * attach once on stream change and the srcObject persists through toggles. */
   useEffect(() => {
-    if (camOff) return;
     attachStream(selfVideoRef.current, localStream);
-  }, [localStream, camOff]);
+  }, [localStream]);
 
   /* ── FIX 2: remote video re-attach after cam toggle ──────────────────── */
   useEffect(() => {
@@ -504,21 +508,30 @@ export default function SessionLive({
         {/* ── SELF PiP ── */}
         <div className={`sl-pip${pipExpanded ? " expanded" : ""}`}
           onClick={() => setPipExpanded((v) => !v)}>
-          {!camOff ? (
-            <video
-              ref={selfVideoRef}
-              autoPlay
-              muted        /* always mute self-preview to prevent echo */
-              playsInline
-              style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: "block" }}
-            />
-          ) : (
-            <div style={{
+          {/*
+            Keep <video> always in DOM so srcObject is never lost when
+            the user toggles their camera. We just hide it with CSS.
+          */}
+          <video
+            ref={selfVideoRef}
+            autoPlay
+            muted        /* always mute self-preview to prevent echo */
+            playsInline
+            style={{
               width: "100%", height: "100%",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              background: "#1a1030", color: "rgba(255,255,255,.3)",
+              objectFit: "cover", transform: "scaleX(-1)",
+              display: camOff ? "none" : "block",
+            }}
+          />
+          {camOff && (
+            <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              background: "#1a1030", gap: 4,
             }}>
-              <CamIcon off size={22} />
+              <Avatar size={pipExpanded ? 64 : 44} initials={selfInitials}
+                extraStyle={{ border: "2px solid rgba(255,255,255,.2)" }} />
             </div>
           )}
           <div style={{

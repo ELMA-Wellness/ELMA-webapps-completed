@@ -177,6 +177,7 @@ export default function App() {
           onLeave={handleLeaveWaiting}
           onPeerJoined={handlePeerJoined}
           role={SESSION_CONFIG.role}
+          name={name}
         />
       )}
 
@@ -187,6 +188,7 @@ export default function App() {
           remoteStream={remoteStream}
           onLeave={handleLeaveCall}
           role={role}
+          name={name}
         />
       )}
 
