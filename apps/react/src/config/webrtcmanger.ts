@@ -258,6 +258,10 @@ class WebRTCManager {
       if (this._renegotiationPending) return;
       this._renegotiationPending = true;
       this._sendWS({ type: 'renegotiation_request', reason });
+      // Auto-reset after 4s so a dropped request doesn't permanently block
+      // future retries. The therapist's media_state_updated fallback should
+      // usually trigger renegotiation first, but this is the safety net.
+      setTimeout(() => { this._renegotiationPending = false; }, 4000);
     }
   }
 
@@ -518,11 +522,37 @@ class WebRTCManager {
   private _broadcastMediaState() {
     if (this.ws?.readyState !== WebSocket.OPEN) return;
 
+    // Include our own userId so the remote peer's filter (msg.userId === this.userId)
+    // works regardless of whether the server enriches the payload.
     this._sendWS({
       type: 'media_state_updated',
+      userId: this.userId,
+      role: this.role,
       micEnabled: this._micEnabled,
       cameraEnabled: this._cameraEnabled,
     });
+  }
+
+  // Therapist-side fallback: if the remote (patient) just enabled a kind that
+  // our existing transceiver can't receive (because the original answer was
+  // negotiated before the patient had any track of that kind), trigger a new
+  // offer so the patient's media gets a sending m-line on the wire.
+  private _needsRenegotiationForRemoteState(
+    state: { micEnabled: boolean; cameraEnabled: boolean }
+  ): boolean {
+    if (!this.pc) return false;
+    const kinds: Array<[LocalMediaKind, boolean]> = [
+      ['audio', !!state.micEnabled],
+      ['video', !!state.cameraEnabled],
+    ];
+    for (const [kind, remoteEnabled] of kinds) {
+      if (!remoteEnabled) continue;
+      const t = this._getLocalTransceiver(kind) ?? this._findTransceiverForKind(kind);
+      if (!t) return true;
+      const dir = t.currentDirection;
+      if (dir !== 'sendrecv' && dir !== 'recvonly') return true;
+    }
+    return false;
   }
 
   private _connectWebSocket() {
@@ -812,11 +842,29 @@ class WebRTCManager {
 
       case 'media_state_updated': {
         if (msg.userId && msg.userId === this.userId) break;
-        console.log("case falling")
         this._onRemoteMediaStateChanged?.({
           micEnabled: msg.micEnabled,
           cameraEnabled: msg.cameraEnabled
         });
+        // Fallback path for the patient → therapist media flow. If the patient
+        // just toggled on a track that the previously-negotiated session can't
+        // receive (because the answer was created with no patient track of
+        // that kind), the therapist forces a new offer here. This kicks in
+        // even when the server doesn't relay the explicit renegotiation_request.
+        if (
+          this.role === 'therapist' &&
+          this._peerReady &&
+          this._needsRenegotiationForRemoteState({
+            micEnabled: !!msg.micEnabled,
+            cameraEnabled: !!msg.cameraEnabled,
+          })
+        ) {
+          if (this.pc?.signalingState === 'stable' && !this._isMakingOffer) {
+            this._safeCreateAndSendOffer('remote_media_changed');
+          } else {
+            this._pendingTherapistRenegotiation = true;
+          }
+        }
         break;
       }
 
