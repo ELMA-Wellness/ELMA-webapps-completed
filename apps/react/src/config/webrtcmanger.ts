@@ -30,6 +30,14 @@ type MessagesCallback = (messages: any[]) => void;
 type MediaStateCallback = (state: { micEnabled: boolean, cameraEnabled: boolean }) => void;
 type LocalMediaKind = 'audio' | 'video';
 
+function normalizeRole(role: unknown): Role {
+  const value = String(role ?? '').trim().toLowerCase();
+  if (['therapist', 'expert', 'psych', 'psychologist', 'doctor', 'provider', 'counsellor', 'counselor', 'professional'].includes(value)) {
+    return 'therapist';
+  }
+  return 'patient';
+}
+
 class WebRTCManager {
   pc: RTCPeerConnection | null = null;
   ws: WebSocket | null = null;
@@ -57,6 +65,8 @@ class WebRTCManager {
   // ─── Offer/answer state (avoid glare + renegotiate cleanly) ───────────────
   private _isMakingOffer = false;
   private _awaitingAnswer = false;
+  private _peerReady = false;
+  private _onPeerReady: (() => void) | null = null;
 
   // ─── Callbacks with replay-on-assign pattern ──────────────────────────────
   // When a listener is assigned, it is immediately called with the current
@@ -77,21 +87,7 @@ class WebRTCManager {
     this.remoteSessionListeners.forEach(cb => cb());
   }
 
-
-
-
-
-
-
-
-
-
   private _onRemoteStreamChanged: StreamCallback | null = null;
-
-
-
-
-
 
 
 
@@ -127,6 +123,12 @@ class WebRTCManager {
     this._onConnectionStateChanged = cb;
   }
 
+  get onPeerReady() { return this._onPeerReady; }
+  set onPeerReady(cb: (() => void) | null) {
+    this._onPeerReady = cb;
+    if (cb && this._peerReady) cb();
+  }
+
   // Fires when remote peer leaves/disconnects. (Used by live screens to show UI)
   onPeerDisconnect: (() => void) | null = null;
 
@@ -153,7 +155,7 @@ class WebRTCManager {
     this._intentionalClose = false;
     this.sessionCode = sessionCode;
     this.userId = userId;
-    this.role = role;
+    this.role = normalizeRole(role);
     this._micEnabled = micEnabled;
     this._cameraEnabled = cameraEnabled;
     this.localStream = new MediaStream();
@@ -260,10 +262,12 @@ class WebRTCManager {
     this._wsReconnectAttempts = 0;
     this._isMakingOffer = false;
     this._awaitingAnswer = false;
+    this._peerReady = false;
     this._micEnabled = false;
     this._cameraEnabled = false;
     this._audioTransceiver = null;
     this._videoTransceiver = null;
+    this._onPeerReady = null;
 
     // Notify listeners of null streams
     this._onLocalStreamChanged?.(null);
@@ -492,6 +496,12 @@ class WebRTCManager {
     }
   }
 
+  private _markPeerReady() {
+    if (this._peerReady) return;
+    this._peerReady = true;
+    this._onPeerReady?.();
+  }
+
   sendMessage(message: object) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ ...message, sessionCode: this.sessionCode }));
@@ -526,7 +536,7 @@ class WebRTCManager {
       videoTrack: videoTrack?.id ?? null,
     });
     this._createLocalTransceiver('audio', audioTrack);
-this._createLocalTransceiver('video', videoTrack);
+    this._createLocalTransceiver('video', videoTrack);
 
     // ICE candidate → send to remote
     this.pc.onicecandidate = (event) => {
@@ -540,6 +550,7 @@ this._createLocalTransceiver('video', videoTrack);
     this.pc.onnegotiationneeded = async () => {
       if (this.role !== 'therapist') return;
       if (!this.pc) return;
+      if (!this._peerReady) return;
       if (this.pc.signalingState !== 'stable') return;
       await this._safeCreateAndSendOffer('negotiationneeded');
     };
@@ -594,6 +605,7 @@ this._createLocalTransceiver('video', videoTrack);
     switch (msg.type) {
 
       case 'session_ready': {
+        this._markPeerReady();
         // Therapist is the offerer
         if (this.role === 'therapist') {
           await this._safeCreateAndSendOffer('session_ready');
@@ -602,6 +614,7 @@ this._createLocalTransceiver('video', videoTrack);
       }
 
       case 'webrtc_offer': {
+        this._markPeerReady();
         // Patient handles the offer
         if (this.role === 'patient') {
           await this._handleRemoteOffer(msg);
@@ -673,6 +686,7 @@ this._createLocalTransceiver('video', videoTrack);
 
         this.remoteStream?.getTracks().forEach(t => t.stop());
         this.remoteStream = null;
+        this._peerReady = false;
         this._onRemoteStreamChanged?.(null);
         this.onPeerDisconnect?.();
 
@@ -689,7 +703,10 @@ this._createLocalTransceiver('video', videoTrack);
       }
 
       case 'peer_joined': {
-
+        this._markPeerReady();
+        if (this.role === 'therapist') {
+          await this._safeCreateAndSendOffer('peer_joined');
+        }
         break;
       }
 
@@ -710,6 +727,7 @@ this._createLocalTransceiver('video', videoTrack);
     if (!this.pc) return;
     if (this.role !== 'therapist') return;
     if (this._isMakingOffer) return;
+    if (this.pc.signalingState !== 'stable') return;
 
 
     this._isMakingOffer = true;
