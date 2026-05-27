@@ -64,8 +64,8 @@ export default function SessionLive({
   const camOffRef = useRef(false);
 
   /* ── state ────────────────────────────────────────────────────────────── */
-  const initialMicActive = localStorage.getItem("micActive") === "true";
-  const initialCamActive = localStorage.getItem("camActive") === "true";
+  const initialMicActive = localStorage.getItem("micActive") === "true" || hasLiveTrack(webRTCManager.localStream, "audio");
+  const initialCamActive = localStorage.getItem("camActive") === "true" || hasLiveTrack(webRTCManager.localStream, "video");
 
   const [chatMsg,     setChatMsg]     = useState("");
   const [messages,    setMessages]    = useState([]);
@@ -90,6 +90,10 @@ export default function SessionLive({
     if (videoEl.srcObject === stream) return;  // already correct, skip
     videoEl.srcObject = stream;
     videoEl.play().catch(() => {});
+  }
+
+  function hasLiveTrack(stream, kind) {
+    return Boolean(stream?.getTracks().some((track) => track.kind === kind && track.readyState === "live"));
   }
 
   function broadcastMediaState(micEnabled, cameraEnabled) {
@@ -132,7 +136,15 @@ export default function SessionLive({
     // so webRTCManager.localStream is already populated on first render.
     // Without this, the very first self-preview is always blank.
     const existingLocal = webRTCManager.localStream;
-    if (existingLocal) setLocalStream(existingLocal);
+    if (existingLocal) {
+      setLocalStream(existingLocal);
+      if (hasLiveTrack(existingLocal, "video")) {
+        setCamOff(false);
+      }
+      if (hasLiveTrack(existingLocal, "audio")) {
+        setMuted(false);
+      }
+    }
 
     if (initialRemoteStream) setRemoteStream(initialRemoteStream);
 

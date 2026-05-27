@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, DotsIcon, Avatar } from "./Icons";
 import { webRTCManager } from "../config/webrtcmanger";
 import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
@@ -16,6 +16,7 @@ import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
  */
 export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
   const selfVideoRef = useRef(null);
+  const movedToLiveRef = useRef(false);
 
   // LocalStorage returns strings. We must convert them to booleans.
   const cameraon = localStorage.getItem('camActive') === 'true';
@@ -38,6 +39,12 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     setIsChatOpen((prev)=>!prev)
 
   }
+
+  const moveToLive = useCallback((stream = webRTCManager.remoteStream) => {
+    if (movedToLiveRef.current) return;
+    movedToLiveRef.current = true;
+    onPeerJoined?.(stream || null);
+  }, [onPeerJoined]);
 
   // Defaults
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
@@ -68,8 +75,12 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     // Remote stream → transition to live
     webRTCManager.onRemoteStreamChanged = (stream) => {
       if (stream) {
-        onPeerJoined?.(stream);
+        moveToLive(stream);
       }
+    };
+
+    webRTCManager.onPeerReady = () => {
+      moveToLive(webRTCManager.remoteStream);
     };
 
     // Chat
@@ -81,6 +92,9 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     // Connection state
     webRTCManager.onConnectionStateChanged = (state) => {
       setConnState(state);
+      if (["connected", "completed"].includes(state)) {
+        moveToLive(webRTCManager.remoteStream);
+      }
     };
 
     // Peer disconnect while waiting — just stay on this screen
@@ -94,8 +108,9 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
       webRTCManager.onMessagesChanged        = null;
       webRTCManager.onConnectionStateChanged = null;
       webRTCManager.onPeerDisconnect = null;
+      webRTCManager.onPeerReady = null;
     };
-  }, [onPeerJoined]);
+  }, [moveToLive]);
 
   useEffect(() => {
     if (selfVideoRef.current && localStream) {

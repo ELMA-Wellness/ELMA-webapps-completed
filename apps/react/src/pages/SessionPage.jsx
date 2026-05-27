@@ -17,6 +17,14 @@ import SessionExpiredWeb from "./SessionExpired";
  * Configure these before deployment:
  */
 
+const normalizeRole = (value) => {
+  const role = String(value || "").trim().toLowerCase();
+  if (["therapist", "expert", "psych", "psychologist", "doctor", "provider", "counsellor", "counselor", "professional"].includes(role)) {
+    return "therapist";
+  }
+  return "patient";
+};
+
 
 
 
@@ -30,7 +38,7 @@ export default function App() {
 
   const sessionCode = params.get("sessionCode");
   const userId = params.get("userId");
-  const role = params.get("role");
+  const role = normalizeRole(params.get("role"));
   const name = params.get("name")
   const profession = params.get("profession")
   const startTime = params.get("startTime");
