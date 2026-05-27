@@ -525,13 +525,8 @@ class WebRTCManager {
       audioTrack: audioTrack?.id ?? null,
       videoTrack: videoTrack?.id ?? null,
     });
-    if (audioTrack) {
-      this.pc.addTrack(audioTrack, this.localStream!);
-    }
-
-    if (videoTrack) {
-      this.pc.addTrack(videoTrack, this.localStream!);
-    }
+    this._createLocalTransceiver('audio', audioTrack);
+this._createLocalTransceiver('video', videoTrack);
 
     // ICE candidate → send to remote
     this.pc.onicecandidate = (event) => {
