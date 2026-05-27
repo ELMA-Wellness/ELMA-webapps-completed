@@ -52,6 +52,8 @@ export default function SessionLive({
     avatarInitials: "SM",
   };
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
+  const remoteParticipantName = role === "therapist" ? "Client" : th.name;
+  const remoteParticipantInitials = role === "therapist" ? "CL" : th.avatarInitials;
 
   /* ── refs ─────────────────────────────────────────────────────────────── */
   // Plain refs so useEffect can always find the current DOM node
@@ -455,7 +457,7 @@ export default function SessionLive({
           ) : (
             <div className="sl-remote-placeholder">
               <div style={{ position: "relative" }}>
-                <Avatar size={96} initials={th.avatarInitials}
+                <Avatar size={96} initials={remoteParticipantInitials}
                   extraStyle={{ border: "3px solid rgba(255,255,255,.15)" }} />
                 {remoteMuted && (
                   <div style={{
@@ -472,8 +474,8 @@ export default function SessionLive({
                 {peerLeft
                   ? "Connection interrupted…"
                   : remoteCamOff
-                  ? `${th.name} has turned off their camera`
-                  : "Connecting to therapist…"}
+                  ? `${remoteParticipantName} has turned off their camera`
+                  : `Connecting to ${remoteParticipantName.toLowerCase()}...`}
               </div>
               {!peerLeft && !remoteCamOff && (
                 <div style={{ color: "rgba(255,255,255,.35)", fontSize: 12, animation: "reconnecting 1.5s infinite" }}>
