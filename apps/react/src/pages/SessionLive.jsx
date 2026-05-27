@@ -116,7 +116,9 @@ export default function SessionLive({
 
   /* ── FIX 2: remote video re-attach after cam toggle ──────────────────── */
   useEffect(() => {
-    if (remoteCamOff) return;
+    // Always attach — keeping the video element mounted regardless of
+    // remoteCamOff lets audio continue playing when the remote peer
+    // turns their camera off (audio and video share the same srcObject).
     attachStream(remoteVideoRef.current, remoteStream);
   }, [remoteStream, remoteCamOff]);
 
@@ -448,14 +450,20 @@ export default function SessionLive({
 
         {/* ── REMOTE VIDEO ── */}
         <div className="sl-remote-wrap">
-          {remoteStream && !peerLeft && !remoteCamOff ? (
-            <video
-              ref={remoteVideoRef}
-              autoPlay playsInline
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", background: "#0d0a1a" }}
-            />
-          ) : (
-            <div className="sl-remote-placeholder">
+          {/*
+            The <video> element is ALWAYS rendered so that audio from remoteStream
+            keeps playing even when the remote peer turns their camera off.
+            Audio and video share the same srcObject; unmounting the element
+            would silence the audio. The placeholder overlays it visually when
+            there is no video to show.
+          */}
+          <video
+            ref={remoteVideoRef}
+            autoPlay playsInline
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", background: "#0d0a1a" }}
+          />
+          {(!remoteStream || peerLeft || remoteCamOff) && (
+            <div className="sl-remote-placeholder" style={{ position: "absolute", inset: 0 }}>
               <div style={{ position: "relative" }}>
                 <Avatar size={96} initials={remoteParticipantInitials}
                   extraStyle={{ border: "3px solid rgba(255,255,255,.15)" }} />
