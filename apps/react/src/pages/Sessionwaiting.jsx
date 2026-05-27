@@ -14,7 +14,7 @@ import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
  *   onLeave       – () => void
  *   onPeerJoined  – (remoteStream) => void
  */
-export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined,role }) {
+export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined, role, name }) {
   const selfVideoRef = useRef(null);
   const movedToLiveRef = useRef(false);
 
@@ -48,6 +48,9 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
   // Defaults
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
+  // For therapists the URL "name" param is their own name. For patients it is
+  // the therapist's name, so patient's own initials are unavailable here.
+  const selfInitials = role === 'therapist' ? th.avatarInitials : '';
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
 
   // Session timer
@@ -386,17 +389,22 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
 
             {/* PiP self-view */}
             <div className="sw-pip">
-              <video 
+              <video
                 ref={selfVideoRef} autoPlay muted playsInline
-                style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: camActive ? "block" : "none" }} 
+                style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)", display: camActive ? "block" : "none" }}
               />
               {!camActive && (
-                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#1a1030", color: "rgba(255,255,255,.3)" }}>
-                  <CamIcon off size={22} />
+                <div style={{
+                  position: "absolute", inset: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "#1a1030",
+                }}>
+                  <Avatar size={52} initials={selfInitials}
+                    extraStyle={{ border: "2px solid rgba(255,255,255,.2)" }} />
                 </div>
               )}
               <div style={{ position: "absolute", top: 5, right: 6, background: "rgba(0,0,0,.55)", color: "white", fontSize: 9, borderRadius: 5, padding: "2px 6px", fontWeight: 600 }}>You</div>
-              
+
               {/* Mic indicator */}
               <div style={{ position: "absolute", bottom: 5, left: 5, background: micActive ? "rgba(34,197,94,.85)" : "rgba(220,38,38,.85)", borderRadius: 20, padding: "3px 8px", display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: "white", fontWeight: 600 }}>
                 <MicIcon muted={!micActive} size={8} />
