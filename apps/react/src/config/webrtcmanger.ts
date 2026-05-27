@@ -402,25 +402,64 @@ class WebRTCManager {
     }
   }
 
+  private _findTransceiverForKind(kind: LocalMediaKind) {
+    return this.pc?.getTransceivers().find(transceiver => {
+      const senderTrack = transceiver.sender.track;
+      const receiverTrack = transceiver.receiver.track;
+      return senderTrack?.kind === kind || receiverTrack?.kind === kind;
+    }) ?? null;
+  }
+
   private _createLocalTransceiver(kind: LocalMediaKind, track: MediaStreamTrack | null) {
     if (!this.pc) return null;
 
-    const init: RTCRtpTransceiverInit = { direction: 'sendrecv' };
     if (track && this.localStream) {
-      init.streams = [this.localStream];
+      const sender = this.pc.addTrack(track, this.localStream);
+      const transceiver = this.pc.getTransceivers().find(t => t.sender === sender) ?? null;
+      if (transceiver) {
+        transceiver.direction = 'sendrecv';
+        this._setLocalTransceiver(kind, transceiver);
+      }
+      return transceiver;
     }
 
-    const transceiver = this.pc.addTransceiver(track ?? kind, init);
+    const transceiver = this.pc.addTransceiver(kind, { direction: 'sendrecv' });
     this._setLocalTransceiver(kind, transceiver);
     return transceiver;
+  }
+
+  private async _syncLocalTracksToTransceivers() {
+    if (!this.pc) return;
+
+    for (const kind of ['audio', 'video'] as LocalMediaKind[]) {
+      const track = this._getLiveLocalTrack(kind);
+      const transceiver =
+        this._getLocalTransceiver(kind) ??
+        this._findTransceiverForKind(kind) ??
+        this._createLocalTransceiver(kind, null);
+
+      if (!transceiver) continue;
+
+      transceiver.direction = 'sendrecv';
+      this._setLocalTransceiver(kind, transceiver);
+
+      if (track && transceiver.sender.track !== track) {
+        await transceiver.sender.replaceTrack(track);
+      }
+    }
   }
 
   private async _replaceSenderTrack(kind: LocalMediaKind, track: MediaStreamTrack | null) {
     if (!this.pc) return;
 
-    const transceiver = this._getLocalTransceiver(kind) ?? this._createLocalTransceiver(kind, track);
+    const transceiver =
+      this._getLocalTransceiver(kind) ??
+      this._findTransceiverForKind(kind) ??
+      this._createLocalTransceiver(kind, track);
     if (!transceiver) return;
 
+    transceiver.direction = 'sendrecv';
+    this._setLocalTransceiver(kind, transceiver);
     await transceiver.sender.replaceTrack(track);
   }
 
@@ -671,6 +710,7 @@ class WebRTCManager {
       }
 
       case 'media_state_updated': {
+        if (msg.userId && msg.userId === this.userId) break;
         console.log("case falling")
         this._onRemoteMediaStateChanged?.({
           micEnabled: msg.micEnabled,
@@ -759,6 +799,7 @@ class WebRTCManager {
       await this.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
       this._remoteDescSet = true;
       await this._drainCandidateQueue();
+      await this._syncLocalTracksToTransceivers();
 
       const answer = await this.pc.createAnswer({
         offerToReceiveAudio: true,
