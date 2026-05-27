@@ -30,6 +30,8 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   const [camActive, setCamActive]     = useState(cameraon);
   const [localStream, setLocalStream] = useState(null);
   const [connState, setConnState]     = useState("connecting");
+  const [mediaError, setMediaError]   = useState(null);
+  const [busy, setBusy]               = useState(false);
   const chatEndRef                    = useRef(null);
   const[chatOpen,setIsChatOpen]=useState(false)
 
@@ -123,7 +125,10 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   }, [localStream, camActive]);
 
   const handleToggleMic = async () => {
+    if (busy) return;
     const next = !micActive;
+    setBusy(true);
+    setMediaError(null);
     try {
       await webRTCManager.toggleMute(!next);
       setMicActive(next);
@@ -132,11 +137,21 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
       console.error('[Waiting] Failed to toggle microphone:', err);
       setMicActive(false);
       localStorage.setItem('micActive', 'false');
+      setMediaError(
+        err?.name === 'NotAllowedError'
+          ? 'Microphone access blocked. Allow it in the address-bar lock icon and try again.'
+          : 'Could not enable microphone. Please check your device settings.'
+      );
+    } finally {
+      setBusy(false);
     }
   };
 
   const handleToggleCam = async () => {
+    if (busy) return;
     const next = !camActive;
+    setBusy(true);
+    setMediaError(null);
     try {
       await webRTCManager.toggleCamera(!next);
       setCamActive(next);
@@ -145,6 +160,13 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
       console.error('[Waiting] Failed to toggle camera:', err);
       setCamActive(false);
       localStorage.setItem('camActive', 'false');
+      setMediaError(
+        err?.name === 'NotAllowedError'
+          ? 'Camera access blocked. Allow it in the address-bar lock icon and try again.'
+          : 'Could not enable camera. Please check your device settings.'
+      );
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -369,15 +391,31 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
               ))}
             </div>
 
+            {/* Inline media error (e.g. permission denied when toggling) */}
+            {mediaError && (
+              <div style={{
+                position: "absolute", bottom: 96, left: "50%", transform: "translateX(-50%)",
+                background: "#fef2f2", color: "#b91c1c",
+                border: "1px solid #fecaca", borderRadius: 10, padding: "8px 14px",
+                fontSize: 12, fontWeight: 500, maxWidth: 360, textAlign: "center", lineHeight: 1.5,
+                boxShadow: "0 4px 16px rgba(220,38,38,0.18)",
+              }}>
+                {mediaError}
+              </div>
+            )}
+
             {/* Controls */}
             <div className="sw-controls-bar">
               {[
-                { icon: <MicIcon muted={!micActive} size={18} />, label: micActive ? "Mute" : "Unmute", onClick: handleToggleMic, active: micActive },
-                { icon: <CamIcon off={!camActive} size={18} />, label: "Camera", onClick: handleToggleCam, active: camActive },
-                { icon:  <ChatIcon size={18} />, label: "Chat", onClick: toggleChat, active: chatOpen },
-              ].map(({ icon, label, onClick, active }, i) => (
+                { icon: <MicIcon muted={!micActive} size={18} />, label: micActive ? "Mute" : "Unmute", onClick: handleToggleMic, active: micActive, disabled: busy },
+                { icon: <CamIcon off={!camActive} size={18} />, label: "Camera", onClick: handleToggleCam, active: camActive, disabled: busy },
+                { icon:  <ChatIcon size={18} />, label: "Chat", onClick: toggleChat, active: chatOpen, disabled: false },
+              ].map(({ icon, label, onClick, active, disabled }, i) => (
                 <div key={i} className="ctrl-item">
-                  <button onClick={onClick} style={ctrlBtn(active)}>{icon}</button>
+                  <button onClick={onClick} disabled={disabled}
+                    style={{ ...ctrlBtn(active), opacity: disabled ? 0.55 : 1, cursor: disabled ? "wait" : "pointer" }}>
+                    {icon}
+                  </button>
                   <span className="ctrl-label">{label}</span>
                 </div>
               ))}

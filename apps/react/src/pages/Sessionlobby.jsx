@@ -148,13 +148,10 @@ export default function SessionLobby({
   const micStreamRef = useRef(null);  // mic stream (local preview)
   const mountedRef  = useRef(true);
 
-  // ── Sync webRTCManager once on mount ───────────────────────────────────────
-  useEffect(() => {
-    webRTCManager.toggleMute(true);   // start muted
-    webRTCManager.toggleCamera(true); // start camera off
-  }, []);
-
   // ── Cleanup on unmount ─────────────────────────────────────────────────────
+  // Stop any preview tracks the user enabled in the lobby but never carried
+  // into the session. Tracks that were handed off to webRTCManager have their
+  // refs nulled in handleJoin, so they won't get stopped here.
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -278,6 +275,7 @@ export default function SessionLobby({
   // ── Join ───────────────────────────────────────────────────────────────────
   const handleJoin = useCallback(async () => {
     if (!mountedRef.current) return;
+    if (joining) return;          // guard against double-click
     setJoining(true);
     setJoinError(null);
 
@@ -324,7 +322,7 @@ export default function SessionLobby({
       setJoinError(msg);
       setJoining(false);
     }
-  }, [sessionCode, userId, role, micActive, camActive, onJoined]);
+  }, [sessionCode, userId, role, micActive, camActive, onJoined, joining]);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const minutesLeft = Math.ceil(timeLeft / 60);

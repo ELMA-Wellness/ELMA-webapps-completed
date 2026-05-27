@@ -87,6 +87,8 @@ export default function SessionLive({
   const [remoteMuted, setRemoteMuted]  = useState(false);
   const [remoteCamOff,setRemoteCamOff] = useState(false);
   const [pipExpanded, setPipExpanded]  = useState(false);
+  const [mediaError,  setMediaError]   = useState(null);
+  const [busy,        setBusy]         = useState(false);
 
   mutedRef.current  = muted;
   camOffRef.current = camOff;
@@ -195,8 +197,10 @@ export default function SessionLive({
 
   /* ── toggles ──────────────────────────────────────────────────────────── */
   const handleToggleMic = async () => {
+    if (busy) return;
     const shouldEnable = mutedRef.current;
-
+    setBusy(true);
+    setMediaError(null);
     try {
       await webRTCManager.toggleMute(!shouldEnable);
       setMuted(!shouldEnable);
@@ -205,13 +209,23 @@ export default function SessionLive({
       console.error("SessionLive: failed to toggle microphone -", err);
       setMuted(true);
       localStorage.setItem("micActive", "false");
+      setMediaError(
+        err?.name === "NotAllowedError"
+          ? "Microphone access blocked. Allow it in the address-bar lock icon and try again."
+          : "Could not enable microphone. Please check your device settings."
+      );
+    } finally {
+      setBusy(false);
     }
     // broadcastMediaState fires via the [muted, camOff] useEffect
   };
 
   const handleToggleCam = async () => {
+    if (busy) return;
     const shouldEnable = camOffRef.current;
     const nowOff = !shouldEnable;
+    setBusy(true);
+    setMediaError(null);
     setCamOff(nowOff);
     localStorage.setItem("camActive", String(shouldEnable));
 
@@ -223,6 +237,13 @@ export default function SessionLive({
       setCamOff(true);
       localStorage.setItem("camActive", "false");
       setLocalStream(webRTCManager.localStream);
+      setMediaError(
+        err?.name === "NotAllowedError"
+          ? "Camera access blocked. Allow it in the address-bar lock icon and try again."
+          : "Could not enable camera. Please check your device settings."
+      );
+    } finally {
+      setBusy(false);
     }
     // broadcastMediaState fires via the [muted, camOff] useEffect
   };
@@ -553,6 +574,20 @@ export default function SessionLive({
           )}
         </div>
 
+        {/* ── MEDIA ERROR TOAST ── */}
+        {mediaError && (
+          <div style={{
+            position: "absolute", bottom: 100, left: "50%", transform: "translateX(-50%)",
+            background: "rgba(239,68,68,0.92)", color: "white",
+            border: "1px solid rgba(239,68,68,0.6)", borderRadius: 10,
+            padding: "10px 16px", fontSize: 12.5, fontWeight: 500,
+            maxWidth: 380, textAlign: "center", lineHeight: 1.5, zIndex: 25,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.4)", backdropFilter: "blur(8px)",
+          }}>
+            {mediaError}
+          </div>
+        )}
+
         {/* ── CONTROLS ── */}
         <div className="sl-controls" style={{ right: chatOpen ? 320 : 0 }}>
           {[
@@ -560,7 +595,12 @@ export default function SessionLive({
             { icon: <CamIcon off={camOff}  size={20} />, label: camOff ? "Cam Off" : "Camera", onClick: handleToggleCam, isOff: camOff  },
           ].map(({ icon, label, onClick, isOff }, i) => (
             <div key={i} className="ctrl-wrap">
-              <button onClick={onClick} className={`ctrl-btn ${isOff ? "ctrl-btn-muted" : "ctrl-btn-active"}`}>
+              <button
+                onClick={onClick}
+                disabled={busy}
+                className={`ctrl-btn ${isOff ? "ctrl-btn-muted" : "ctrl-btn-active"}`}
+                style={{ opacity: busy ? 0.55 : 1, cursor: busy ? "wait" : "pointer" }}
+              >
                 {icon}
               </button>
               <span className="ctrl-lbl">{label}</span>
