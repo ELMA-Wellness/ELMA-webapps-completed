@@ -611,29 +611,26 @@ class WebRTCManager {
       console.log('[PC] Signaling state:', this.pc?.signalingState);
     };
 
-    // Remote track received (modern API). Some versions of react-native-webrtc
-    // populate event.streams[0]; when not, we assemble a MediaStream manually.
+    // Remote track received. We always build our own MediaStream and snapshot
+    // it to a NEW object on every ontrack event. This guarantees React sees a
+    // reference change even when audio and video tracks arrive sequentially
+    // from the same remote stream (event.streams[0] would be the same object
+    // both times, causing React to bail out and never re-attach srcObject).
     this.pc.ontrack = (event) => {
       const track = event.track;
-      // if (!track) return;
-
       console.log('[PC] Remote track (ontrack):', track.kind, track.id);
 
-      let stream = event.streams && event.streams[0];
-      if (stream) {
-        console.log('[PC] ontrack event.streams[0] tracks:', stream.getTracks().length);
-        this.remoteStream = stream as MediaStream;
-      } else {
-        // Fallback: assemble our own MediaStream from incoming tracks.
-        if (!this.remoteStream) {
-          this.remoteStream = new MediaStream();
-        }
-        const exists = this.remoteStream.getTracks().some(t => t.id === track.id);
-        if (!exists) {
-          this.remoteStream.addTrack(track);
-        }
+      if (!this.remoteStream) {
+        this.remoteStream = new MediaStream();
       }
 
+      if (!this.remoteStream.getTracks().some(t => t.id === track.id)) {
+        this.remoteStream.addTrack(track);
+      }
+
+      // Snapshot to a new MediaStream so React always sees a changed reference
+      // and re-runs the srcObject attachment effect in the UI layer.
+      this.remoteStream = new MediaStream(this.remoteStream.getTracks());
       this._onRemoteStreamChanged?.(this.remoteStream);
     };
   }
