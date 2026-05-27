@@ -618,7 +618,7 @@ class WebRTCManager {
     // both times, causing React to bail out and never re-attach srcObject).
     this.pc.ontrack = (event) => {
       const track = event.track;
-      console.log('[PC] Remote track (ontrack):', track.kind, track.id);
+      console.log('[PC] Remote track (ontrack):', track.kind, track.id, 'muted:', track.muted);
 
       if (!this.remoteStream) {
         this.remoteStream = new MediaStream();
@@ -632,6 +632,26 @@ class WebRTCManager {
       // and re-runs the srcObject attachment effect in the UI layer.
       this.remoteStream = new MediaStream(this.remoteStream.getTracks());
       this._onRemoteStreamChanged?.(this.remoteStream);
+
+      // Browsers often deliver tracks in a muted (no-data) state initially.
+      // Re-fire when the track first produces data so the UI re-attaches if needed.
+      track.onunmute = () => {
+        console.log('[PC] Track unmuted:', track.kind, track.id);
+        if (this.remoteStream?.getTracks().some(t => t.id === track.id)) {
+          this.remoteStream = new MediaStream(this.remoteStream.getTracks());
+          this._onRemoteStreamChanged?.(this.remoteStream);
+        }
+      };
+
+      // Remove ended tracks from our stream snapshot.
+      track.onended = () => {
+        console.log('[PC] Track ended:', track.kind, track.id);
+        if (this.remoteStream) {
+          this.remoteStream.removeTrack(track);
+          this.remoteStream = new MediaStream(this.remoteStream.getTracks());
+          this._onRemoteStreamChanged?.(this.remoteStream);
+        }
+      };
     };
   }
 
