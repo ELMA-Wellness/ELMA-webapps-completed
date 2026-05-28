@@ -95,10 +95,16 @@ export default function SessionLive({
 
   /* ── helpers ──────────────────────────────────────────────────────────── */
   function attachStream(videoEl, stream) {
-    if (!videoEl || !stream) return;
-    if (videoEl.srcObject === stream) return;  // already correct, skip
-    videoEl.srcObject = stream;
-    videoEl.play().catch(() => {});
+    if (!videoEl) return;
+    if (videoEl.srcObject !== stream) {
+      videoEl.srcObject = stream || null;
+    }
+    if (stream) {
+      const playPromise = videoEl.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    }
   }
 
   function hasLiveTrack(stream, kind) {
@@ -115,10 +121,12 @@ export default function SessionLive({
 
   /* ── FIX 1: self preview ──────────────────────────────────────────────── *
    * Video element is always in DOM (hidden via CSS when camOff), so we can   *
-   * attach once on stream change and the srcObject persists through toggles. */
+   * attach whenever the stream object changes or the element re-shows.       *
+   * Re-running when camOff flips back to false guarantees the browser has a  *
+   * mounted, painted element to play into.                                   */
   useEffect(() => {
     attachStream(selfVideoRef.current, localStream);
-  }, [localStream]);
+  }, [localStream, camOff]);
 
   /* ── FIX 2: remote video re-attach after cam toggle ──────────────────── */
   useEffect(() => {

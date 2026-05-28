@@ -88,6 +88,14 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
       moveToLive(webRTCManager.remoteStream);
     };
 
+    // Remote media state arriving is also proof the peer is in the room.
+    // The webRTCManager already marks peer-ready on any peer message, but
+    // this guarantees the UI transition fires even if the order of callbacks
+    // means onPeerReady was already consumed before this effect attached.
+    webRTCManager.onRemoteMediaStateChanged = () => {
+      moveToLive(webRTCManager.remoteStream);
+    };
+
     // Chat
     webRTCManager.onMessagesChanged = (msgs) => {
       console.log(msgs)
@@ -108,12 +116,13 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
     };
 
     return () => {
-      webRTCManager.onLocalStreamChanged     = null;
-      webRTCManager.onRemoteStreamChanged    = null;
-      webRTCManager.onMessagesChanged        = null;
-      webRTCManager.onConnectionStateChanged = null;
-      webRTCManager.onPeerDisconnect = null;
-      webRTCManager.onPeerReady = null;
+      webRTCManager.onLocalStreamChanged       = null;
+      webRTCManager.onRemoteStreamChanged      = null;
+      webRTCManager.onRemoteMediaStateChanged  = null;
+      webRTCManager.onMessagesChanged          = null;
+      webRTCManager.onConnectionStateChanged   = null;
+      webRTCManager.onPeerDisconnect           = null;
+      webRTCManager.onPeerReady                = null;
     };
   }, [moveToLive]);
 
