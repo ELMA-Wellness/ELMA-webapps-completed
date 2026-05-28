@@ -846,6 +846,22 @@ class WebRTCManager {
           micEnabled: msg.micEnabled,
           cameraEnabled: msg.cameraEnabled
         });
+        // Peer-back detection. After peer_left we rebuild the PC and set
+        // _peerReady=false, then wait for session_ready/peer_joined to send a
+        // fresh offer. If the server doesn't relay that message reliably, the
+        // therapist would sit with an idle PC forever. A media_state_updated
+        // from the remote is proof the peer is back in the session, so mark
+        // ready and offer immediately — this also covers the case where the
+        // patient toggles their camera right after rejoining.
+        if (this.role === 'therapist' && !this._peerReady) {
+          this._markPeerReady();
+          if (this.pc?.signalingState === 'stable' && !this._isMakingOffer) {
+            this._safeCreateAndSendOffer('remote_back_after_disconnect');
+          } else {
+            this._pendingTherapistRenegotiation = true;
+          }
+          break;
+        }
         // Fallback path for the patient → therapist media flow. If the patient
         // just toggled on a track that the previously-negotiated session can't
         // receive (because the answer was created with no patient track of
