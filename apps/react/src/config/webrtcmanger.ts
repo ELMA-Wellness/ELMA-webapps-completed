@@ -1,34 +1,41 @@
+/**
+ * WebRTC manager built on the WebRTC "Perfect Negotiation" pattern.
+ *
+ * Both peers handle `onnegotiationneeded` and may originate offers.
+ * Patient is the polite peer (rolls back on glare); therapist is impolite
+ * (ignores incoming offers during their own offer). This removes the
+ * asymmetric "only therapist may offer" rule that previously meant a
+ * patient who toggled their camera on after answering had no way to
+ * publish the new track — the m-line had been negotiated without an
+ * SSRC and Chrome/Safari refused to upgrade it from a plain replaceTrack.
+ *
+ * Public API (`initialize`, `setCameraEnabled`, etc.) is preserved so
+ * the React layer (SessionLobby / SessionWaiting / SessionLive) is
+ * unchanged.
+ */
+
 const WEBSOCKET_URL = 'wss://elma-dsb6fne7c0bqezaj.centralindia-01.azurewebsites.net/';
-const ICE_SERVERS = [
-  {
-    urls: "stun:stun.relay.metered.ca:80",
-  },
-  {
-    urls: "turn:global.relay.metered.ca:80",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
-  {
-    urls: "turn:global.relay.metered.ca:80?transport=tcp",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
-  {
-    urls: "turn:global.relay.metered.ca:443",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
-  {
-    urls: "turns:global.relay.metered.ca:443?transport=tcp",
-    username: "cdc87cccc674b5cd95ddde9c",
-    credential: "WnyJEhKDRKzCjJ7t",
-  },
+const ICE_SERVERS: RTCIceServer[] = [
+  { urls: 'stun:stun.relay.metered.ca:80' },
+  { urls: 'turn:global.relay.metered.ca:80', username: 'cdc87cccc674b5cd95ddde9c', credential: 'WnyJEhKDRKzCjJ7t' },
+  { urls: 'turn:global.relay.metered.ca:80?transport=tcp', username: 'cdc87cccc674b5cd95ddde9c', credential: 'WnyJEhKDRKzCjJ7t' },
+  { urls: 'turn:global.relay.metered.ca:443', username: 'cdc87cccc674b5cd95ddde9c', credential: 'WnyJEhKDRKzCjJ7t' },
+  { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'cdc87cccc674b5cd95ddde9c', credential: 'WnyJEhKDRKzCjJ7t' },
 ];
+
 type Role = 'patient' | 'therapist';
 type StreamCallback = (stream: MediaStream | null) => void;
 type MessagesCallback = (messages: any[]) => void;
 type MediaStateCallback = (state: { micEnabled: boolean, cameraEnabled: boolean }) => void;
 type LocalMediaKind = 'audio' | 'video';
+
+const SIGNALING_TYPES = new Set([
+  'webrtc_offer',
+  'webrtc_answer',
+  'webrtc_ice_candidate',
+  'renegotiation_request',
+  'media_state_updated',
+]);
 
 function normalizeRole(role: unknown): Role {
   const value = String(role ?? '').trim().toLowerCase();
@@ -36,6 +43,10 @@ function normalizeRole(role: unknown): Role {
     return 'therapist';
   }
   return 'patient';
+}
+
+function log(tag: string, ...args: any[]) {
+  console.log(`[WebRTC][${tag}]`, ...args);
 }
 
 class WebRTCManager {
@@ -47,42 +58,36 @@ class WebRTCManager {
   userId: string | null = null;
   role: Role = 'patient';
   messages: any[] = [];
+
+  // ── Perfect Negotiation state ────────────────────────────────────────────
+  // polite=true → rollback on glare. polite=false → ignore colliding offer.
+  // We make the patient polite and the therapist impolite.
+  private polite = true;
+  private makingOffer = false;
+  private ignoreOffer = false;
+  private isSettingRemoteAnswerPending = false;
+
+  // ── Media state ──────────────────────────────────────────────────────────
   private _micEnabled = false;
   private _cameraEnabled = false;
   private _audioTransceiver: RTCRtpTransceiver | null = null;
   private _videoTransceiver: RTCRtpTransceiver | null = null;
 
-  // ─── ICE candidate queue (buffer until remoteDescription is set) ──────────
-  private _pendingCandidates: RTCIceCandidate[] = [];
-  private _remoteDescSet = false;
+  // ── ICE candidate queue ──────────────────────────────────────────────────
+  private _pendingCandidates: RTCIceCandidateInit[] = [];
 
-  // ─── Reconnection state ───────────────────────────────────────────────────
+  // ── WS reconnection ──────────────────────────────────────────────────────
   private _wsReconnectAttempts = 0;
   private _maxReconnectAttempts = 8;
   private _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private _intentionalClose = false;
 
-  // ─── Offer/answer state (avoid glare + renegotiate cleanly) ───────────────
-  private _isMakingOffer = false;
-  private _awaitingAnswer = false;
+  // ── Peer readiness ───────────────────────────────────────────────────────
   private _peerReady = false;
   private _onPeerReady: (() => void) | null = null;
-  private _renegotiationPending = false;        // patient: waiting for therapist offer
-  private _pendingTherapistRenegotiation = false; // therapist: needs to re-offer once stable
-  // ─── Recovery timers ──────────────────────────────────────────────────────
-  // Therapist: after ICE connects, verify the patient's inbound tracks
-  // arrived. If not, force a fresh offer.
-  private _inboundCheckTimer: ReturnType<typeof setTimeout> | null = null;
-  // Patient: if no offer arrives within a window after the peer is known
-  // to be in the session, send an explicit renegotiation_request.
-  private _patientOfferTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
   private _lastRemoteMediaState: { micEnabled: boolean; cameraEnabled: boolean } | null = null;
 
-  // ─── Callbacks with replay-on-assign pattern ──────────────────────────────
-  // When a listener is assigned, it is immediately called with the current
-  // value so components that register late never miss an update.
-
-
+  // ── Callbacks ────────────────────────────────────────────────────────────
   private _onRemoteSessionChanged: any;
   private remoteSessionListeners: Array<() => void> = [];
 
@@ -92,42 +97,35 @@ class WebRTCManager {
       this.remoteSessionListeners = this.remoteSessionListeners.filter(fn => fn !== cb);
     };
   }
-
   private emitRemoteSessionChanged() {
     this.remoteSessionListeners.forEach(cb => cb());
   }
 
   private _onRemoteStreamChanged: StreamCallback | null = null;
-
-
-
   get onRemoteStreamChanged() { return this._onRemoteStreamChanged; }
   set onRemoteStreamChanged(cb: StreamCallback | null) {
     this._onRemoteStreamChanged = cb;
-    if (cb) cb(this.remoteStream); // replay current value
+    if (cb) cb(this.remoteStream);
   }
 
   private _onLocalStreamChanged: StreamCallback | null = null;
   get onLocalStreamChanged() { return this._onLocalStreamChanged; }
   set onLocalStreamChanged(cb: StreamCallback | null) {
     this._onLocalStreamChanged = cb;
-    if (cb) cb(this.localStream); // replay current value
+    if (cb) cb(this.localStream);
   }
 
   private _onMessagesChanged: MessagesCallback | null = null;
   get onMessagesChanged() { return this._onMessagesChanged; }
   set onMessagesChanged(cb: MessagesCallback | null) {
     this._onMessagesChanged = cb;
-    if (cb) cb(this.messages); // replay current value
+    if (cb) cb(this.messages);
   }
 
   private _onRemoteMediaStateChanged: MediaStateCallback | null = null;
   get onRemoteMediaStateChanged() { return this._onRemoteMediaStateChanged; }
   set onRemoteMediaStateChanged(cb: MediaStateCallback | null) {
     this._onRemoteMediaStateChanged = cb;
-    // Replay the most recent remote media state so listeners that attach late
-    // (e.g. SessionLive useEffect that runs after the message already arrived)
-    // converge to the correct UI on first paint.
     if (cb && this._lastRemoteMediaState) cb(this._lastRemoteMediaState);
   }
 
@@ -143,14 +141,11 @@ class WebRTCManager {
     if (cb && this._peerReady) cb();
   }
 
-  // Fires when remote peer leaves/disconnects. (Used by live screens to show UI)
   onPeerDisconnect: (() => void) | null = null;
 
-  // ─── Public API ───────────────────────────────────────────────────────────
+  get peerConnection() { return this.pc; }
 
-  get peerConnection() {
-    return this.pc;
-  }
+  // ── Public API ───────────────────────────────────────────────────────────
 
   async initialize(
     sessionCode: string = '69a54abd29c99c56303ea5f6',
@@ -158,19 +153,18 @@ class WebRTCManager {
     role: Role = 'patient',
     micEnabled = false,
     cameraEnabled = false,
-    initialStream: MediaStream | null = null
+    initialStream: MediaStream | null = null,
   ): Promise<void> {
-    // Prevent double-initialization
     if (this.pc || this.ws) {
       console.warn('[WebRTC] Already initialized. Call hangup() first.');
       return;
     }
 
     this._intentionalClose = false;
-    this._renegotiationPending = false;
     this.sessionCode = sessionCode;
     this.userId = userId;
     this.role = normalizeRole(role);
+    this.polite = this.role === 'patient';
     this._micEnabled = micEnabled;
     this._cameraEnabled = cameraEnabled;
     this.localStream = new MediaStream();
@@ -178,10 +172,10 @@ class WebRTCManager {
 
     try {
       if (micEnabled && !this._getLiveLocalTrack('audio')) {
-        await this._enableLocalKind('audio');
+        await this._acquireLocalKind('audio');
       }
       if (cameraEnabled && !this._getLiveLocalTrack('video')) {
-        await this._enableLocalKind('video');
+        await this._acquireLocalKind('video');
       }
       this._snapshotLocalStream();
       this._onLocalStreamChanged?.(this.localStream);
@@ -208,19 +202,15 @@ class WebRTCManager {
       this._micEnabled = enabled;
       return;
     }
-
     if (enabled) {
       await this._enableLocalKind('audio');
     } else {
       await this._disableLocalKind('audio');
     }
-
     this._micEnabled = enabled;
     this._snapshotLocalStream();
     this._onLocalStreamChanged?.(this.localStream);
     this._broadcastMediaState();
-
-    if (enabled) await this._ensureSenderTransmitting('audio');
   }
 
   async setCameraEnabled(enabled: boolean) {
@@ -228,85 +218,38 @@ class WebRTCManager {
       this._cameraEnabled = enabled;
       return;
     }
-
     if (enabled) {
       await this._enableLocalKind('video');
     } else {
       await this._disableLocalKind('video');
     }
-
     this._cameraEnabled = enabled;
     this._snapshotLocalStream();
     this._onLocalStreamChanged?.(this.localStream);
     this._broadcastMediaState();
-
-    if (enabled) await this._ensureSenderTransmitting('video');
-  }
-
-  // After enabling a local track, verify the transceiver is actually allowed
-  // to send. If the negotiated direction is recvonly/inactive (which happens
-  // when the answer was created with no local track of that kind), force a
-  // renegotiation so the new track reaches the remote peer.
-  private async _ensureSenderTransmitting(kind: LocalMediaKind) {
-    if (!this.pc) return;
-    const transceiver = this._getLocalTransceiver(kind) ?? this._findTransceiverForKind(kind);
-    if (!transceiver) return;
-    const current = transceiver.currentDirection;
-    const isSending = current === 'sendrecv' || current === 'sendonly';
-    if (isSending) return;
-
-    // Lock the preferred direction so the next negotiation publishes a sending
-    // m-line. currentDirection only updates after the next answer is applied.
-    try { transceiver.direction = 'sendrecv'; } catch {}
-
-    this._requestRenegotiation(`enable-${kind}`);
-  }
-
-  private _requestRenegotiation(reason: string) {
-    if (!this._peerReady) return;
-    if (this.role === 'therapist') {
-      this._safeCreateAndSendOffer(`local-${reason}`);
-    } else {
-      if (this._renegotiationPending) return;
-      this._renegotiationPending = true;
-      this._sendWS({ type: 'renegotiation_request', reason });
-      // Auto-reset after 4s so a dropped request doesn't permanently block
-      // future retries. The therapist's media_state_updated fallback should
-      // usually trigger renegotiation first, but this is the safety net.
-      setTimeout(() => { this._renegotiationPending = false; }, 4000);
-    }
-  }
-
-  // Replace the underlying MediaStream object with a fresh one carrying the
-  // same tracks so React effects keyed on the stream reference re-run and the
-  // <video> element re-attaches srcObject. Without this, adding a track to
-  // the same MediaStream instance leaves the UI showing a black tile.
-  private _snapshotLocalStream() {
-    if (!this.localStream) return;
-    const tracks = this.localStream.getTracks();
-    this.localStream = new MediaStream(tracks);
   }
 
   sendChatMessage(text: string) {
     this._sendWS({ type: 'chat_message', text });
   }
 
-  /** Call this to end the session from the local side. */
-  hangup(navigate = false, cb = () => { }) {
+  sendMessage(message: object) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ ...message, sessionCode: this.sessionCode }));
+    } else {
+      console.warn('[WS] Tried to send but socket not open:', message);
+    }
+  }
+
+  hangup(navigate = false, cb = () => {}) {
     this._intentionalClose = true;
 
     if (this._reconnectTimer) {
       clearTimeout(this._reconnectTimer);
       this._reconnectTimer = null;
     }
-    if (this._inboundCheckTimer) {
-      clearTimeout(this._inboundCheckTimer);
-      this._inboundCheckTimer = null;
-    }
-    this._clearPatientOfferTimeout();
     this._lastRemoteMediaState = null;
 
-    // Tell server explicitly (so the other peer gets peer_left/session_ended reliably)
     if (this.ws?.readyState === WebSocket.OPEN) {
       const type = this.role === 'therapist' ? 'end_session' : 'leave_session';
       try {
@@ -330,68 +273,55 @@ class WebRTCManager {
     this.sessionCode = null;
     this.userId = null;
     this._pendingCandidates = [];
-    this._remoteDescSet = false;
     this._wsReconnectAttempts = 0;
-    this._isMakingOffer = false;
-    this._awaitingAnswer = false;
+    this.makingOffer = false;
+    this.ignoreOffer = false;
+    this.isSettingRemoteAnswerPending = false;
     this._peerReady = false;
-    this._renegotiationPending = false;
-    this._pendingTherapistRenegotiation = false;
     this._micEnabled = false;
     this._cameraEnabled = false;
     this._audioTransceiver = null;
     this._videoTransceiver = null;
     this._onPeerReady = null;
 
-    // Notify listeners of null streams
     this._onLocalStreamChanged?.(null);
     this._onRemoteStreamChanged?.(null);
     this._onMessagesChanged?.([]);
 
-    // Clear listeners
     this._onRemoteStreamChanged = null;
     this._onLocalStreamChanged = null;
     this._onMessagesChanged = null;
     this._onConnectionStateChanged = null;
     this.onPeerDisconnect = null;
-    cb()
+    cb();
 
     if (navigate) {
-      if (this.role === 'patient') {
-
-        // router.replace('/experts/sessionend');
-      }
-      else {
-        // router.replace('/experts/drsessionend')
-      }
+      // routing handled at the page layer
     }
   }
 
-  // ─── Private: WebSocket ───────────────────────────────────────────────────
+  // ── Private: session checks ──────────────────────────────────────────────
 
   private _isSessionActive() {
     return Boolean(this.pc || this.ws || this.sessionCode);
   }
 
+  // ── Private: local media ─────────────────────────────────────────────────
+
   private _ensureLocalStream() {
-    if (!this.localStream) {
-      this.localStream = new MediaStream();
-    }
+    if (!this.localStream) this.localStream = new MediaStream();
     return this.localStream;
   }
 
   private _adoptInitialTracks(stream: MediaStream | null, micEnabled: boolean, cameraEnabled: boolean) {
     if (!stream) return;
-
     const localStream = this._ensureLocalStream();
     const audioTrack = stream.getAudioTracks().find(t => t.readyState === 'live');
     const videoTrack = stream.getVideoTracks().find(t => t.readyState === 'live');
-
     if (micEnabled && audioTrack) {
       audioTrack.enabled = true;
       localStream.addTrack(audioTrack);
     }
-
     if (cameraEnabled && videoTrack) {
       videoTrack.enabled = true;
       localStream.addTrack(videoTrack);
@@ -404,14 +334,16 @@ class WebRTCManager {
       .find(t => t.kind === kind && t.readyState === 'live') ?? null;
   }
 
-  private async _enableLocalKind(kind: LocalMediaKind) {
-    const existingTrack = this._getLiveLocalTrack(kind);
-    if (existingTrack) {
-      existingTrack.enabled = true;
-      await this._replaceSenderTrack(kind, existingTrack);
-      return;
+  /**
+   * Acquire a local track via getUserMedia and add it to localStream.
+   * Does not touch the peer connection.
+   */
+  private async _acquireLocalKind(kind: LocalMediaKind) {
+    const existing = this._getLiveLocalTrack(kind);
+    if (existing) {
+      existing.enabled = true;
+      return existing;
     }
-
     const mediaStream = kind === 'audio'
       ? await navigator.mediaDevices.getUserMedia({ audio: true })
       : await this._getCameraStreamWithFallback();
@@ -422,26 +354,36 @@ class WebRTCManager {
 
     if (!track) {
       mediaStream.getTracks().forEach(t => t.stop());
-      throw new Error(`No ${kind} track was returned by getUserMedia.`);
+      throw new Error(`No ${kind} track returned by getUserMedia.`);
     }
 
     this._removeLocalTracks(kind, true);
     track.enabled = true;
     this._ensureLocalStream().addTrack(track);
-    mediaStream.getTracks().forEach(t => {
-      if (t !== track) t.stop();
-    });
-    await this._replaceSenderTrack(kind, track);
+    mediaStream.getTracks().forEach(t => { if (t !== track) t.stop(); });
+    return track;
+  }
+
+  /**
+   * Acquire a track and bind it to the corresponding RTCRtpSender. This
+   * is what `setCameraEnabled(true)` / `setMicrophoneEnabled(true)` call
+   * during an active session. After binding, the PC's negotiationneeded
+   * event fires automatically and Perfect Negotiation takes over.
+   */
+  private async _enableLocalKind(kind: LocalMediaKind) {
+    const track = await this._acquireLocalKind(kind);
+    await this._bindSenderTrack(kind, track);
   }
 
   private async _disableLocalKind(kind: LocalMediaKind) {
-    await this._replaceSenderTrack(kind, null);
+    // Stop sending on the wire by clearing the sender's track. Stop the
+    // physical track so the OS releases the camera/mic LED.
+    await this._bindSenderTrack(kind, null);
     this._removeLocalTracks(kind, true);
   }
 
   private _removeLocalTracks(kind: LocalMediaKind, shouldStop: boolean) {
     if (!this.localStream) return;
-
     this.localStream.getTracks()
       .filter(t => t.kind === kind)
       .forEach(track => {
@@ -464,84 +406,48 @@ class WebRTCManager {
     }
   }
 
+  private _snapshotLocalStream() {
+    if (!this.localStream) return;
+    const tracks = this.localStream.getTracks();
+    this.localStream = new MediaStream(tracks);
+  }
+
+  // ── Private: transceiver helpers ─────────────────────────────────────────
+
   private _getLocalTransceiver(kind: LocalMediaKind) {
     return kind === 'audio' ? this._audioTransceiver : this._videoTransceiver;
   }
 
   private _setLocalTransceiver(kind: LocalMediaKind, transceiver: RTCRtpTransceiver) {
-    if (kind === 'audio') {
-      this._audioTransceiver = transceiver;
-    } else {
-      this._videoTransceiver = transceiver;
-    }
+    if (kind === 'audio') this._audioTransceiver = transceiver;
+    else this._videoTransceiver = transceiver;
   }
 
-  private _findTransceiverForKind(kind: LocalMediaKind) {
-    return this.pc?.getTransceivers().find(transceiver => {
-      const senderTrack = transceiver.sender.track;
-      const receiverTrack = transceiver.receiver.track;
-      return senderTrack?.kind === kind || receiverTrack?.kind === kind;
-    }) ?? null;
-  }
-
-  private _createLocalTransceiver(kind: LocalMediaKind, track: MediaStreamTrack | null) {
-    if (!this.pc) return null;
-
-    if (track && this.localStream) {
-      const sender = this.pc.addTrack(track, this.localStream);
-      const transceiver = this.pc.getTransceivers().find(t => t.sender === sender) ?? null;
-      if (transceiver) {
-        transceiver.direction = 'sendrecv';
-        this._setLocalTransceiver(kind, transceiver);
-      }
-      return transceiver;
-    }
-
-    const transceiver = this.pc.addTransceiver(kind, { direction: 'sendrecv' });
-    this._setLocalTransceiver(kind, transceiver);
-    return transceiver;
-  }
-
-  private async _syncLocalTracksToTransceivers() {
+  /**
+   * Bind a track to the sender of the kind-specific transceiver. If the
+   * transceiver doesn't exist yet (shouldn't happen after _buildPeerConnection
+   * but defensive), create it sendrecv.
+   *
+   * After this call, the PC will fire `onnegotiationneeded` if the SDP
+   * needs to change — which is exactly what we want.
+   */
+  private async _bindSenderTrack(kind: LocalMediaKind, track: MediaStreamTrack | null) {
     if (!this.pc) return;
-
-    for (const kind of ['audio', 'video'] as LocalMediaKind[]) {
-      const track = this._getLiveLocalTrack(kind);
-      const transceiver =
-        this._getLocalTransceiver(kind) ??
-        this._findTransceiverForKind(kind) ??
-        this._createLocalTransceiver(kind, null);
-
-      if (!transceiver) continue;
-
-      transceiver.direction = 'sendrecv';
+    let transceiver = this._getLocalTransceiver(kind);
+    if (!transceiver) {
+      transceiver = this.pc.addTransceiver(kind, { direction: 'sendrecv' });
       this._setLocalTransceiver(kind, transceiver);
-
-      if (track && transceiver.sender.track !== track) {
-        await transceiver.sender.replaceTrack(track);
-      }
     }
-  }
-
-  private async _replaceSenderTrack(kind: LocalMediaKind, track: MediaStreamTrack | null) {
-    if (!this.pc) return;
-
-    const transceiver =
-      this._getLocalTransceiver(kind) ??
-      this._findTransceiverForKind(kind) ??
-      this._createLocalTransceiver(kind, track);
-    if (!transceiver) return;
-
-    transceiver.direction = 'sendrecv';
-    this._setLocalTransceiver(kind, transceiver);
+    try {
+      transceiver.direction = 'sendrecv';
+    } catch { /* may throw on a closed PC; safe to ignore */ }
     await transceiver.sender.replaceTrack(track);
   }
 
+  // ── Private: signaling ───────────────────────────────────────────────────
+
   private _broadcastMediaState() {
     if (this.ws?.readyState !== WebSocket.OPEN) return;
-
-    // Include our own userId so the remote peer's filter (msg.userId === this.userId)
-    // works regardless of whether the server enriches the payload.
     this._sendWS({
       type: 'media_state_updated',
       userId: this.userId,
@@ -551,37 +457,26 @@ class WebRTCManager {
     });
   }
 
-  // Therapist-side fallback: if the remote (patient) just enabled a kind that
-  // our existing transceiver can't receive (because the original answer was
-  // negotiated before the patient had any track of that kind), trigger a new
-  // offer so the patient's media gets a sending m-line on the wire.
-  private _needsRenegotiationForRemoteState(
-    state: { micEnabled: boolean; cameraEnabled: boolean }
-  ): boolean {
-    if (!this.pc) return false;
-    const kinds: Array<[LocalMediaKind, boolean]> = [
-      ['audio', !!state.micEnabled],
-      ['video', !!state.cameraEnabled],
-    ];
-    for (const [kind, remoteEnabled] of kinds) {
-      if (!remoteEnabled) continue;
-      const t = this._getLocalTransceiver(kind) ?? this._findTransceiverForKind(kind);
-      if (!t) return true;
-      const dir = t.currentDirection;
-      if (dir !== 'sendrecv' && dir !== 'recvonly') return true;
+  private _sendWS(message: object) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      // Always tag with userId so the receiver can filter self-echoes.
+      this.ws.send(JSON.stringify({
+        userId: this.userId,
+        sessionCode: this.sessionCode,
+        ...message,
+      }));
+    } else {
+      console.warn('[WS] Tried to send but socket not open:', message);
     }
-    return false;
   }
 
   private _connectWebSocket() {
     if (!this.sessionCode) return;
-
     this.ws = new WebSocket(`${WEBSOCKET_URL}?sessionCode=${this.sessionCode}`);
 
     this.ws.onopen = () => {
-      console.log('[WS] Connected');
+      log('WS', 'connected');
       this._wsReconnectAttempts = 0;
-      // Build peer connection once WS is open
       this._buildPeerConnection();
       this._sendWS({
         type: 'join_session',
@@ -590,34 +485,23 @@ class WebRTCManager {
         role: this.role,
       });
       this._broadcastMediaState();
-
-      // Patient fallback: if no offer arrives shortly after we announce
-      // ourselves, request one explicitly. This catches the case where the
-      // server didn't broadcast session_ready/peer_joined to both sides.
-      if (this.role === 'patient') {
-        this._schedulePatientOfferTimeout(6000);
-      }
     };
 
     this.ws.onmessage = async (event) => {
       try {
         const msg = JSON.parse(event.data);
-        console.log('[WS] ←', msg.type);
+        log('WS', '←', msg.type);
         await this._handleWSMessage(msg);
       } catch (err) {
         console.error('[WS] Message parse error:', err);
       }
     };
 
-    this.ws.onerror = (err) => {
-      console.error('[WS] Error:', err);
-    };
+    this.ws.onerror = (err) => { console.error('[WS] Error:', err); };
 
     this.ws.onclose = (event) => {
-      console.log('[WS] Closed. Code:', event.code);
-      if (!this._intentionalClose) {
-        this._scheduleReconnect();
-      }
+      log('WS', 'closed code=', event.code);
+      if (!this._intentionalClose) this._scheduleReconnect();
     };
   }
 
@@ -627,19 +511,9 @@ class WebRTCManager {
       return;
     }
     const delay = Math.min(1000 * 2 ** this._wsReconnectAttempts, 16000);
-    console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this._wsReconnectAttempts + 1})`);
+    log('WS', `reconnect in ${delay}ms (attempt ${this._wsReconnectAttempts + 1})`);
     this._wsReconnectAttempts++;
-    this._reconnectTimer = setTimeout(() => {
-      this._connectWebSocket();
-    }, delay);
-  }
-
-  private _sendWS(message: object) {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ ...message, sessionCode: this.sessionCode }));
-    } else {
-      console.warn('[WS] Tried to send but socket not open:', message);
-    }
+    this._reconnectTimer = setTimeout(() => this._connectWebSocket(), delay);
   }
 
   private _markPeerReady() {
@@ -648,137 +522,112 @@ class WebRTCManager {
     this._onPeerReady?.();
   }
 
-  sendMessage(message: object) {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ ...message, sessionCode: this.sessionCode }));
-    } else {
-      console.warn('[WS] Tried to send but socket not open:', message);
-    }
-  }
-
-  // ─── Private: PeerConnection ──────────────────────────────────────────────
+  // ── Private: peer connection ─────────────────────────────────────────────
 
   private _buildPeerConnection() {
-    if (this.pc) {
-      this.pc.close();
-    }
+    if (this.pc) this.pc.close();
 
-    this._remoteDescSet = false;
     this._pendingCandidates = [];
-    this._isMakingOffer = false;
-    this._awaitingAnswer = false;
-    this._renegotiationPending = false;
-    this._pendingTherapistRenegotiation = false;
+    this.makingOffer = false;
+    this.ignoreOffer = false;
+    this.isSettingRemoteAnswerPending = false;
     this._audioTransceiver = null;
     this._videoTransceiver = null;
 
-    // Use a simple, widely compatible config: only iceServers.
-    this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    this.pc = pc;
 
+    // Always create both transceivers up-front in sendrecv. This guarantees
+    // the wire has m=audio and m=video lines from the first offer onward so
+    // either side can populate them by replaceTrack later (which triggers
+    // negotiationneeded and a fresh SDP carrying the new SSRC).
+    this._audioTransceiver = pc.addTransceiver('audio', { direction: 'sendrecv' });
+    this._videoTransceiver = pc.addTransceiver('video', { direction: 'sendrecv' });
+
+    // Bind whatever live local tracks we already have. The order of
+    // addTransceiver above pins the m-line index for audio/video.
     const audioTrack = this._getLiveLocalTrack('audio');
+    if (audioTrack) {
+      this._audioTransceiver.sender.replaceTrack(audioTrack).catch(err =>
+        console.warn('[PC] initial audio replaceTrack failed:', err));
+    }
     const videoTrack = this._getLiveLocalTrack('video');
-    console.log('[PC] Local media state:', {
-      micEnabled: this._micEnabled,
-      cameraEnabled: this._cameraEnabled,
+    if (videoTrack) {
+      this._videoTransceiver.sender.replaceTrack(videoTrack).catch(err =>
+        console.warn('[PC] initial video replaceTrack failed:', err));
+    }
+
+    log('PC', 'built', {
+      role: this.role,
+      polite: this.polite,
       audioTrack: audioTrack?.id ?? null,
       videoTrack: videoTrack?.id ?? null,
     });
-    this._createLocalTransceiver('audio', audioTrack);
-    this._createLocalTransceiver('video', videoTrack);
 
-    // ICE candidate → send to remote
-    this.pc.onicecandidate = (event) => {
-      if (event.candidate && this.ws?.readyState === WebSocket.OPEN) {
-        console.log("REMOTE ICE", event.candidate);
-        this._sendWS({ type: 'webrtc_ice_candidate', candidate: event.candidate });
-      }
+    pc.onicecandidate = ({ candidate }) => {
+      if (!candidate) return;
+      this._sendWS({ type: 'webrtc_ice_candidate', candidate });
     };
 
-    // Renegotiation hook (therapist is the only offerer)
-    this.pc.onnegotiationneeded = async () => {
-      if (this.role !== 'therapist') return;
-      if (!this.pc) return;
-      if (!this._peerReady) return;
-      if (this.pc.signalingState !== 'stable') return;
-      await this._safeCreateAndSendOffer('negotiationneeded');
-    };
-
-    // ICE connection state
-    this.pc.oniceconnectionstatechange = () => {
-      const state = this.pc?.iceConnectionState;
-      console.log('[ICE] Connection state:', state);
-      this._onConnectionStateChanged?.(state ?? 'unknown');
-
+    pc.oniceconnectionstatechange = () => {
+      const state = pc.iceConnectionState;
+      log('ICE', 'state=', state);
+      this._onConnectionStateChanged?.(state);
       if (state === 'failed') {
-        console.warn('[ICE] Failed — attempting ICE restart');
-        this.pc?.restartIce?.();
-      }
-
-      // Therapist safety net: when the connection comes up, verify we are
-      // actually receiving the patient's media. The first answer occasionally
-      // ships without a sending m-line for one or both kinds; this catches it.
-      if (
-        this.role === 'therapist' &&
-        (state === 'connected' || state === 'completed')
-      ) {
-        this._scheduleInboundMediaCheck(2500);
+        log('ICE', 'restartIce()');
+        try { pc.restartIce(); } catch (err) { console.warn('[ICE] restartIce failed:', err); }
       }
     };
 
-    // Signaling state. When we return to 'stable' after an in-flight offer
-    // and a renegotiation request was queued on the therapist side, fire it
-    // now — otherwise the patient's request would be silently dropped.
-    this.pc.onsignalingstatechange = () => {
-      const state = this.pc?.signalingState;
-      console.log('[PC] Signaling state:', state);
-      if (
-        state === 'stable' &&
-        this.role === 'therapist' &&
-        this._pendingTherapistRenegotiation &&
-        this._peerReady
-      ) {
-        this._pendingTherapistRenegotiation = false;
-        // Schedule on microtask so this fires *after* the state transition
-        // settles and we don't recursively kick off another offer.
-        Promise.resolve().then(() => this._safeCreateAndSendOffer('queued_renegotiation'));
+    pc.onsignalingstatechange = () => {
+      log('PC', 'signaling state=', pc.signalingState);
+    };
+
+    pc.onconnectionstatechange = () => {
+      log('PC', 'connection state=', pc.connectionState);
+    };
+
+    // Perfect Negotiation: the canonical onnegotiationneeded handler.
+    // Fires whenever the PC needs a fresh SDP exchange (track added/removed,
+    // transceiver direction changed, etc.).
+    pc.onnegotiationneeded = async () => {
+      if (!this._peerReady) {
+        // No peer to negotiate with yet; the offerer side will fire this
+        // again automatically once we have peer presence and the PC state
+        // demands renegotiation. We also force it after _markPeerReady.
+        log('PN', 'negotiationneeded but peer not ready yet, deferring');
+        return;
+      }
+      try {
+        this.makingOffer = true;
+        await pc.setLocalDescription();
+        if (!this.pc) return;
+        this._sendWS({ type: 'webrtc_offer', sdp: pc.localDescription });
+      } catch (err) {
+        console.error('[PN] onnegotiationneeded error:', err);
+      } finally {
+        this.makingOffer = false;
       }
     };
 
-    // Remote track received. We always build our own MediaStream and snapshot
-    // it to a NEW object on every ontrack event. This guarantees React sees a
-    // reference change even when audio and video tracks arrive sequentially
-    // from the same remote stream (event.streams[0] would be the same object
-    // both times, causing React to bail out and never re-attach srcObject).
-    this.pc.ontrack = (event) => {
-      const track = event.track;
-      console.log('[PC] Remote track (ontrack):', track.kind, track.id, 'muted:', track.muted);
-
-      if (!this.remoteStream) {
-        this.remoteStream = new MediaStream();
-      }
-
+    pc.ontrack = ({ track }) => {
+      log('PC', 'ontrack', track.kind, track.id, 'muted=', track.muted);
+      if (!this.remoteStream) this.remoteStream = new MediaStream();
       if (!this.remoteStream.getTracks().some(t => t.id === track.id)) {
         this.remoteStream.addTrack(track);
       }
-
-      // Snapshot to a new MediaStream so React always sees a changed reference
-      // and re-runs the srcObject attachment effect in the UI layer.
       this.remoteStream = new MediaStream(this.remoteStream.getTracks());
       this._onRemoteStreamChanged?.(this.remoteStream);
 
-      // Browsers often deliver tracks in a muted (no-data) state initially.
-      // Re-fire when the track first produces data so the UI re-attaches if needed.
       track.onunmute = () => {
-        console.log('[PC] Track unmuted:', track.kind, track.id);
+        log('PC', 'track unmuted', track.kind, track.id);
         if (this.remoteStream?.getTracks().some(t => t.id === track.id)) {
           this.remoteStream = new MediaStream(this.remoteStream.getTracks());
           this._onRemoteStreamChanged?.(this.remoteStream);
         }
       };
-
-      // Remove ended tracks from our stream snapshot.
       track.onended = () => {
-        console.log('[PC] Track ended:', track.kind, track.id);
+        log('PC', 'track ended', track.kind, track.id);
         if (this.remoteStream) {
           this.remoteStream.removeTrack(track);
           this.remoteStream = new MediaStream(this.remoteStream.getTracks());
@@ -788,15 +637,16 @@ class WebRTCManager {
     };
   }
 
-  // ─── Private: Signaling message handler ───────────────────────────────────
+  // ── Private: WS message dispatch ─────────────────────────────────────────
 
   private async _handleWSMessage(msg: any) {
-    // ── Peer-known signals ───────────────────────────────────────────────────
-    // ANY message that originates from the remote peer is proof they are
-    // in the session. We rely on this to make the waiting → live transition
-    // resilient against the server only delivering session_ready/peer_joined
-    // to one side (which caused both peers to sit in the waiting room until
-    // someone rejoined).
+    // Self-echo filter — never process our own signaling messages even if
+    // the server reflects them back.
+    if (msg.userId && msg.userId === this.userId && SIGNALING_TYPES.has(msg.type)) {
+      return;
+    }
+
+    // Any peer-originated signal is proof the remote is in the session.
     const peerProofs = [
       'webrtc_offer',
       'webrtc_answer',
@@ -809,91 +659,44 @@ class WebRTCManager {
       'session_ready',
     ];
     if (peerProofs.includes(msg.type) && !this._peerReady) {
-      // For media_state we still verify the sender isn't us before promoting.
-      const isSelfEcho = msg.type === 'media_state_updated' && msg.userId && msg.userId === this.userId;
-      if (!isSelfEcho) {
-        this._markPeerReady();
-        // Therapist must (re)offer once we've discovered the peer.
-        if (this.role === 'therapist') {
-          if (this.pc?.signalingState === 'stable' && !this._isMakingOffer) {
-            this._safeCreateAndSendOffer(`peer_known_via_${msg.type}`);
-          } else {
-            this._pendingTherapistRenegotiation = true;
-          }
-        }
-      }
+      this._markPeerReady();
+      // Newly known peer → kick off negotiation if the PC has anything to
+      // offer. setLocalDescription() will be a no-op if nothing has
+      // changed since the last negotiation.
+      void this._maybeOffer('peer_discovered');
     }
 
     switch (msg.type) {
-
-      case 'session_ready': {
+      case 'session_ready':
+      case 'peer_joined': {
         this._markPeerReady();
-        // Therapist is the offerer
-        if (this.role === 'therapist') {
-          await this._safeCreateAndSendOffer('session_ready');
-        }
+        void this._maybeOffer(msg.type);
         break;
       }
 
-      case 'webrtc_offer': {
-        this._markPeerReady();
-        // Patient handles the offer
-        if (this.role === 'patient') {
-          this._clearPatientOfferTimeout();
-          await this._handleRemoteOffer(msg);
-        }
-        break;
-      }
-
+      case 'webrtc_offer':
       case 'webrtc_answer': {
-        // Therapist handles the answer
-        if (this.role === 'therapist' && this.pc) {
-          try {
-            if (this.pc.signalingState === 'have-local-offer') {
-              await this.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-              this._remoteDescSet = true;
-              this._awaitingAnswer = false;
-              this._renegotiationPending = false;
-              await this._drainCandidateQueue();
-            } else {
-              console.warn('[Signaling] Ignoring answer in state:', this.pc.signalingState);
-            }
-          } catch (err) {
-            console.error('[Signaling] setRemoteDescription (answer) error:', err);
+        await this._handleRemoteDescription(msg.sdp);
+        break;
+      }
+
+      case 'webrtc_ice_candidate': {
+        if (!msg.candidate || !this.pc) break;
+        try {
+          await this.pc.addIceCandidate(msg.candidate);
+        } catch (err) {
+          if (!this.ignoreOffer) {
+            console.error('[ICE] addIceCandidate error:', err);
           }
         }
         break;
       }
 
       case 'renegotiation_request': {
-        // Patient asked therapist to re-offer because patient just enabled
-        // a new track and the previously-negotiated answer didn't include a
-        // sending m-line for that kind. If we're mid-offer, defer until the
-        // signaling state returns to stable so the request isn't dropped.
-        if (this.role === 'therapist' && this._peerReady) {
-          if (this.pc?.signalingState === 'stable' && !this._isMakingOffer) {
-            await this._safeCreateAndSendOffer('renegotiation_request');
-          } else {
-            this._pendingTherapistRenegotiation = true;
-          }
-        }
-        break;
-      }
-
-      case 'webrtc_ice_candidate': {
-        if (!msg.candidate) break;
-        const candidate = new RTCIceCandidate(msg.candidate);
-        if (this._remoteDescSet && this.pc) {
-          try {
-            await this.pc.addIceCandidate(candidate);
-          } catch (err) {
-            console.error('[ICE] addIceCandidate error:', err);
-          }
-        } else {
-          // Buffer until remote description is set
-          console.log('[ICE] Buffering candidate (no remoteDesc yet)');
-          this._pendingCandidates.push(candidate);
-        }
+        // Legacy from older clients — Perfect Negotiation no longer needs
+        // this. Force a fresh offer just to be safe (will be a no-op SDP if
+        // nothing actually changed).
+        void this._maybeOffer('renegotiation_request');
         break;
       }
 
@@ -904,280 +707,125 @@ class WebRTCManager {
       }
 
       case 'chat_history': {
-        this.messages = [...msg.messages];
+        this.messages = [...(msg.messages || [])];
         this._onMessagesChanged?.(this.messages);
         break;
       }
 
       case 'media_state_updated': {
+        // Already filtered above for self-echo by userId, but defensive.
         if (msg.userId && msg.userId === this.userId) break;
-        this._onRemoteMediaStateChanged?.({
-          micEnabled: msg.micEnabled,
-          cameraEnabled: msg.cameraEnabled
-        });
-        this._lastRemoteMediaState = {
+        const state = {
           micEnabled: !!msg.micEnabled,
           cameraEnabled: !!msg.cameraEnabled,
         };
-        // Fallback path for the patient → therapist media flow. If the patient
-        // just toggled on a track that the previously-negotiated session can't
-        // receive (because the answer was created with no patient track of
-        // that kind), the therapist forces a new offer here. This kicks in
-        // even when the server doesn't relay the explicit renegotiation_request.
-        // Peer-ready promotion is handled by the peerProofs block above.
-        if (
-          this.role === 'therapist' &&
-          this._peerReady &&
-          this._needsRenegotiationForRemoteState({
-            micEnabled: !!msg.micEnabled,
-            cameraEnabled: !!msg.cameraEnabled,
-          })
-        ) {
-          if (this.pc?.signalingState === 'stable' && !this._isMakingOffer) {
-            this._safeCreateAndSendOffer('remote_media_changed');
-          } else {
-            this._pendingTherapistRenegotiation = true;
-          }
-        }
-        // Patient may have been waiting for an offer that never came. If we
-        // know the therapist is around (this very message proves it) and we
-        // still don't have a remote description, nudge a renegotiation_request.
-        if (this.role === 'patient' && !this._remoteDescSet && !this._renegotiationPending) {
-          this._schedulePatientOfferTimeout(1500);
-        }
+        this._lastRemoteMediaState = state;
+        this._onRemoteMediaStateChanged?.(state);
         break;
       }
 
       case 'peer_left':
       case 'peer_disconnected': {
-        // Remote peer is gone (temporary). Keep local media alive and wait for rejoin.
-        console.log('[WS] Peer disconnected/left');
-
+        log('WS', 'peer left/disconnected');
         this.remoteStream?.getTracks().forEach(t => t.stop());
         this.remoteStream = null;
         this._peerReady = false;
-        this._remoteDescSet = false;
         this._pendingCandidates = [];
-        this._renegotiationPending = false;
-        this._pendingTherapistRenegotiation = false;
         this._lastRemoteMediaState = null;
-        if (this._inboundCheckTimer) {
-          clearTimeout(this._inboundCheckTimer);
-          this._inboundCheckTimer = null;
-        }
-        this._clearPatientOfferTimeout();
         this._onRemoteStreamChanged?.(null);
         this.onPeerDisconnect?.();
-
-        // Reset PC so next session_ready triggers a clean offer/answer.
-        // (Safer than trying to keep old transceivers around across reconnects)
+        // Rebuild PC so the next session_ready / peer_joined produces a
+        // clean offer/answer (including any local tracks we still hold).
         this._buildPeerConnection();
         break;
       }
 
-      case 'peer-unavailable': {
-
-
-        break;
-      }
-
-      case 'peer_joined': {
-        this._markPeerReady();
-        if (this.role === 'therapist') {
-          await this._safeCreateAndSendOffer('peer_joined');
-        }
-        break;
-      }
-
       case 'session_ended': {
-
-
         this.hangup(true);
         this.emitRemoteSessionChanged();
         break;
       }
 
       default:
-        console.log('[WS] Unhandled message type:', msg);
+        // ignore unknown
+        break;
     }
   }
 
-  private async _safeCreateAndSendOffer(reason: string) {
-    if (!this.pc) return;
-    if (this.role !== 'therapist') return;
-    if (this._isMakingOffer) return;
-    if (this.pc.signalingState !== 'stable') return;
+  /**
+   * Perfect Negotiation: handle a remote description (offer or answer).
+   * - On glare with an offer (we're already making one), impolite side
+   *   ignores it; polite side rolls back via setRemoteDescription which
+   *   handles rollback implicitly when readyForOffer is true.
+   * - On an answer, just apply it.
+   */
+  private async _handleRemoteDescription(sdp: RTCSessionDescriptionInit) {
+    const pc = this.pc;
+    if (!pc) return;
 
-
-    this._isMakingOffer = true;
     try {
-      // Re-acquire any local track that should be live but is missing, so the
-      // offer's sending m-lines actually carry data once negotiation completes.
-      await this._ensureLocalTracksMatchFlags();
-      await this._syncLocalTracksToTransceivers();
-      // Force both transceivers to sendrecv so the offer publishes a sending
-      // m-line even when the local track for that kind isn't enabled yet.
-      this._forceSendRecvDirection();
-      const offer = await this.pc.createOffer();
-      // Bail if the connection was torn down while createOffer was running.
-      if (!this.pc) return;
-      await this.pc.setLocalDescription(offer);
-      this._awaitingAnswer = true;
-      this._sendWS({ type: 'webrtc_offer', sdp: this.pc.localDescription });
-    } catch (err) {
-      console.error('[Signaling] createOffer error:', reason, err);
-    } finally {
-      this._isMakingOffer = false;
-    }
-  }
+      const readyForOffer = !this.makingOffer && (pc.signalingState === 'stable' || this.isSettingRemoteAnswerPending);
+      const offerCollision = sdp.type === 'offer' && !readyForOffer;
 
-  private async _handleRemoteOffer(msg: any) {
-    if (!this.pc) return;
-    try {
-      // If we ever get an offer while not stable, reset to avoid "glare" issues.
-      if (this.pc.signalingState !== 'stable') {
-        console.warn('[Signaling] Offer received while not stable; resetting PC.');
-        this._buildPeerConnection();
+      this.ignoreOffer = !this.polite && offerCollision;
+      if (this.ignoreOffer) {
+        log('PN', 'ignoring colliding offer (impolite)');
+        return;
       }
-      if (!this.pc) return;
 
-      // Re-acquire any local track that should be live but is missing. This
-      // closes the race where the answer would otherwise ship with no sender
-      // for a kind the user thinks they have enabled (e.g. lobby toggled the
-      // cam on, but the track got stopped before the offer arrived).
-      await this._ensureLocalTracksMatchFlags();
+      this.isSettingRemoteAnswerPending = sdp.type === 'answer';
+      // For the polite peer on an offer collision, setRemoteDescription
+      // performs an implicit rollback of our in-flight local offer.
+      await pc.setRemoteDescription(sdp);
+      this.isSettingRemoteAnswerPending = false;
 
-      await this.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-      this._remoteDescSet = true;
-      this._clearPatientOfferTimeout();
-      await this._drainCandidateQueue();
-      await this._syncLocalTracksToTransceivers();
-      // Force sendrecv direction BEFORE createAnswer so the answer SDP
-      // publishes a send slot even when we have no local track yet. Without
-      // this, an answerer with no track produces an a=recvonly line and the
-      // remote peer never opens a receive channel for our media — meaning the
-      // patient's audio/video can never reach the therapist once toggled on.
-      this._forceSendRecvDirection();
-
-      const answer = await this.pc.createAnswer();
-      if (!this.pc) return;
-      await this.pc.setLocalDescription(answer);
-      this._renegotiationPending = false;
-      this._sendWS({ type: 'webrtc_answer', sdp: this.pc.localDescription });
-      // Re-broadcast our media state so the remote knows exactly what to
-      // expect now that the negotiation just completed.
-      this._broadcastMediaState();
-    } catch (err) {
-      console.error('[Signaling] setRemoteDescription (offer) error:', err);
-    }
-  }
-
-  private async _ensureLocalTracksMatchFlags() {
-    if (this._micEnabled && !this._getLiveLocalTrack('audio')) {
-      try { await this._enableLocalKind('audio'); } catch (err) {
-        console.warn('[WebRTC] Failed to re-acquire audio:', err);
-      }
-    }
-    if (this._cameraEnabled && !this._getLiveLocalTrack('video')) {
-      try { await this._enableLocalKind('video'); } catch (err) {
-        console.warn('[WebRTC] Failed to re-acquire video:', err);
-      }
-    }
-  }
-
-  private _forceSendRecvDirection() {
-    if (!this.pc) return;
-    for (const kind of ['audio', 'video'] as LocalMediaKind[]) {
-      const transceiver =
-        this._getLocalTransceiver(kind) ?? this._findTransceiverForKind(kind);
-      if (transceiver && transceiver.direction !== 'sendrecv') {
-        try { transceiver.direction = 'sendrecv'; } catch (err) {
-          console.warn(`[PC] Failed to set ${kind} transceiver to sendrecv:`, err);
+      // Drain any ICE that arrived before the remote description.
+      if (this._pendingCandidates.length) {
+        log('ICE', `draining ${this._pendingCandidates.length} buffered candidates`);
+        const buffered = this._pendingCandidates;
+        this._pendingCandidates = [];
+        for (const c of buffered) {
+          try { await pc.addIceCandidate(c); }
+          catch (err) { console.warn('[ICE] drain addIceCandidate failed:', err); }
         }
       }
-    }
-  }
 
-  // ─── Recovery helpers ─────────────────────────────────────────────────────
-  // Patient: if no offer arrives within `delay` ms after we know the peer
-  // is in the session, explicitly request one. Multiple calls collapse into
-  // the latest schedule.
-  private _schedulePatientOfferTimeout(delay = 5000) {
-    if (this.role !== 'patient') return;
-    if (this._remoteDescSet) return;
-    if (this._patientOfferTimeoutTimer) clearTimeout(this._patientOfferTimeoutTimer);
-    this._patientOfferTimeoutTimer = setTimeout(() => {
-      this._patientOfferTimeoutTimer = null;
-      if (this._remoteDescSet) return;
-      if (!this._peerReady) return;
-      if (this._renegotiationPending) return;
-      console.log('[Patient] No offer received — sending renegotiation_request');
-      this._renegotiationPending = true;
-      this._sendWS({ type: 'renegotiation_request', reason: 'no_offer_received' });
-      setTimeout(() => { this._renegotiationPending = false; }, 4000);
-      // Reschedule once more in case the first request was lost.
-      this._schedulePatientOfferTimeout(6000);
-    }, delay);
-  }
-
-  private _clearPatientOfferTimeout() {
-    if (this._patientOfferTimeoutTimer) {
-      clearTimeout(this._patientOfferTimeoutTimer);
-      this._patientOfferTimeoutTimer = null;
-    }
-  }
-
-  // Therapist: after ICE connects, verify the patient's expected inbound
-  // tracks actually arrived. If they didn't (e.g. the initial answer ended
-  // up with recvonly/inactive m-lines on the patient side because their
-  // transceivers weren't fully bound when the answer was generated), force
-  // a fresh offer so the negotiation re-runs with proper directions.
-  private _scheduleInboundMediaCheck(delay = 2500) {
-    if (this.role !== 'therapist') return;
-    if (this._inboundCheckTimer) clearTimeout(this._inboundCheckTimer);
-    this._inboundCheckTimer = setTimeout(() => {
-      this._inboundCheckTimer = null;
-      this._verifyInboundMedia();
-    }, delay);
-  }
-
-  private _verifyInboundMedia() {
-    if (!this.pc) return;
-    if (this.role !== 'therapist') return;
-    const expected = this._lastRemoteMediaState;
-    if (!expected) return;
-    const needs: LocalMediaKind[] = [];
-    if (expected.micEnabled && !this._hasInboundLiveTrack('audio')) needs.push('audio');
-    if (expected.cameraEnabled && !this._hasInboundLiveTrack('video')) needs.push('video');
-    if (needs.length === 0) return;
-    console.log('[Therapist] Inbound media missing for kinds:', needs, '— forcing renegotiation');
-    if (this.pc.signalingState === 'stable' && !this._isMakingOffer) {
-      this._safeCreateAndSendOffer('inbound_media_missing');
-    } else {
-      this._pendingTherapistRenegotiation = true;
-    }
-  }
-
-  private _hasInboundLiveTrack(kind: LocalMediaKind) {
-    if (!this.pc) return false;
-    return this.pc.getReceivers().some(r => {
-      const t = r.track;
-      return !!t && t.kind === kind && t.readyState === 'live' && !t.muted;
-    });
-  }
-
-  // Drain buffered ICE candidates after remote description is set
-  private async _drainCandidateQueue() {
-    if (!this.pc || this._pendingCandidates.length === 0) return;
-    console.log(`[ICE] Draining ${this._pendingCandidates.length} buffered candidates`);
-    for (const candidate of this._pendingCandidates) {
-      try {
-        await this.pc.addIceCandidate(candidate);
-      } catch (err) {
-        console.error('[ICE] Drain addIceCandidate error:', err);
+      if (sdp.type === 'offer') {
+        await pc.setLocalDescription();
+        if (!this.pc) return;
+        this._sendWS({ type: 'webrtc_answer', sdp: pc.localDescription });
+        // The other side now knows our current media state; re-broadcast
+        // so any UI listening for media_state stays consistent post-renegotiation.
+        this._broadcastMediaState();
       }
+    } catch (err) {
+      console.error('[PN] handleRemoteDescription error:', err);
     }
-    this._pendingCandidates = [];
+  }
+
+  /**
+   * Idempotently nudge the PC to renegotiate if it has pending changes.
+   * setLocalDescription() with no argument is the safe Perfect-Negotiation
+   * way to "offer if needed". Calling it when the PC is already stable
+   * with no pending changes just rewrites the same local description.
+   */
+  private async _maybeOffer(reason: string) {
+    const pc = this.pc;
+    if (!pc) return;
+    if (!this._peerReady) return;
+    if (this.makingOffer) return;
+    if (pc.signalingState !== 'stable') return;
+    try {
+      this.makingOffer = true;
+      log('PN', 'offering', { reason });
+      await pc.setLocalDescription();
+      if (!this.pc) return;
+      this._sendWS({ type: 'webrtc_offer', sdp: pc.localDescription });
+    } catch (err) {
+      console.error('[PN] _maybeOffer error:', err);
+    } finally {
+      this.makingOffer = false;
+    }
   }
 }
 
