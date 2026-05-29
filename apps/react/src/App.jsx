@@ -11,6 +11,7 @@ import Home from './pages/HomePage.jsx'
 import { LangProvider, SUPPORTED_LANGS } from './contexts/LangContext.jsx'
 import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import SessionExpiredWeb from './pages/SessionExpired.tsx'
+import QRPage from './pages/QRPage.tsx'
 
 const BG_GRADIENTS = [
   'linear-gradient(135deg, #07050f 0%, #1a0a38 45%, #050d1a 100%)',
@@ -163,6 +164,7 @@ function App() {
 
   {/* Without layout */}
   <Route path="/session/expired" element={<SessionExpiredWeb />} />
+  <Route path="/session" element={<QRPage />} />
 
   {/* Layout */}
   <Route
@@ -199,7 +201,7 @@ function App() {
       <Route path="faq" element={<FAQPage />} />
     </Route>
 
-    <Route path="/session" element={<SessionPage />} />
+    <Route path="/session-join" element={<SessionPage />} />
     <Route path="*" element={<BarePathRedirect />} />
   </Route>
 

@@ -49,6 +49,25 @@ export default function App() {
     );
 
 
+    const therapistPhoto = params.get("therapistPhoto")
+    const clientPhoto = params.get("patientPhoto")
+    const tname = params.get("therapistName")
+    const cname = params.get("patientName")
+    const temail = params.get("therapistEmail")
+    const cemail = params.get("patientEmail")
+
+
+    const commonQueryParams={
+        patientPhoto : clientPhoto,
+        therapistPhoto,
+        patientName : cname,
+        therapistName : tname,
+        therapistEmail: temail,
+        patientEmail : cemail
+        
+    }
+
+
 
 
 
@@ -178,6 +197,8 @@ export default function App() {
           onPeerJoined={handlePeerJoined}
           role={SESSION_CONFIG.role}
           name={name}
+          therapistNameIntial={getInitials(commonQueryParams.therapistName)}
+          patientNameInitial={getInitials(commonQueryParams.patientName)}
         />
       )}
 
@@ -189,6 +210,8 @@ export default function App() {
           onLeave={handleLeaveCall}
           role={role}
           name={name}
+          therapistName={commonQueryParams.therapistName}
+          patientName={commonQueryParams.patientName}
         />
       )}
 

@@ -44,6 +44,9 @@ export default function SessionLive({
   onLeave,
   role,
   name,
+  patientName,
+  therapistName
+
 }) {
   /* ── defaults ─────────────────────────────────────────────────────────── */
   const th = therapist || {
@@ -53,12 +56,12 @@ export default function SessionLive({
     avatarInitials: "SM",
   };
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
-  const remoteParticipantName = role === "therapist" ? "Client" : th.name;
-  const remoteParticipantInitials = role === "therapist" ? "CL" : th.avatarInitials;
+  const remoteParticipantName = role === "therapist" ? patientName : therapistName;
+  const remoteParticipantInitials = role === "therapist" ? getInitials(patientName) : getInitials(therapistName);
   // Own initials for the self-preview PiP.
   // For therapists the URL "name" param is their own name. For patients "name" is
   // the therapist's name (for display), so we can't derive patient initials from it.
-  const selfInitials = role === "therapist" ? th.avatarInitials : "";
+  const selfInitials = role === "therapist" ? getInitials(therapistName) : getInitials(patientName);
 
   /* ── refs ─────────────────────────────────────────────────────────────── */
   // Plain refs so useEffect can always find the current DOM node

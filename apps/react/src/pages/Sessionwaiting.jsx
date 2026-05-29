@@ -14,7 +14,10 @@ import { getInitials,formatFirebaseTimestamp } from "../utils/helper";
  *   onLeave       – () => void
  *   onPeerJoined  – (remoteStream) => void
  */
-export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined, role, name }) {
+export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeerJoined, role, name,
+  therapistNameIntial,
+  patientNameInitial
+ }) {
   const selfVideoRef = useRef(null);
   const movedToLiveRef = useRef(false);
 
@@ -52,7 +55,6 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
   // For therapists the URL "name" param is their own name. For patients it is
   // the therapist's name, so patient's own initials are unavailable here.
-  const selfInitials = role === 'therapist' ? th.avatarInitials : '';
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
 
   // Session timer
@@ -446,7 +448,7 @@ export default function SessionWaiting({ therapist, sessionMeta, onLeave, onPeer
                   display: "flex", alignItems: "center", justifyContent: "center",
                   background: "#1a1030",
                 }}>
-                  <Avatar size={52} initials={selfInitials}
+                  <Avatar size={52} initials={role === 'therapist' ? therapistNameIntial : patientNameInitial}
                     extraStyle={{ border: "2px solid rgba(255,255,255,.2)" }} />
                 </div>
               )}
