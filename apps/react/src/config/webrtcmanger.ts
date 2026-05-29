@@ -46,7 +46,30 @@ function normalizeRole(role: unknown): Role {
 }
 
 function log(tag: string, ...args: any[]) {
-  console.log(`[WebRTC][${tag}]`, ...args);
+  const ts = new Date().toISOString().slice(11, 23); // HH:MM:SS.mmm
+  console.log(`[WebRTC][${ts}][${tag}]`, ...args);
+}
+
+/**
+ * Summarize an SDP for safe console logging without dumping the whole blob.
+ * Captures presence of m=audio / m=video, their direction attribute, and
+ * whether any SSRC is bound. This is what we need to diagnose the exact
+ * "audio-only negotiation is broken" symptom.
+ */
+function summarizeSdp(sdp: string | undefined | null) {
+  if (!sdp) return { audio: null, video: null };
+  const sections: Record<string, any> = { audio: null, video: null };
+  const mLines = sdp.split(/^m=/m).slice(1); // first chunk is session-level
+  for (const block of mLines) {
+    const kind = block.startsWith('audio') ? 'audio' : block.startsWith('video') ? 'video' : null;
+    if (!kind) continue;
+    const dir = ['sendrecv', 'sendonly', 'recvonly', 'inactive']
+      .find(d => new RegExp(`^a=${d}`, 'm').test(block)) ?? 'sendrecv';
+    const ssrcs = Array.from(block.matchAll(/^a=ssrc:(\d+)/gm)).map(m => m[1]);
+    const msid = block.match(/^a=msid:(\S+(?:\s+\S+)?)/m)?.[1] ?? null;
+    sections[kind] = { dir, ssrcs: ssrcs.slice(0, 4), msid };
+  }
+  return sections;
 }
 
 class WebRTCManager {
@@ -72,9 +95,25 @@ class WebRTCManager {
   private _cameraEnabled = false;
   private _audioTransceiver: RTCRtpTransceiver | null = null;
   private _videoTransceiver: RTCRtpTransceiver | null = null;
+  // Stable stream-id we advertise as the m-line msid for both audio and
+  // video. Without this, sender.setStreams() is never called and Chromium
+  // emits "a=msid:- <track-id>" — many remote stacks then either drop the
+  // RTP into a phantom MediaStream or refuse to flow until renegotiation
+  // rewrites the line. This single string is the lifeline that keeps the
+  // audio sender wired to the same logical stream across re-offers.
+  private _localStreamId = `elma-${Math.random().toString(36).slice(2, 10)}`;
 
   // ── ICE candidate queue ──────────────────────────────────────────────────
   private _pendingCandidates: RTCIceCandidateInit[] = [];
+
+  // ── Serial signaling queue ───────────────────────────────────────────────
+  // WebSocket onmessage fires for each frame, but the handlers are async and
+  // run concurrently. That lets an ICE candidate begin processing while a
+  // preceding offer is still inside `await setRemoteDescription`, so
+  // addIceCandidate throws "InvalidStateError: remote description was null"
+  // and the candidate is lost. We chain every handler through this promise
+  // so signaling state transitions stay strictly ordered.
+  private _signalingChain: Promise<void> = Promise.resolve();
 
   // ── WS reconnection ──────────────────────────────────────────────────────
   private _wsReconnectAttempts = 0;
@@ -442,6 +481,20 @@ class WebRTCManager {
       transceiver.direction = 'sendrecv';
     } catch { /* may throw on a closed PC; safe to ignore */ }
     await transceiver.sender.replaceTrack(track);
+    // Bind / refresh the sender's streams whenever we attach a real track so
+    // the msid matches across re-offers.
+    if (track && typeof transceiver.sender.setStreams === 'function' && this.localStream) {
+      try {
+        transceiver.sender.setStreams(this.localStream);
+      } catch (err) {
+        console.warn('[PC] setStreams failed:', err);
+      }
+    }
+    log('SENDER', `bound ${kind}`, {
+      hasTrack: !!transceiver.sender.track,
+      trackId: track?.id ?? null,
+      direction: transceiver.direction,
+    });
   }
 
   // ── Private: signaling ───────────────────────────────────────────────────
@@ -474,10 +527,15 @@ class WebRTCManager {
     if (!this.sessionCode) return;
     this.ws = new WebSocket(`${WEBSOCKET_URL}?sessionCode=${this.sessionCode}`);
 
-    this.ws.onopen = () => {
+    this.ws.onopen = async () => {
       log('WS', 'connected');
       this._wsReconnectAttempts = 0;
-      this._buildPeerConnection();
+      // _buildPeerConnection is now async: it awaits initial replaceTrack so
+      // the first generated SDP truly reflects the bound audio sender.
+      // Otherwise the offer could be generated while the operations queue
+      // is still mid-swap and the m=audio section ends up without a usable
+      // msid binding — the canonical "audio dead until renegotiation" bug.
+      await this._buildPeerConnection();
       this._sendWS({
         type: 'join_session',
         sessionCode: this.sessionCode,
@@ -487,14 +545,23 @@ class WebRTCManager {
       this._broadcastMediaState();
     };
 
-    this.ws.onmessage = async (event) => {
+    this.ws.onmessage = (event) => {
+      let msg: any;
       try {
-        const msg = JSON.parse(event.data);
-        log('WS', '←', msg.type);
-        await this._handleWSMessage(msg);
+        msg = JSON.parse(event.data);
       } catch (err) {
         console.error('[WS] Message parse error:', err);
+        return;
       }
+      log('WS', '←', msg.type);
+      // Strictly serialize message handling. Otherwise ICE candidates that
+      // arrive while an offer is still inside `await setRemoteDescription`
+      // hit a null remoteDescription, throw InvalidStateError, and are
+      // silently dropped — starving the connection of half its candidate
+      // pairs and leaving audio with no media path.
+      this._signalingChain = this._signalingChain
+        .then(() => this._handleWSMessage(msg))
+        .catch(err => { console.error('[WS] Handler error for', msg.type, err); });
     };
 
     this.ws.onerror = (err) => { console.error('[WS] Error:', err); };
@@ -524,7 +591,7 @@ class WebRTCManager {
 
   // ── Private: peer connection ─────────────────────────────────────────────
 
-  private _buildPeerConnection() {
+  private async _buildPeerConnection() {
     if (this.pc) this.pc.close();
 
     this._pendingCandidates = [];
@@ -539,22 +606,41 @@ class WebRTCManager {
 
     // Always create both transceivers up-front in sendrecv. This guarantees
     // the wire has m=audio and m=video lines from the first offer onward so
-    // either side can populate them by replaceTrack later (which triggers
-    // negotiationneeded and a fresh SDP carrying the new SSRC).
+    // either side can populate them by replaceTrack later. Critically,
+    // **audio comes first** so its m-line index is 0 — Chrome occasionally
+    // misbehaves when an audio-only sender is appended at index 1 after a
+    // disabled video index 0.
     this._audioTransceiver = pc.addTransceiver('audio', { direction: 'sendrecv' });
     this._videoTransceiver = pc.addTransceiver('video', { direction: 'sendrecv' });
 
-    // Bind whatever live local tracks we already have. The order of
-    // addTransceiver above pins the m-line index for audio/video.
+    // Bind whatever live local tracks we already have. We AWAIT replaceTrack
+    // here so that by the time _maybeOffer runs setLocalDescription() the
+    // sender state is fully settled and the generated SDP carries the
+    // correct SSRC + msid for the audio track. The old fire-and-forget
+    // version made the first audio-only offer non-deterministic.
     const audioTrack = this._getLiveLocalTrack('audio');
     if (audioTrack) {
-      this._audioTransceiver.sender.replaceTrack(audioTrack).catch(err =>
-        console.warn('[PC] initial audio replaceTrack failed:', err));
+      try {
+        await this._audioTransceiver.sender.replaceTrack(audioTrack);
+        // Anchor the sender to our stable stream id so the remote ontrack
+        // sees a consistent MediaStream and audio routes correctly.
+        if (typeof this._audioTransceiver.sender.setStreams === 'function' && this.localStream) {
+          this._audioTransceiver.sender.setStreams(this.localStream);
+        }
+      } catch (err) {
+        console.warn('[PC] initial audio replaceTrack failed:', err);
+      }
     }
     const videoTrack = this._getLiveLocalTrack('video');
     if (videoTrack) {
-      this._videoTransceiver.sender.replaceTrack(videoTrack).catch(err =>
-        console.warn('[PC] initial video replaceTrack failed:', err));
+      try {
+        await this._videoTransceiver.sender.replaceTrack(videoTrack);
+        if (typeof this._videoTransceiver.sender.setStreams === 'function' && this.localStream) {
+          this._videoTransceiver.sender.setStreams(this.localStream);
+        }
+      } catch (err) {
+        console.warn('[PC] initial video replaceTrack failed:', err);
+      }
     }
 
     log('PC', 'built', {
@@ -562,6 +648,8 @@ class WebRTCManager {
       polite: this.polite,
       audioTrack: audioTrack?.id ?? null,
       videoTrack: videoTrack?.id ?? null,
+      audioSenderHasTrack: !!this._audioTransceiver.sender.track,
+      videoSenderHasTrack: !!this._videoTransceiver.sender.track,
     });
 
     pc.onicecandidate = ({ candidate }) => {
@@ -682,6 +770,17 @@ class WebRTCManager {
 
       case 'webrtc_ice_candidate': {
         if (!msg.candidate || !this.pc) break;
+        // If the remote description hasn't been applied yet, queue the
+        // candidate. addIceCandidate would otherwise throw and the
+        // candidate would be lost forever — and ICE candidate loss is the
+        // exact failure mode that produces "audio dies until something
+        // triggers renegotiation," because re-offer prompts the remote
+        // peer to ship its candidates again.
+        if (!this.pc.remoteDescription || !this.pc.remoteDescription.type) {
+          this._pendingCandidates.push(msg.candidate);
+          log('ICE', 'buffered candidate (no remoteDescription yet)', { queued: this._pendingCandidates.length });
+          break;
+        }
         try {
           await this.pc.addIceCandidate(msg.candidate);
         } catch (err) {
@@ -736,7 +835,9 @@ class WebRTCManager {
         this.onPeerDisconnect?.();
         // Rebuild PC so the next session_ready / peer_joined produces a
         // clean offer/answer (including any local tracks we still hold).
-        this._buildPeerConnection();
+        // Awaited so that subsequent signaling chain entries see a fully
+        // initialized PC (transceivers + bound tracks).
+        await this._buildPeerConnection();
         break;
       }
 
@@ -773,6 +874,7 @@ class WebRTCManager {
         return;
       }
 
+      log('SDP', `remote ${sdp.type}`, summarizeSdp(sdp.sdp));
       this.isSettingRemoteAnswerPending = sdp.type === 'answer';
       // For the polite peer on an offer collision, setRemoteDescription
       // performs an implicit rollback of our in-flight local offer.
@@ -817,9 +919,17 @@ class WebRTCManager {
     if (pc.signalingState !== 'stable') return;
     try {
       this.makingOffer = true;
-      log('PN', 'offering', { reason });
+      log('PN', 'offering', { reason, streamId: this._localStreamId });
       await pc.setLocalDescription();
       if (!this.pc) return;
+      log('SDP', 'local offer', summarizeSdp(pc.localDescription?.sdp));
+      log('TRANSCEIVER', 'snapshot', pc.getTransceivers().map(tx => ({
+        mid: tx.mid,
+        kind: tx.receiver?.track?.kind ?? tx.sender?.track?.kind ?? null,
+        direction: tx.direction,
+        currentDirection: tx.currentDirection,
+        senderTrack: tx.sender.track?.id ?? null,
+      })));
       this._sendWS({ type: 'webrtc_offer', sdp: pc.localDescription });
     } catch (err) {
       console.error('[PN] _maybeOffer error:', err);
