@@ -1,7 +1,7 @@
 ---
 slug: how-to-build-emotional-resilience
-title: "How to Build Emotional Resilience: 10 Science-Backed Strategies"
-description: "Emotional resilience isn't toughness or suppression. It's the trained ability to process adversity and recover. Here are 10 evidence-based strategies to build it deliberately."
+title: "How to Build Emotional Resilience: 10 Strategies"
+description: "Emotional resilience is the trained ability to process adversity and recover. Here are 10 evidence-based strategies to build it deliberately."
 date: "2026-04-17"
 tags: ["emotional resilience", "resilience building", "mental strength", "emotional intelligence"]
 readingTime: 8

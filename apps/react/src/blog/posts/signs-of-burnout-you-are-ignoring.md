@@ -1,7 +1,7 @@
 ---
 slug: signs-of-burnout-you-are-ignoring
-title: "9 Signs of Burnout You're Probably Ignoring (And What to Do About Them)"
-description: "Burnout looks like laziness from the outside. From the inside, it feels like exhaustion that sleep doesn't fix. Here are 9 warning signs — and how to recover before you collapse."
+title: "9 Signs of Burnout You're Ignoring and What to Do"
+description: "Burnout feels like exhaustion that sleep doesn't fix. Here are 9 warning signs you might be ignoring — and how to recover before it gets worse."
 date: "2026-04-12"
 tags: ["burnout", "work stress", "mental health", "India"]
 readingTime: 6

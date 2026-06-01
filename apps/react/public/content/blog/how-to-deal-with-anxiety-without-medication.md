@@ -1,7 +1,7 @@
 ---
 slug: how-to-deal-with-anxiety-without-medication
-title: "How to Deal With Anxiety Without Medication: 8 Science-Backed Techniques"
-description: "Struggling with anxiety in India? Discover 8 proven, medication-free techniques — from breathing exercises to AI-assisted emotional support — that actually work."
+title: "How to Deal With Anxiety Without Medication"
+description: "8 proven, medication-free techniques for managing anxiety — from breathing exercises to AI-assisted support — that actually work."
 date: "2026-04-10"
 tags: ["anxiety", "mental health", "coping strategies", "India"]
 readingTime: 7

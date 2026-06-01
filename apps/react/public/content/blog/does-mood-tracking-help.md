@@ -1,7 +1,7 @@
 ---
 slug: does-mood-tracking-help
-title: "Does Mood Tracking Actually Help? What the Research Says"
-description: "Mood tracking apps are everywhere. But do they actually improve emotional wellbeing — or just add another thing to feel guilty about? Here's what the science says."
+title: "Does Mood Tracking Actually Help? The Evidence"
+description: "Mood tracking apps are everywhere — but do they actually improve emotional wellbeing? Here's what the science says and when tracking helps most."
 date: "2026-04-15"
 tags: ["mood tracking", "mood tracking apps", "emotional tracking", "self-monitoring mental health"]
 readingTime: 6

@@ -1,6 +1,6 @@
 ---
 slug: how-psychologists-earn-from-home-india
-title: "How Psychologists Can Earn From Home in India: A Complete 2026 Guide"
+title: "How Psychologists Earn From Home in India (2026)"
 description: "A practical, no-fluff guide for Indian psychologists and counsellors on how to earn from home — platforms, income streams, what pays well, and what to avoid."
 date: "2026-05-25"
 tags: ["psychologist earn from home", "work from home psychologist India", "online counselling income", "psychologist side income India", "mental health professional earn online"]

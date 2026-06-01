@@ -1,7 +1,7 @@
 ---
 slug: how-to-deal-with-loneliness
-title: "How to Deal With Loneliness: Why Half of Us Feel It and What Actually Helps"
-description: "Nearly 1 in 2 young adults globally report feeling lonely — and India is no exception. Here's what loneliness actually is, why it's spreading, and what genuinely helps."
+title: "How to Deal With Loneliness: Causes and What Helps"
+description: "Nearly 1 in 2 young adults feel lonely — India is no exception. Here's what loneliness actually is, why it's spreading, and what genuinely helps."
 date: "2026-05-04"
 tags: ["loneliness", "emotional health", "mental health", "social anxiety", "India"]
 readingTime: 9

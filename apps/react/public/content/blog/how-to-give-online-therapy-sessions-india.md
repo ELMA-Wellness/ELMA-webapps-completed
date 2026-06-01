@@ -1,7 +1,7 @@
 ---
 slug: how-to-give-online-therapy-sessions-india
-title: "How to Give Online Therapy Sessions in India: A Complete Setup Guide for Psychologists"
-description: "A practical guide for Indian psychologists and counsellors on how to deliver online therapy sessions — technical setup, ethical protocols, session structure, and what to do when things go wrong."
+title: "How to Give Online Therapy Sessions in India"
+description: "A practical guide for Indian psychologists on delivering online therapy — technical setup, ethical protocols, and what to do when things go wrong."
 date: "2026-05-25"
 tags: ["how to give online therapy sessions India", "online counselling session setup", "conduct online therapy India", "give therapy sessions online", "online session psychologist India"]
 readingTime: 9

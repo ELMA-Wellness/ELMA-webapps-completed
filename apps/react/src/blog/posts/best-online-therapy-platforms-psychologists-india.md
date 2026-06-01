@@ -1,7 +1,7 @@
 ---
 slug: best-online-therapy-platforms-psychologists-india
-title: "Best Online Therapy Platforms for Psychologists in India 2026: An Honest Comparison"
-description: "Which online therapy platform should you join as a psychologist or counsellor in India? A no-fluff comparison of rates, terms, client quality, and how ELMA Experts fits in."
+title: "Best Therapy Platforms for Psychologists in India"
+description: "Which platform should Indian psychologists join? A no-fluff comparison of rates, client quality, and how ELMA Experts compares."
 date: "2026-05-25"
 tags: ["online therapy platform psychologist India", "therapist portal India", "best platform for therapists India", "join online counselling platform", "psychologist register platform India"]
 readingTime: 9

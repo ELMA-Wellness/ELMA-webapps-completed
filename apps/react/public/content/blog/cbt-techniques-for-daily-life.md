@@ -1,7 +1,7 @@
 ---
 slug: cbt-techniques-for-daily-life
-title: "7 CBT Techniques You Can Use in Daily Life (No Therapist Required)"
-description: "Cognitive Behavioural Therapy is the most evidence-backed treatment for anxiety and depression. Here are 7 core CBT techniques you can apply on your own, starting today."
+title: "7 CBT Techniques for Daily Life (No Therapist Needed)"
+description: "Cognitive Behavioural Therapy is the most evidence-backed treatment for anxiety and depression. Here are 7 core CBT techniques you can apply today."
 date: "2026-04-16"
 tags: ["CBT", "cognitive behavioral therapy", "anxiety", "depression", "mental health tools"]
 readingTime: 7

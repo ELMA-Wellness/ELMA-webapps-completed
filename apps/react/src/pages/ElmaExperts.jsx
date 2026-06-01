@@ -406,8 +406,8 @@ export default function ElmaExperts() {
   return (
     <main style={{ background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
       <SEO
-        title="ELMA Experts — Earn From Home as a Psychologist | Online Therapy Portal India"
-        description="Psychologists &amp; counsellors: give online therapy sessions from home. Earn on your schedule, receive motivated clients, and let AI handle admin. Apply in 5 minutes."
+        title="ELMA Experts — Online Therapy Portal for Psychologists"
+        description="Psychologists and counsellors: give online therapy sessions from home. Earn on your schedule, reach motivated clients, and let AI handle admin."
         canonical={`/${lang}/elma-experts`}
         hreflangBase="/elma-experts"
         schema={expertsSchema}

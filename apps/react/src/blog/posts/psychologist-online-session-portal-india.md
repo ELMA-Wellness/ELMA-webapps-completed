@@ -1,7 +1,7 @@
 ---
 slug: psychologist-online-session-portal-india
-title: "Online Therapy Portal for Psychologists in India: What to Look For and Where to Find It"
-description: "Looking for a portal to give online therapy sessions as a psychologist in India? Here's what the best platforms offer, how to compare them, and which ones are worth your time in 2026."
+title: "Online Therapy Portal for Psychologists India 2026"
+description: "Looking for an online session portal as a psychologist in India? Here's what the best platforms offer and which ones are worth your time in 2026."
 date: "2026-05-25"
 tags: ["online therapy portal psychologist India", "portal for online counselling India", "join therapy platform India", "psychologist portal India", "online mental health platform for therapists"]
 readingTime: 7

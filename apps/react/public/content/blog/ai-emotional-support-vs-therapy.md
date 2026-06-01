@@ -1,7 +1,7 @@
 ---
 slug: ai-emotional-support-vs-therapy
-title: "AI Emotional Support vs Human Therapy: What's Actually Different?"
-description: "AI emotional support and human therapy serve different purposes. Here's a clear, honest comparison — when each is appropriate, what each can and cannot do, and how to use them together."
+title: "AI Emotional Support vs Therapy: What's Different?"
+description: "AI emotional support and therapy serve different purposes. An honest comparison — when each is right for you and how to use both together."
 date: "2026-04-20"
 tags: ["AI vs therapy", "AI emotional support", "therapy alternatives", "mental health India"]
 readingTime: 7

@@ -1,7 +1,7 @@
 ---
 slug: india-mental-health-statistics
-title: "India's Mental Health Crisis: The Numbers, the Barriers, and What's Changing"
-description: "India has 150 million people with mental health conditions and fewer than 9,000 psychiatrists. Here's what the data shows, why the gap exists, and what technology is doing about it."
+title: "India Mental Health Statistics: The Reality in 2026"
+description: "India has 150 million people with mental health conditions and fewer than 9,000 psychiatrists. Here's what the data shows and what's changing."
 date: "2026-04-19"
 tags: ["mental health India", "India mental health statistics", "therapy access India", "mental health crisis"]
 readingTime: 7
