@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import QRCode from 'react-qr-code';
 //@ts-ignore
 import "../styles/SessionExpired.css";
 import { useSearchParams } from "react-router-dom";
+import SessionPage from "./SessionPage";
+
 
 const QRPage: React.FC = () => {
     const [params] = useSearchParams();
@@ -71,70 +72,8 @@ const QRPage: React.FC = () => {
     // If commonQueryParams are needed, they should be defined or extracted from useSearchParams similarly.
 
     return (
-        <div className="se-root">
-            {/* Background glow orb */}
-            <div className="se-bg-orb" />
-            <div className="se-bg-orb-secondary" />
-
-            <div className="se-card">
-                {/* Logo */}
-                <div className="se-logo-wrap">
-                    <img style={{ height: 70, width: 154 }} src="https://res.cloudinary.com/dnzy9hf2x/image/upload/v1779178463/app-images_2FELMA_logos_tv3kyj.webp" />
-                    <span className="se-logo-heart">♡</span>
-                </div>
-
-                {/* QR Code Section - Enhanced Quality */}
-                <div style={{ background: '#ffffff', padding: '16px', borderRadius: '24px', margin: '0 auto 24px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0 12px 40px rgba(7, 17, 46, 0.12)' }}>
-                        <QRCode
-                            value={sessionLink} // Use the dynamically constructed URL
-                            size={256}
-                            style={{ height: "auto", maxWidth: "180px", width: "100%" }}
-                            viewBox={`0 0 256 256`}
-                            bgColor="#ffffff" // Explicitly set background color for clarity
-                            fgColor="#07112E"
-                            level="M" // Balanced error correction for high-density URLs
-                        />
-                </div>
-
-                {/* Content */}
-                <div className="se-content">
-                    <p className="se-subtitle">
-                        scan this QR code to continue with your session on your mobile device, kindly make sure you scan with the same device on which you run the “Elma” Emotional Companion app
-                    </p>
-
-                    <div className="se-divider-heart">♡</div>
-
-                    <p className="se-help-text">We are continuously working on increasing the horizon of operating systems and devices on which you can access your therapy sessions online seamlessly
- </p>
-
-                    {/* <button onClick={onContactSupport} className="se-btn-support">
-                        <ChatIcon />
-                        Contact Support
-                    </button> */}
-                </div>
-
-                
-            </div>
-        </div>
+        <SessionPage/>
     );
 };
-
-const ChatIcon: React.FC = () => (
-    <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-    >
-        <path
-            d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-    </svg>
-);
 
 export default QRPage;

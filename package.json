@@ -9,6 +9,10 @@
     "dev:admin": "npm run dev --workspace=apps/admin-portal",
     "dev:psych": "npm run dev --workspace=apps/psych-portal",
     "dev:elma": "npm run dev --workspace=apps/react",
+    "build:admin": "npm run build --workspace=apps/admin-portal",
+    "build:psych": "npm run build --workspace=apps/psych-portal",
+    "build:elma": "npm run build --workspace=apps/react",
+
     "seed": "node scripts/seed.js"
   },
   "overrides": {

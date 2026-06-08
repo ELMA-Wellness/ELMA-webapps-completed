@@ -164,7 +164,7 @@ function App() {
 
   {/* Without layout */}
   <Route path="/session/expired" element={<SessionExpiredWeb />} />
-  <Route path="/session" element={<QRPage />} />
+  
 
   {/* Layout */}
   <Route
@@ -184,6 +184,7 @@ function App() {
     }
   >
     <Route path="/" element={<RootRedirect />} />
+    <Route path="/session" element={<QRPage />} />
 
     <Route path="/:lang" element={<LangLayout />}>
       <Route index element={<Home />} />
