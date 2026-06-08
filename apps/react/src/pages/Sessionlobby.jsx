@@ -9,7 +9,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createLocalAudioTrack, createLocalVideoTrack } from "livekit-client";
 import { MicIcon, CamIcon, Avatar } from "./Icons";
-import { livekitManager } from "../config/livekitManager";
+import { livekitManager } from "../config/livekitmanager";
 
 // ── Permission helpers ────────────────────────────────────────────────────────
 

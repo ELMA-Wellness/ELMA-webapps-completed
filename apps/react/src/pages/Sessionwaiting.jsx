@@ -11,7 +11,7 @@
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, ShieldIcon, LockIcon, Avatar } from "./Icons";
-import { livekitManager } from "../config/livekitManager";
+import { livekitManager } from "../config/livekitmanager";
 import { getInitials, formatFirebaseTimestamp } from "../utils/helper";
 
 export default function SessionWaiting({
