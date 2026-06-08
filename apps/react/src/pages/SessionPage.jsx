@@ -18,6 +18,7 @@ import CompleteSessionConfirmationModal from "../components/modals/CompleteSessi
 import { livekitManager } from "../config/livekitManager";
 import { updateById }      from "../firebase/firestore";
 import { isSessionExpired, getInitials } from "../utils/helper";
+import { createAndDownloadPDF } from "../utils/createAndDownLoadPDF";
 
 function normalizeRole(value) {
   const role = String(value || "").trim().toLowerCase();
@@ -30,6 +31,7 @@ export default function App() {
   const [screen,          setScreen]          = useState("lobby");
   const [sessionDuration, setSessionDuration] = useState(0);
   const sessionStartRef = useRef(null);
+   const [notes, setNotes] = useState("")
 
   const [params] = useSearchParams();
 
@@ -71,7 +73,9 @@ export default function App() {
 
   // ── Session ended event from WS ────────────────────────────────────────────
   useEffect(() => {
-    livekitManager.callbacks.onSessionEnded = () => setScreen("ended");
+    livekitManager.callbacks.onSessionEnded = () => {setScreen("ended")
+     
+    };
     return () => { livekitManager.callbacks.onSessionEnded = undefined; };
   }, []);
 
@@ -104,6 +108,9 @@ export default function App() {
       ? Math.floor((Date.now() - sessionStartRef.current) / 1000)
       : 0;
     setSessionDuration(Math.ceil(secs / 60));
+     if(role==='therapist'){
+      localStorage.setItem("notes",notes)
+    }
     livekitManager.hangup()
     // livekitManager.hangup() was already called inside SessionLive
     setScreen("ended");
@@ -118,6 +125,20 @@ export default function App() {
     setScreen("lobby");
   };
   const onSkip = () => setScreen("lobby");
+
+  const handleDownLoad=async()=>{
+    await createAndDownloadPDF({
+      therapistName:tname,
+      patientName:cname,
+      
+      sessionCode,
+      notes: localStorage.getItem("notes"),
+      date:startTime,
+      duration:45
+
+    })
+    localStorage.removeItem("notes")
+  }
 
   // Patient sees confirmation modal on ended
   if (role === "patient" && screen === "ended") {
@@ -160,6 +181,8 @@ export default function App() {
           name={name}
           therapistName={tname}
           patientName={cname}
+          notes={notes}
+          setNotes={setNotes}
         />
       )}
 
@@ -172,6 +195,7 @@ export default function App() {
           name={THERAPIST_INFO.name}
           role={role}
           profession={profession}
+          onDownLoadNotes={handleDownLoad}
         />
       )}
     </>

@@ -236,6 +236,8 @@ export default function SessionLobby({
           font-family: 'Sora', 'Segoe UI', sans-serif;
           padding: 72px 24px 40px;
           box-sizing: border-box;
+          display: flex; justify-content: center; align-items: center;
+          margin-top:12px;
         }
         .lobby-card {
           max-width: 960px;

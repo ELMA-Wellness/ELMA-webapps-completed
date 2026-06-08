@@ -24,6 +24,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, LockIcon, ExpandIcon, Avatar, SignalIcon } from "./Icons";
 import { livekitManager } from "../config/livekitManager";
 import { getInitials, formatFirebaseTimestamp } from "../utils/helper";
+import SessionNotesModal from "../components/modals/SessionNotesModal";
+import { CgNotes } from "react-icons/cg";
+import { FcEndCall } from "react-icons/fc";
+
 
 export default function SessionLive({
   therapist,
@@ -33,50 +37,52 @@ export default function SessionLive({
   name,
   patientName,
   therapistName,
+  notes,
+  setNotes
 }) {
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
 
   const remoteVideoContainerRef = useRef(null);
-  const selfVideoContainerRef   = useRef(null);
-  const chatEndRef              = useRef(null);
-  const peerLeftTimer           = useRef(null);
+  const selfVideoContainerRef = useRef(null);
+  const chatEndRef = useRef(null);
+  const peerLeftTimer = useRef(null);
 
-  const remoteParticipantName     = role === "therapist" ? patientName    : therapistName;
+  const remoteParticipantName = role === "therapist" ? patientName : therapistName;
   const remoteParticipantInitials = role === "therapist" ? getInitials(patientName) : getInitials(therapistName);
-  const selfInitials              = role === "therapist" ? getInitials(therapistName) : getInitials(patientName);
+  const selfInitials = role === "therapist" ? getInitials(therapistName) : getInitials(patientName);
 
   // Initial media state from localStorage (set in lobby)
   const initMic = localStorage.getItem("micActive") === "true";
   const initCam = localStorage.getItem("camActive") === "true";
 
-  const [chatMsg,      setChatMsg]      = useState("");
-  const [messages,     setMessages]     = useState([]);
-  const [sessionSecs,  setSessionSecs]  = useState(0);
-  const [muted,        setMuted]        = useState(!initMic);
-  const [camOff,       setCamOff]       = useState(!initCam);
-  const [chatOpen,     setChatOpen]     = useState(true);
-  const [connState,    setConnState]    = useState("connected");
-  const [peerLeft,     setPeerLeft]     = useState(false);
-  const [remoteMuted,  setRemoteMuted]  = useState(false);
+  const [chatMsg, setChatMsg] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [sessionSecs, setSessionSecs] = useState(0);
+  const [muted, setMuted] = useState(!initMic);
+  const [camOff, setCamOff] = useState(!initCam);
+  const [chatOpen, setChatOpen] = useState(true);
+  const [connState, setConnState] = useState("connected");
+  const [peerLeft, setPeerLeft] = useState(false);
+  const [remoteMuted, setRemoteMuted] = useState(false);
   const [remoteCamOff, setRemoteCamOff] = useState(false);
-  const [pipExpanded,  setPipExpanded]  = useState(false);
-  const [mediaError,   setMediaError]   = useState(null);
-  const [busy,         setBusy]         = useState(false);
+  const [pipExpanded, setPipExpanded] = useState(false);
+  const [mediaError, setMediaError] = useState(null);
+  const [busy, setBusy] = useState(false);
   // Whether a remote video track is subscribed
   const [hasRemoteVideo, setHasRemoteVideo] = useState(false);
 
   // ── Attach remote video track ─────────────────────────────────────────────
   const attachRemoteVideo = useCallback(() => {
-    const media     = livekitManager.remoteMedia;
+    const media = livekitManager.remoteMedia;
     const container = remoteVideoContainerRef.current;
     if (!media.videoTrack || !container) return;
     media.videoTrack.detach(); // detach from any old element
     const el = media.videoTrack.attach();
-    el.style.width      = "100%";
-    el.style.height     = "100%";
-    el.style.objectFit  = "cover";
-    el.style.display    = "block";
+    el.style.width = "100%";
+    el.style.height = "100%";
+    el.style.objectFit = "cover";
+    el.style.display = "block";
     el.style.background = "#0b0f1a";
     container.innerHTML = "";
     container.appendChild(el);
@@ -85,15 +91,15 @@ export default function SessionLive({
 
   // ── Attach self (local) video ─────────────────────────────────────────────
   const attachLocalVideo = useCallback(() => {
-    const track     = livekitManager.localVideoTrack;
+    const track = livekitManager.localVideoTrack;
     const container = selfVideoContainerRef.current;
     if (!track || !container) return;
     track.detach();
     const el = track.attach();
-    el.style.width      = "100%";
-    el.style.height     = "100%";
-    el.style.objectFit  = "cover";
-    el.style.transform  = "scaleX(-1)";
+    el.style.width = "100%";
+    el.style.height = "100%";
+    el.style.objectFit = "cover";
+    el.style.transform = "scaleX(-1)";
     container.innerHTML = "";
     container.appendChild(el);
   }, []);
@@ -144,12 +150,12 @@ export default function SessionLive({
     };
 
     return () => {
-      livekitManager.callbacks.onRemoteMedia      = undefined;
-      livekitManager.callbacks.onLocalVideoTrack  = undefined;
+      livekitManager.callbacks.onRemoteMedia = undefined;
+      livekitManager.callbacks.onLocalVideoTrack = undefined;
       livekitManager.callbacks.onRemoteMediaState = undefined;
-      livekitManager.callbacks.onMessages         = undefined;
+      livekitManager.callbacks.onMessages = undefined;
       livekitManager.callbacks.onConnectionStatus = undefined;
-      livekitManager.callbacks.onPeerLeft         = undefined;
+      livekitManager.callbacks.onPeerLeft = undefined;
       clearTimeout(peerLeftTimer.current);
     };
   }, [attachRemoteVideo, attachLocalVideo, initCam, camOff]);
@@ -178,6 +184,10 @@ export default function SessionLive({
       cameraEnabled: !camOff,
     });
   }, [muted, camOff]);
+
+  const openNotes=()=>{
+    setIsNotesOpen(true)
+  }
 
   // ── Toggles ───────────────────────────────────────────────────────────────
   const handleToggleMic = async () => {
@@ -214,6 +224,12 @@ export default function SessionLive({
 
   const handleLeave = () => { livekitManager.hangup(); onLeave?.(); };
 
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+ 
+
+
+
+
   const sendMsg = () => {
     if (!chatMsg.trim()) return;
     livekitManager.sendChatMessage(chatMsg.trim());
@@ -222,10 +238,42 @@ export default function SessionLive({
 
   const em = String(Math.floor(sessionSecs / 60)).padStart(2, "0");
   const es = String(sessionSecs % 60).padStart(2, "0");
-  const isConnected    = connState === "connected";
+  const isConnected = connState === "connected";
   const connBadgeColor = isConnected ? "#22c55e" : connState === "failed" ? "#ef4444" : "#f59e0b";
 
   const showRemotePlaceholder = !hasRemoteVideo || peerLeft || remoteCamOff;
+
+  const controls = [
+  {
+    icon: <MicIcon muted={muted} size={20} />,
+    label: muted ? "Unmute" : "Mute",
+    onClick: handleToggleMic,
+    isOff: muted,
+  },
+  {
+    icon: <CamIcon off={camOff} size={20} />,
+    label: camOff ? "Cam Off" : "Camera",
+    onClick: handleToggleCam,
+    isOff: camOff,
+  },
+  ...(role === "therapist"
+    ? [
+        {
+          icon: <CgNotes size={20} />,
+          label: "Notes",
+          onClick: openNotes,
+          isOff: false,
+        },
+      ]
+    : []),
+
+    {
+    icon: <FcEndCall off={false} size={30} />,
+    label: 'End Call',
+    onClick: handleLeave,
+    isOff: true,
+  },
+];
 
   return (
     <>
@@ -416,8 +464,8 @@ export default function SessionLive({
                 {peerLeft
                   ? "Connection interrupted…"
                   : remoteCamOff
-                  ? `${remoteParticipantName} has turned off their camera`
-                  : `Connecting to ${remoteParticipantName}…`}
+                    ? `${remoteParticipantName} has turned off their camera`
+                    : `Connecting to ${remoteParticipantName}…`}
               </div>
               {!peerLeft && !remoteCamOff && (
                 <div style={{ color: "rgba(255,255,255,.2)", fontSize: 12, animation: "reconnecting 1.5s infinite" }}>Please wait</div>
@@ -438,8 +486,8 @@ export default function SessionLive({
           {!camOff
             ? <div ref={selfVideoContainerRef} style={{ width: "100%", height: "100%" }} />
             : <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#111827", gap: 4 }}>
-                <Avatar size={pipExpanded ? 60 : 40} initials={selfInitials} extraStyle={{ border: "2px solid rgba(255,255,255,.15)" }} />
-              </div>
+              <Avatar size={pipExpanded ? 60 : 40} initials={selfInitials} extraStyle={{ border: "2px solid rgba(255,255,255,.15)" }} />
+            </div>
           }
           <div style={{ position: "absolute", top: 5, left: 6, background: "rgba(0,0,0,.6)", color: "white", fontSize: 9, borderRadius: 4, padding: "2px 6px", fontWeight: 600 }}>You</div>
           <div style={{ position: "absolute", top: 5, right: 6, color: "rgba(255,255,255,.4)" }}><ExpandIcon size={9} /></div>
@@ -459,21 +507,16 @@ export default function SessionLive({
 
         {/* ── CONTROLS ── */}
         <div className="sl-controls" style={{ right: chatOpen ? 316 : 0 }}>
-          {[
-            { icon: <MicIcon muted={muted} size={20} />, label: muted ? "Unmute" : "Mute",       onClick: handleToggleMic, isOff: muted   },
-            { icon: <CamIcon off={camOff}  size={20} />, label: camOff ? "Cam Off" : "Camera",   onClick: handleToggleCam, isOff: camOff  },
-          ].map(({ icon, label, onClick, isOff }, i) => (
+          {controls.map(({ icon, label, onClick, isOff }, i) => (
             <div key={i} className="ctrl-wrap">
               <button onClick={onClick} disabled={busy} className={`ctrl-btn ${isOff ? "ctrl-muted" : "ctrl-active"}`} style={{ opacity: busy ? 0.5 : 1, cursor: busy ? "wait" : "pointer" }}>{icon}</button>
               <span className="ctrl-lbl">{label}</span>
             </div>
           ))}
-         
-            <div className="ctrl-wrap" style={{ marginLeft: 8 }}>
-              <button className="ctrl-leave" onClick={handleLeave}><PhoneOff size={16} /> End Call</button>
-              <span className="ctrl-lbl" style={{ visibility: "hidden" }}>·</span>
-            </div>
+
           
+          
+
         </div>
 
         {/* ── CHAT OVERLAY ── */}
@@ -487,7 +530,7 @@ export default function SessionLive({
 
             <div className="chat-msgs">
               {messages.length === 0 && <div style={{ textAlign: "center", color: "rgba(255,255,255,.2)", fontSize: 12, marginTop: 20 }}>No messages yet. 👋</div>}
-               {messages.map((m, i) => (
+              {messages.map((m, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                   <div style={{
                     display: "flex", alignItems: "center", gap: 6,
@@ -533,6 +576,12 @@ export default function SessionLive({
             </div>
           </div>
         )}
+        <SessionNotesModal
+          visible={isNotesOpen}
+          onClose={() => setIsNotesOpen(false)}
+          notesText={notes}
+          setNotesText={setNotes}
+        />
       </div>
     </>
   );

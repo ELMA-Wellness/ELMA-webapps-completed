@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getInitials } from "../utils/helper";
+import { FcDownload } from "react-icons/fc";
 
 const StarIcon = ({ filled, size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -26,7 +27,7 @@ const CheckBadge = ({ size = 22 }) => (
   </svg>
 );
 
-export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,role,professtion }) {
+export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,role,professtion,onDownLoadNotes }) {
   const [rating, setRating]       = useState(0);
   const [hovered, setHovered]     = useState(0);
   const [feedback, setFeedback]   = useState("");
@@ -325,7 +326,7 @@ export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,r
 
           {/* Action buttons */}
           {
-            role==='patient' &&
+            role==='patient' ?
           
           
           
@@ -342,7 +343,11 @@ export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,r
             <button className="btn-outline" onClick={onDone}>
               Done
             </button>
-          </div>)}
+          </div>):(
+            <button className="btn-outline" onClick={onDownLoadNotes}>
+              <FcDownload size={15} /> DownLoad Notes
+            </button>
+          )}
 
           {/* Feedback box */}
           {showFeedback && !submitted && (
