@@ -22,7 +22,7 @@
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { MicIcon, CamIcon, PhoneOff, SendIcon, ChatIcon, LockIcon, ExpandIcon, Avatar, SignalIcon } from "./Icons";
-import { livekitManager } from "../config/livekitManager";
+import { livekitManager } from "../config/livekitmanager";
 import { getInitials, formatFirebaseTimestamp } from "../utils/helper";
 import SessionNotesModal from "../components/modals/SessionNotesModal";
 import { CgNotes } from "react-icons/cg";
