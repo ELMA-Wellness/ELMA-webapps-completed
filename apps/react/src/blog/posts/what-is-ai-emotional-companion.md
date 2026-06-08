@@ -1,7 +1,7 @@
 ---
 slug: what-is-ai-emotional-companion
 title: "What Is an AI Emotional Companion? The Complete Guide"
-description: "AI emotional companions are a new category of app — distinct from therapy, chatbots, and meditation apps. Here's exactly what they are, how they work, and when to use one."
+description: "AI emotional companions are a new category — distinct from therapy, chatbots, and meditation apps. Here's what they are, how they work, and when to use one."
 date: "2026-04-21"
 tags: ["AI emotional companion", "AI companion app", "emotional support AI", "what is ELMA"]
 readingTime: 6

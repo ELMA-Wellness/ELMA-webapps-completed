@@ -560,138 +560,142 @@
   </url>
 
   <!-- ═══════════════════════════════════════════════════════════════
+       NEW POSTS — HIGH-VOLUME EMOTIONAL WELLNESS TOPICS
+  ═══════════════════════════════════════════════════════════════ -->
+
+  <url>
+    <loc>https://elma.ltd/en/blog/attachment-styles-explained/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Attachment Styles: How Childhood Shapes Love</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/how-to-stop-a-panic-attack/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Stop a Panic Attack: What Actually Works</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/work-stress-india/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Work Stress in India: Causes, Signs and How to Cope</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/how-to-improve-self-esteem/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Improve Self-Esteem: 8 Science-Backed Ways</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/imposter-syndrome/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>Imposter Syndrome: Why You Feel Like a Fraud</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://elma.ltd/en/blog/how-to-cope-with-grief/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
+      <image:title>How to Cope With Grief: What No One Tells You</image:title>
+    </image:image>
+  </url>
+
+  <!-- ═══════════════════════════════════════════════════════════════
        PSYCHOLOGIST / THERAPIST TARGETING — B2B BLOG POSTS
   ═══════════════════════════════════════════════════════════════ -->
 
   <url>
-    <loc>https://elma.ltd/blog/how-psychologists-earn-from-home-india/</loc>
-    <lastmod>2026-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>How Psychologists Can Earn From Home in India: A Complete 2026 Guide</image:title>
-    </image:image>
-  </url>
-
-  <url>
     <loc>https://elma.ltd/en/blog/how-psychologists-earn-from-home-india/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>How Psychologists Can Earn From Home in India: A Complete 2026 Guide</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/blog/best-online-therapy-platforms-psychologists-india/</loc>
-    <lastmod>2026-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>Best Online Therapy Platforms for Psychologists in India 2026</image:title>
+      <image:title>How Psychologists Earn From Home in India (2026)</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/blog/best-online-therapy-platforms-psychologists-india/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>Best Online Therapy Platforms for Psychologists in India 2026</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/blog/how-to-start-online-counselling-practice-india/</loc>
-    <lastmod>2026-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>How to Start Your Online Counselling Practice in India</image:title>
+      <image:title>Best Therapy Platforms for Psychologists in India</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/blog/how-to-start-online-counselling-practice-india/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>How to Start Your Online Counselling Practice in India</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/blog/work-from-home-psychologist-earning-platforms/</loc>
-    <lastmod>2026-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>Work From Home as a Psychologist in India: Real Earning Options in 2026</image:title>
+      <image:title>Start an Online Counselling Practice in India (2026)</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/blog/work-from-home-psychologist-earning-platforms/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>Work From Home as a Psychologist in India: Real Earning Options in 2026</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/blog/how-to-give-online-therapy-sessions-india/</loc>
-    <lastmod>2026-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>How to Give Online Therapy Sessions in India: A Complete Setup Guide for Psychologists</image:title>
+      <image:title>Work From Home as a Psychologist in India (2026)</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/blog/how-to-give-online-therapy-sessions-india/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>How to Give Online Therapy Sessions in India: A Complete Setup Guide for Psychologists</image:title>
-    </image:image>
-  </url>
-
-  <url>
-    <loc>https://elma.ltd/blog/psychologist-online-session-portal-india/</loc>
-    <lastmod>2026-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>Online Therapy Portal for Psychologists in India: What to Look For and Where to Find It</image:title>
+      <image:title>How to Give Online Therapy Sessions in India</image:title>
     </image:image>
   </url>
 
   <url>
     <loc>https://elma.ltd/en/blog/psychologist-online-session-portal-india/</loc>
-    <lastmod>2026-05-25</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
     <image:image>
       <image:loc>https://elma.ltd/images/elma-og-cover.png</image:loc>
-      <image:title>Online Therapy Portal for Psychologists in India: What to Look For and Where to Find It</image:title>
+      <image:title>Online Therapy Portal for Psychologists India 2026</image:title>
     </image:image>
   </url>
 

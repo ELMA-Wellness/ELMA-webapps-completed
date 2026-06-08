@@ -1,6 +1,6 @@
 ---
 slug: why-talking-to-ai-feels-easier
-title: "Why Talking to an AI About Your Feelings Can Feel Easier Than Talking to a Human"
+title: "Why Talking to an AI About Feelings Feels Easier"
 description: "Many people find it easier to open up to an AI than to a therapist or friend. Here's the psychology behind why — and why that's not as strange as it sounds."
 date: "2026-04-18"
 tags: ["AI mental health", "emotional support", "therapy", "digital wellbeing"]

@@ -144,7 +144,7 @@ export default function FAQPage() {
   return (
     <>
       <SEO
-        title="FAQ — Everything About ELMA, the AI Emotional Companion App"
+        title="FAQ — Everything About ELMA"
         description="Answers to every question about ELMA: what it is, how it works, ELMA Experts, privacy, pricing, and more."
         canonical={`/${lang}/faq`}
         hreflangBase="/faq"

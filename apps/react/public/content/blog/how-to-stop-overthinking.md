@@ -1,6 +1,6 @@
 ---
 slug: how-to-stop-overthinking
-title: "How to Stop Overthinking: 9 Techniques That Break the Loop"
+title: "How to Stop Overthinking: 9 Proven Techniques"
 description: "Overthinking is exhausting — and it's India's most-Googled mental health problem. Here's what actually stops the thought spiral, backed by science."
 date: "2026-05-04"
 tags: ["overthinking", "anxiety", "mental health", "mindfulness", "India"]

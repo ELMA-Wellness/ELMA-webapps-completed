@@ -1,6 +1,6 @@
 ---
 slug: best-ai-mental-health-apps-india
-title: "Best AI Mental Health Apps in India 2026: An Honest Comparison"
+title: "Best AI Mental Health Apps in India 2026"
 description: "Comparing the top AI mental health and emotional wellness apps available in India in 2026 — features, pricing, privacy, and which one is right for you."
 date: "2026-04-22"
 tags: ["mental health apps India", "AI therapy app", "best mental health app", "emotional wellness app India"]

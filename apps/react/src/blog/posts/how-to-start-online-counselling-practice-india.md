@@ -1,7 +1,7 @@
 ---
 slug: how-to-start-online-counselling-practice-india
-title: "How to Start Your Online Counselling Practice in India: A Step-by-Step Guide (2026)"
-description: "Everything Indian psychologists and counsellors need to start a legitimate, sustainable online practice — legal setup, platforms, client acquisition, and what nobody tells you."
+title: "Start an Online Counselling Practice in India (2026)"
+description: "Everything Indian psychologists need to start a legitimate online practice — legal setup, platforms, client acquisition, and what nobody tells you."
 date: "2026-05-25"
 tags: ["start online counselling practice India", "online therapy practice setup", "how to practice psychology online India", "online counselling business India", "virtual therapy practice India"]
 readingTime: 11

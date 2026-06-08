@@ -1,7 +1,7 @@
 ---
 slug: social-anxiety-india
-title: "Social Anxiety in India: Why It's More Common Than You Think (And What Helps)"
-description: "Social anxiety affects millions of Indians but is almost never talked about. Here's how to recognise it, understand why it happens, and what actually reduces it."
+title: "Social Anxiety in India: Signs, Causes and What Helps"
+description: "Social anxiety affects millions of Indians but is rarely talked about. Here's how to recognise it, understand why it happens, and what actually reduces it."
 date: "2026-05-04"
 tags: ["social anxiety", "anxiety", "mental health India", "social anxiety tips", "shyness"]
 readingTime: 8

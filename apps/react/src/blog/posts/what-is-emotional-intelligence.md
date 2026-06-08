@@ -1,6 +1,6 @@
 ---
 slug: what-is-emotional-intelligence
-title: "What Is Emotional Intelligence? The Complete Guide (And Why It Matters More Than IQ)"
+title: "What Is Emotional Intelligence? A Complete Guide"
 description: "Emotional intelligence (EQ) predicts success better than IQ. Learn what it is, the 5 components, how to measure yours, and practical ways to build it."
 date: "2026-04-14"
 tags: ["emotional intelligence", "EQ", "self-awareness", "personal growth"]

@@ -1,7 +1,7 @@
 ---
 slug: work-from-home-psychologist-earning-platforms
-title: "Work From Home as a Psychologist in India: Real Earning Options in 2026"
-description: "A practical breakdown for Indian psychologists wanting to work from home — what pays, what doesn't, how much to expect, and the platforms actually worth your time."
+title: "Work From Home as a Psychologist in India (2026)"
+description: "A practical breakdown for Indian psychologists wanting to work from home — what pays, what doesn't, and the platforms actually worth your time."
 date: "2026-05-25"
 tags: ["work from home psychologist India", "psychologist home practice", "earn money psychologist online India", "remote work psychology India", "psychology work from home India"]
 readingTime: 8

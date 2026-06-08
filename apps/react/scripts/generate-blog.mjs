@@ -207,17 +207,17 @@ const SHARED_CSS = `
 // ── Shared Navbar HTML ────────────────────────────────────────────────────────
 const NAVBAR_HTML = `
 <nav class="nav" aria-label="Main navigation">
-  <a href="/" class="nav-logo">
+  <a href="/en/" class="nav-logo">
     <img src="/images/elma-logo.png" alt="ELMA logo" width="32" height="32" loading="lazy" />
     ELMA
   </a>
   <ul class="nav-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li><a href="/blog">Blog</a></li>
-    <li><a href="/elma-experts">Experts</a></li>
-    <li><a href="/contact">Contact</a></li>
-    <li><a href="/" class="nav-cta">Download App</a></li>
+    <li><a href="/en/">Home</a></li>
+    <li><a href="/en/about">About</a></li>
+    <li><a href="/en/blog/">Blog</a></li>
+    <li><a href="/en/elma-experts">Experts</a></li>
+    <li><a href="/en/contact">Contact</a></li>
+    <li><a href="/en/" class="nav-cta">Download App</a></li>
   </ul>
 </nav>
 `.trim()
@@ -225,16 +225,16 @@ const NAVBAR_HTML = `
 const FOOTER_HTML = `
 <footer class="site-footer">
   <p>&copy; ${new Date().getFullYear()} ELMA. All rights reserved. &nbsp;|&nbsp;
-    <a href="/privacy">Privacy Policy</a> &nbsp;|&nbsp;
-    <a href="/terms">Terms</a> &nbsp;|&nbsp;
-    <a href="/contact">Contact</a>
+    <a href="/en/privacy">Privacy Policy</a> &nbsp;|&nbsp;
+    <a href="/en/terms">Terms</a> &nbsp;|&nbsp;
+    <a href="/en/contact">Contact</a>
   </p>
 </footer>
 `.trim()
 
 // ── Generate individual post pages ────────────────────────────────────────────
 for (const post of posts) {
-  const canonical = `${BASE_URL}/blog/${post.slug}/`
+  const canonical = `${BASE_URL}/en/blog/${post.slug}/`
 
   const blogPostingSchema = {
     '@context': 'https://schema.org',
@@ -260,7 +260,7 @@ for (const post of posts) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home',  item: BASE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Blog',  item: `${BASE_URL}/blog/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog',  item: `${BASE_URL}/en/blog/` },
       { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
     ]
   }
@@ -277,7 +277,7 @@ ${NAVBAR_HTML}
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="/">Home</a>
     <span aria-hidden="true">›</span>
-    <a href="/blog/">Blog</a>
+    <a href="/en/blog/">Blog</a>
     <span aria-hidden="true">›</span>
     <span>${esc(post.title)}</span>
   </nav>
@@ -305,7 +305,7 @@ ${NAVBAR_HTML}
     <a href="/en/elma-experts" class="cta-btn">Apply as an Expert →</a>`
       : `<h3>Try ELMA — Your AI Emotional Companion</h3>
     <p>Voice your thoughts, track your emotional patterns, and get CBT-based support — 24/7, stigma-free.</p>
-    <a href="/" class="cta-btn">Download Free on Android &amp; iOS</a>`
+    <a href="/en/" class="cta-btn">Download Free on Android &amp; iOS</a>`
     }
   </aside>
 </main>
@@ -319,7 +319,7 @@ ${FOOTER_HTML}
 }
 
 // ── Generate blog listing page ────────────────────────────────────────────────
-const listCanonical = `${BASE_URL}/blog/`
+const listCanonical = `${BASE_URL}/en/blog/`
 
 const blogSchema = {
   '@context': 'https://schema.org',
@@ -332,7 +332,7 @@ const blogSchema = {
 
 const postCards = posts.map(p => `
   <article class="post-card">
-    <h2><a href="/blog/${p.slug}/">${esc(p.title)}</a></h2>
+    <h2><a href="/en/blog/${p.slug}/">${esc(p.title)}</a></h2>
     <p class="excerpt">${esc(p.description)}</p>
     <div class="card-meta">
       <div class="tags">${tagBadges(p.tags)}</div>

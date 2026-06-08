@@ -1,7 +1,7 @@
 ---
 slug: relationship-anxiety
-title: "Relationship Anxiety: Why You Overthink Your Relationship and How to Stop"
-description: "Relationship anxiety makes you question everything — is this person right for me? Do they really care? Why am I like this? Here's what's actually happening and how to find peace."
+title: "Relationship Anxiety: Causes, Signs and How to Stop"
+description: "Relationship anxiety makes you question everything — is this right? Do they care? Here's what's actually happening and how to find peace."
 date: "2026-05-04"
 tags: ["relationship anxiety", "overthinking", "attachment", "anxiety", "mental health"]
 readingTime: 9
