@@ -15,7 +15,7 @@ import SessionLive    from "./SessionLive";
 import SessionEnded   from "./Sessionended";
 import SessionExpiredWeb from "./SessionExpired";
 import CompleteSessionConfirmationModal from "../components/modals/CompleteSessionConfirmation";
-import { livekitManager } from "../config/livekitManager";
+import { livekitManager } from "../config/livekitmanager";
 import { updateById }      from "../firebase/firestore";
 import { isSessionExpired, getInitials } from "../utils/helper";
 import { createAndDownloadPDF } from "../utils/createAndDownLoadPDF";
