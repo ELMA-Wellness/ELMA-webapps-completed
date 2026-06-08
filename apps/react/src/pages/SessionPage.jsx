@@ -9,9 +9,9 @@
  */
 import { useState, useEffect, useRef } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
-import SessionLobby   from "./SessionLobby";
-import SessionWaiting from "./SessionWaiting";
-import SessionLive    from "./SessionLive";
+import SessionLobby   from "./Sessionlobby";
+import SessionWaiting from "./Sessionwaiting";
+import SessionLive    from "./Sessionlive";
 import SessionEnded   from "./Sessionended";
 import SessionExpiredWeb from "./SessionExpired";
 import CompleteSessionConfirmationModal from "../components/modals/CompleteSessionConfirmation";
