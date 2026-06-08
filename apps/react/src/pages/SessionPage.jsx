@@ -1,188 +1,137 @@
-import { useState, useRef, useEffect } from "react";
-import SessionLobby from "./Sessionlobby";
-import SessionWaiting from "./Sessionwaiting";
-import SessionLive from "./SessionLive";
-import SessionEnded from "./Sessionended";
-import { webRTCManager } from "../config/webrtcmanger";
-import { Navigate, useSearchParams } from "react-router-dom";
-import CompleteSessionConfirmationModal from "../components/modals/CompleteSessionConfirmation";
-import { updateById } from "../firebase/firestore";
-import { isSessionExpired } from "../utils/helper";
-import SessionExpiredWeb from "./SessionExpired";
-
 /**
- * Session flow:
+ * App.jsx  (LiveKit edition)
+ *
+ * Session flow orchestrator:
  *   lobby → waiting → live → ended
  *
- * Configure these before deployment:
+ * livekitManager.initialize() is the single entry point for all media.
+ * All screens read/write via the singleton livekitManager.
  */
+import { useState, useEffect, useRef } from "react";
+import { Navigate, useSearchParams } from "react-router-dom";
+import SessionLobby   from "./SessionLobby";
+import SessionWaiting from "./SessionWaiting";
+import SessionLive    from "./SessionLive";
+import SessionEnded   from "./Sessionended";
+import SessionExpiredWeb from "./SessionExpired";
+import CompleteSessionConfirmationModal from "../components/modals/CompleteSessionConfirmation";
+import { livekitManager } from "../config/livekitManager";
+import { updateById }      from "../firebase/firestore";
+import { isSessionExpired, getInitials } from "../utils/helper";
 
-const normalizeRole = (value) => {
+function normalizeRole(value) {
   const role = String(value || "").trim().toLowerCase();
-  if (["therapist", "expert", "psych", "psychologist", "doctor", "provider", "counsellor", "counselor", "professional"].includes(role)) {
-    return "therapist";
-  }
+  if (["therapist", "expert", "psych", "psychologist", "doctor", "provider",
+       "counsellor", "counselor", "professional"].includes(role)) return "therapist";
   return "patient";
-};
-
-
-
+}
 
 export default function App() {
-  const [screen, setScreen] = useState("lobby");   // lobby | waiting | live | ended
-  const [remoteStream, setRemoteStream] = useState(null);
+  const [screen,          setScreen]          = useState("lobby");
   const [sessionDuration, setSessionDuration] = useState(0);
   const sessionStartRef = useRef(null);
 
   const [params] = useSearchParams();
 
+  // ── URL params ─────────────────────────────────────────────────────────────
   const sessionCode = params.get("sessionCode");
-  const userId = params.get("userId");
-  const role = normalizeRole(params.get("role"));
-  const name = params.get("name")
-  const profession = params.get("profession")
-  const startTime = params.get("startTime");
+  const userId      = params.get("userId");
+  const role        = normalizeRole(params.get("role"));
+  const name        = params.get("name");
+  const profession  = params.get("profession");
+  const startTime   = params.get("startTime");
 
-  const skills =
-    JSON.parse(
-      decodeURIComponent(params.get("skills") || "[]")
-    );
+  const skills = (() => {
+    try { return JSON.parse(decodeURIComponent(params.get("skills") || "[]")); }
+    catch { return []; }
+  })();
 
+  const therapistPhoto = params.get("therapistPhoto");
+  const clientPhoto    = params.get("patientPhoto");
+  const tname          = params.get("therapistName");
+  const cname          = params.get("patientName");
+  const temail         = params.get("therapistEmail");
+  const cemail         = params.get("patientEmail");
 
-    const therapistPhoto = params.get("therapistPhoto")
-    const clientPhoto = params.get("patientPhoto")
-    const tname = params.get("therapistName")
-    const cname = params.get("patientName")
-    const temail = params.get("therapistEmail")
-    const cemail = params.get("patientEmail")
+  // The display name for the current user (used as LiveKit participant name)
+  const ownDisplayName = role === "therapist" ? tname : cname;
 
-
-    const commonQueryParams={
-        patientPhoto : clientPhoto,
-        therapistPhoto,
-        patientName : cname,
-        therapistName : tname,
-        therapistEmail: temail,
-        patientEmail : cemail
-        
-    }
-
-
-
-
-
-
-
-  const getInitials = (name = "") => {
-    return name?.trim()
-      .split(" ")
-      .filter(Boolean)
-      .map(word => word[0].toUpperCase())
-      .join("");
-  };
-
-
-
-
-
-  const SESSION_CONFIG = {
-    sessionCode: sessionCode,
-    userId: userId,
-    role: role,           // "patient" | "therapist"
-  };
-
+  // ── Config objects ─────────────────────────────────────────────────────────
   const THERAPIST_INFO = {
-    name: name,
-    credentials: profession,
-    specialties: skills,
+    name:           name,
+    credentials:    profession,
+    specialties:    skills,
     avatarInitials: getInitials(name),
   };
 
   const SESSION_META = {
     durationMins: 45,
-    startTime: startTime,
+    startTime,
   };
 
+  // ── Session ended event from WS ────────────────────────────────────────────
   useEffect(() => {
-  const unsubscribe = webRTCManager.onRemoteSessionChanged(() => {
-    setScreen("ended");
-  });
+    livekitManager.callbacks.onSessionEnded = () => setScreen("ended");
+    return () => { livekitManager.callbacks.onSessionEnded = undefined; };
+  }, []);
 
-  return () => unsubscribe?.();
-}, []);
+  // ── Guard: expired session ─────────────────────────────────────────────────
+  if (isSessionExpired(startTime)) {
+    return <Navigate to="/session/expired" />;
+  }
 
-  // ── Lobby → Waiting ──────────────────────────────────────────────────────
+  // ── Lobby → Waiting ────────────────────────────────────────────────────────
   const handleLobbyJoined = () => {
     sessionStartRef.current = Date.now();
     setScreen("waiting");
   };
 
-  // ── Waiting → Live (remote peer joined) ──────────────────────────────────
-  const handlePeerJoined = (stream) => {
-    setRemoteStream(stream);
+  // ── Waiting → Live ─────────────────────────────────────────────────────────
+  // LiveKit-based: no remoteStream arg needed — SessionLive reads from livekitManager directly
+  const handlePeerJoined = () => {
     setScreen("live");
   };
 
-  // ── Leave from Waiting ────────────────────────────────────────────────────
+  // ── Leave from Waiting ─────────────────────────────────────────────────────
   const handleLeaveWaiting = () => {
-    webRTCManager.hangup();
+    livekitManager.hangup();
     setScreen("lobby");
   };
 
-  // ── Leave from Live ───────────────────────────────────────────────────────
+  // ── Leave from Live ────────────────────────────────────────────────────────
   const handleLeaveCall = () => {
     const secs = sessionStartRef.current
       ? Math.floor((Date.now() - sessionStartRef.current) / 1000)
       : 0;
     setSessionDuration(Math.ceil(secs / 60));
-    setRemoteStream(null);
-    // hangup already called inside SessionLive before this fires
+    livekitManager.hangup()
+    // livekitManager.hangup() was already called inside SessionLive
     setScreen("ended");
   };
 
-  // ── Ended → Lobby ─────────────────────────────────────────────────────────
-  const handleDone = () => {
-    setScreen("lobby");
-  };
-
-  const handleBookAgain = () => {
-    // Navigate to booking page in your app
-    console.log("[App] Book again clicked");
-    setScreen("lobby");
-  };
+  // ── Ended flow ─────────────────────────────────────────────────────────────
+  const handleDone      = () => setScreen("lobby");
+  const handleBookAgain = () => setScreen("lobby");
 
   const onMarkComplete = async () => {
-    await updateById('bookings', sessionCode, {
-      status: "completed",
-      sessionCompleted: true
+    await updateById("bookings", sessionCode, { status: "completed", sessionCompleted: true });
+    setScreen("lobby");
+  };
+  const onSkip = () => setScreen("lobby");
 
-    })
-    setScreen('lobby')
-
+  // Patient sees confirmation modal on ended
+  if (role === "patient" && screen === "ended") {
+    return <CompleteSessionConfirmationModal onMarkAsComplete={onMarkComplete} onSkip={onSkip} visible />;
   }
 
-  const onSkip = () => {
-    setScreen('lobby')
-  }
-  if (role === 'patient' && screen === 'ended') {
-    return <CompleteSessionConfirmationModal
-      onMarkAsComplete={onMarkComplete}
-      onSkip={onSkip}
-      visible />
-  }
-
-  if(isSessionExpired(startTime)){
-    return (
-      <Navigate to={'/session/expired'}/>
-    )
-  }
   return (
     <>
       {screen === "lobby" && (
         <SessionLobby
-          sessionCode={SESSION_CONFIG.sessionCode}
-          userId={SESSION_CONFIG.userId}
-          role={SESSION_CONFIG.role}
+          sessionCode={sessionCode}
+          userId={userId}
+          role={role}
+          userName={ownDisplayName || userId}
           therapist={THERAPIST_INFO}
           sessionMeta={SESSION_META}
           onJoined={handleLobbyJoined}
@@ -195,10 +144,10 @@ export default function App() {
           sessionMeta={SESSION_META}
           onLeave={handleLeaveWaiting}
           onPeerJoined={handlePeerJoined}
-          role={SESSION_CONFIG.role}
+          role={role}
           name={name}
-          therapistNameIntial={getInitials(commonQueryParams.therapistName)}
-          patientNameInitial={getInitials(commonQueryParams.patientName)}
+          therapistNameInitial={getInitials(tname)}
+          patientNameInitial={getInitials(cname)}
         />
       )}
 
@@ -206,12 +155,11 @@ export default function App() {
         <SessionLive
           therapist={THERAPIST_INFO}
           sessionMeta={SESSION_META}
-          remoteStream={remoteStream}
           onLeave={handleLeaveCall}
           role={role}
           name={name}
-          therapistName={commonQueryParams.therapistName}
-          patientName={commonQueryParams.patientName}
+          therapistName={tname}
+          patientName={cname}
         />
       )}
 

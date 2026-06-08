@@ -1,211 +1,146 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { MicIcon, CamIcon, Avatar } from "./Icons";
-import { webRTCManager } from "../config/webrtcmanger";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 /**
- * Map a getUserMedia DOMException to a human-readable, actionable message.
- * NotAllowedError = user denied OR browser/OS blocked (no popup was shown).
- * We distinguish the two by checking the pre-flight permission state.
+ * SessionLobby.jsx  (LiveKit edition)
+ *
+ * Pre-session setup screen.
+ * – Camera preview via LiveKit createLocalVideoTrack
+ * – Microphone via createLocalAudioTrack (routes through Bluetooth if connected)
+ * – On "Join" → livekitManager.initialize() → onJoined()
  */
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createLocalAudioTrack, createLocalVideoTrack } from "livekit-client";
+import { MicIcon, CamIcon, Avatar } from "./Icons";
+import { livekitManager } from "../config/livekitManager";
+
+// ── Permission helpers ────────────────────────────────────────────────────────
+
 function mediaErrorMessage(err, deviceLabel, permissionState) {
   switch (err.name) {
     case "NotAllowedError":
     case "PermissionDeniedError":
-      // permissionState "denied"  → user previously denied, popup won't appear again
-      // permissionState "prompt"  → user dismissed the popup this time
-      // permissionState "unsupported" / undefined → OS-level block or policy header
-      if (permissionState === "prompt") {
-        return `${deviceLabel} access was dismissed. Please click the button again and press "Allow" in the browser prompt.`;
-      }
-      return (
-        `${deviceLabel} access is blocked. ` +
-        `Click the 🔒 lock icon in your browser's address bar → ` +
-        `set ${deviceLabel} to "Allow" → refresh the page.`
-      );
-
+      return permissionState === "prompt"
+        ? `${deviceLabel} access was dismissed. Click the button again and press "Allow".`
+        : `${deviceLabel} access is blocked. Click the 🔒 icon → set ${deviceLabel} to "Allow" → refresh.`;
     case "NotFoundError":
     case "DevicesNotFoundError":
       return `No ${deviceLabel} found. Please connect one and try again.`;
-
     case "NotReadableError":
     case "TrackStartError":
-      return `${deviceLabel} is in use by another application. Please close it and try again.`;
-
-    case "OverconstrainedError":
-    case "ConstraintNotSatisfiedError":
-      return `${deviceLabel} doesn't support the requested quality settings. Retrying with lower quality…`;
-
+      return `${deviceLabel} is in use by another app. Close it and try again.`;
     case "SecurityError":
-      return (
-        `${deviceLabel} access is blocked by a browser security policy. ` +
-        `Ensure the page is on HTTPS and is not inside a restricted iframe ` +
-        `(the iframe must have the allow="camera; microphone" attribute).`
-      );
-
+      return `${deviceLabel} blocked by security policy. Ensure HTTPS and iframe has allow="camera; microphone".`;
     case "AbortError":
-      return `${deviceLabel} request was interrupted. Please try again.`;
-
-    case "TypeError":
-      return `${deviceLabel} API is unavailable. Ensure the page is served over HTTPS.`;
-
+      return `${deviceLabel} request interrupted. Please try again.`;
     default:
       return `Could not access ${deviceLabel}: ${err.message || err.name}`;
   }
 }
 
-/**
- * Query the Permissions API — purely informational, never blocks the UI.
- * Returns "granted" | "denied" | "prompt" | "unsupported"
- */
 async function queryPermission(name) {
   if (!navigator?.permissions) return "unsupported";
   try {
-    const result = await navigator.permissions.query({ name });
-    return result.state;
-  } catch {
-    return "unsupported"; // Firefox doesn't support camera/microphone queries
-  }
+    const r = await navigator.permissions.query({ name });
+    return r.state;
+  } catch { return "unsupported"; }
 }
 
-/**
- * Try getUserMedia with ideal constraints, fall back to bare minimum
- * on OverconstrainedError so we don't break on restrictive mobile cameras.
- */
-async function getUserMediaWithFallback(ideal, fallback) {
-  try {
-    return await navigator.mediaDevices.getUserMedia(ideal);
-  } catch (err) {
-    if (
-      (err.name === "OverconstrainedError" || err.name === "ConstraintNotSatisfiedError") &&
-      fallback
-    ) {
-      return await navigator.mediaDevices.getUserMedia(fallback);
-    }
-    throw err;
-  }
-}
-
-// ---------------------------------------------------------------------------
-// CountdownTimer
-// ---------------------------------------------------------------------------
 function CountdownTimer({ seconds }) {
   const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
   const secs = String(seconds % 60).padStart(2, "0");
   return <span style={{ fontVariantNumeric: "tabular-nums" }}>{mins}:{secs}</span>;
 }
 
-// ---------------------------------------------------------------------------
-// SessionLobby
-// ---------------------------------------------------------------------------
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function SessionLobby({
   sessionCode = "69a54abd29c99c56303ea5f6",
-  userId     = "696f408b2ff51b82b1cee0e6",
-  role       = "patient",
-  therapist  = {
-    name: "Dr. Sarah Mitchell",
-    credentials: "PhD",
-    specialties: ["Anxiety", "Relationships"],
-    avatarInitials: "SM",
-  },
-  sessionMeta = {
-    durationMins: 50,
-    // safe default: 5 min from now — avoids NaN countdown when startTime is missing
-    startTime: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-  },
+  userId      = "696f408b2ff51b82b1cee0e6",
+  role        = "patient",
+  userName    = "User",
+  therapist   = { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" },
+  sessionMeta = { durationMins: 50, startTime: new Date(Date.now() + 5 * 60 * 1000).toISOString() },
   onJoined,
 }) {
   // ── Countdown ──────────────────────────────────────────────────────────────
   const targetTime     = new Date(sessionMeta.startTime).getTime();
   const initialSeconds = Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
-
   useEffect(() => {
     const t = setInterval(() => setTimeLeft(s => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
-  }, []); // start once on mount only
+  }, []);
 
   // ── Device state ───────────────────────────────────────────────────────────
-  const [micActive, setMicActive] = useState(false);
-  const [camActive, setCamActive] = useState(false);
+  const [micActive,    setMicActive]    = useState(false);
+  const [camActive,    setCamActive]    = useState(false);
+  const [micError,     setMicError]     = useState(null);
+  const [camError,     setCamError]     = useState(null);
+  const [micPermState, setMicPermState] = useState("idle");
+  const [camPermState, setCamPermState] = useState("idle");
+  const [joining,      setJoining]      = useState(false);
+  const [joinError,    setJoinError]    = useState(null);
 
-  const [micError,      setMicError]      = useState(null);
-  const [camError,      setCamError]      = useState(null);
+  // LiveKit local tracks for preview
+  const localAudioRef = useRef(null); // LocalAudioTrack
+  const localVideoRef = useRef(null); // LocalVideoTrack
+  const videoContainerRef = useRef(null);
+  const mountedRef    = useRef(true);
 
-  // "idle" | "checking" | "granted" | "denied" | "prompt" | "unsupported"
-  // Used only for display hints — NEVER used to block button clicks
-  const [micPermState,  setMicPermState]  = useState("idle");
-  const [camPermState,  setCamPermState]  = useState("idle");
-
-  const [joining,   setJoining]   = useState(false);
-  const [joinError, setJoinError] = useState(null);
-
-  const videoRef    = useRef(null);
-  const streamRef   = useRef(null);   // camera stream (local preview)
-  const micStreamRef = useRef(null);  // mic stream (local preview)
-  const mountedRef  = useRef(true);
-
-  // ── Cleanup on unmount ─────────────────────────────────────────────────────
-  // Stop any preview tracks the user enabled in the lobby but never carried
-  // into the session. Tracks that were handed off to webRTCManager have their
-  // refs nulled in handleJoin, so they won't get stopped here.
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      streamRef.current?.getTracks().forEach(t => t.stop());
-      micStreamRef.current?.getTracks().forEach(t => t.stop());
-      streamRef.current    = null;
-      micStreamRef.current = null;
+      // Stop preview tracks that were NOT handed to livekitManager
+      localAudioRef.current?.stop();
+      localVideoRef.current?.stop();
+      localVideoRef.current?.detach();
     };
   }, []);
 
+  // ── Attach local video preview ─────────────────────────────────────────────
+  useEffect(() => {
+    if (camActive && localVideoRef.current && videoContainerRef.current) {
+      const el = localVideoRef.current.attach();
+      el.style.width = "100%";
+      el.style.height = "100%";
+      el.style.objectFit = "cover";
+      el.style.transform = "scaleX(-1)";
+      videoContainerRef.current.innerHTML = "";
+      videoContainerRef.current.appendChild(el);
+    }
+  }, [camActive]);
+
   // ── Mic toggle ─────────────────────────────────────────────────────────────
   const toggleMic = useCallback(async () => {
-    // ── Turn OFF ──
     if (micActive) {
-      micStreamRef.current?.getTracks().forEach(t => t.stop());
-      micStreamRef.current = null;
-      webRTCManager.toggleMute(true);
+      localAudioRef.current?.stop();
+      localAudioRef.current = null;
       localStorage.setItem("micActive", "false");
-      if (mountedRef.current) setMicActive(false);
+      if (mountedRef.current) { setMicActive(false); setMicError(null); }
       return;
     }
-
-    // ── Turn ON ──
     if (!mountedRef.current) return;
     setMicError(null);
     setMicPermState("checking");
 
-    // Guard: API unavailable (http:// context or sandboxed iframe)
     if (!navigator?.mediaDevices?.getUserMedia) {
-      if (mountedRef.current) {
-        setMicError("Microphone API is unavailable. Ensure the page is served over HTTPS.");
-        setMicPermState("unsupported");
-      }
+      setMicError("Microphone API unavailable. Ensure HTTPS.");
+      setMicPermState("unsupported");
       return;
     }
-
-    // Snapshot permission state BEFORE calling getUserMedia so we can give
-    // the right error message in the catch block (dismissed vs hard-denied)
     const beforeState = await queryPermission("microphone");
-
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
-
-      micStreamRef.current = stream;
-      webRTCManager.toggleMute(false);
+      const track = await createLocalAudioTrack({
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      });
+      if (!mountedRef.current) { track.stop(); return; }
+      localAudioRef.current = track;
       localStorage.setItem("micActive", "true");
       setMicPermState("granted");
       setMicActive(true);
-      setMicError(null);
     } catch (err) {
       if (!mountedRef.current) return;
-      // Re-query so the state reflects what the browser decided
       const afterState = await queryPermission("microphone");
       setMicPermState(afterState);
       setMicError(mediaErrorMessage(err, "Microphone", beforeState));
@@ -214,56 +149,35 @@ export default function SessionLobby({
 
   // ── Camera toggle ──────────────────────────────────────────────────────────
   const toggleCam = useCallback(async () => {
-    // ── Turn OFF ──
     if (camActive) {
-      streamRef.current?.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-      if (videoRef.current) videoRef.current.srcObject = null;
-      webRTCManager.toggleCamera(true);
+      localVideoRef.current?.stop();
+      localVideoRef.current?.detach();
+      localVideoRef.current = null;
+      if (videoContainerRef.current) videoContainerRef.current.innerHTML = "";
       localStorage.setItem("camActive", "false");
-      if (mountedRef.current) setCamActive(false);
+      if (mountedRef.current) { setCamActive(false); setCamError(null); }
       return;
     }
-
-    // ── Turn ON ──
     if (!mountedRef.current) return;
     setCamError(null);
     setCamPermState("checking");
 
-    // Guard: API unavailable
     if (!navigator?.mediaDevices?.getUserMedia) {
-      if (mountedRef.current) {
-        setCamError("Camera API is unavailable. Ensure the page is served over HTTPS.");
-        setCamPermState("unsupported");
-      }
+      setCamError("Camera API unavailable. Ensure HTTPS.");
+      setCamPermState("unsupported");
       return;
     }
-
-    // Snapshot permission state BEFORE the prompt appears
     const beforeState = await queryPermission("camera");
-
     try {
-      const stream = await getUserMediaWithFallback(
-        // Ideal — uses ideal: so browser can relax constraints automatically
-        { video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30 } } },
-        // Fallback — bare minimum, avoids OverconstrainedError on restricted cams
-        { video: true }
-      );
-
-      if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
-
-      streamRef.current = stream;
-      webRTCManager.toggleCamera(false);
+      const track = await createLocalVideoTrack({
+        facingMode: "user",
+        resolution: { width: 640, height: 480, frameRate: 30 },
+      });
+      if (!mountedRef.current) { track.stop(); return; }
+      localVideoRef.current = track;
       localStorage.setItem("camActive", "true");
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {}); // safe to ignore autoplay errors
-      }
-
       setCamPermState("granted");
       setCamActive(true);
-      setCamError(null);
     } catch (err) {
       if (!mountedRef.current) return;
       const afterState = await queryPermission("camera");
@@ -274,71 +188,50 @@ export default function SessionLobby({
 
   // ── Join ───────────────────────────────────────────────────────────────────
   const handleJoin = useCallback(async () => {
-    if (!mountedRef.current) return;
-    if (joining) return;          // guard against double-click
+    if (!mountedRef.current || joining) return;
     setJoining(true);
     setJoinError(null);
 
-    // Hand active preview tracks to webRTCManager so join does not ask again.
-    const initialStream = new MediaStream();
+    // Transfer preview tracks ownership → livekitManager (no re-acquire)
+    // We stop them here; livekitManager.initialize() acquires fresh ones to
+    // publish into the room with proper signaling.
+    localAudioRef.current?.stop();
+    localVideoRef.current?.stop();
+    localVideoRef.current?.detach();
+    if (videoContainerRef.current) videoContainerRef.current.innerHTML = "";
+    localAudioRef.current = null;
+    localVideoRef.current = null;
 
-    if (micActive && micStreamRef.current) {
-      micStreamRef.current.getAudioTracks().forEach(track => initialStream.addTrack(track));
-      micStreamRef.current = null;
-    } else {
-      micStreamRef.current?.getTracks().forEach(t => t.stop());
-      micStreamRef.current = null;
-    }
-
-    if (camActive && streamRef.current) {
-      streamRef.current.getVideoTracks().forEach(track => initialStream.addTrack(track));
-      streamRef.current = null;
-    } else {
-      streamRef.current?.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) videoRef.current.srcObject = null;
+    localStorage.setItem("camActive", String(camActive));
+    localStorage.setItem("micActive", String(micActive));
 
     try {
-      localStorage.setItem("camActive", String(camActive));
-      localStorage.setItem("micActive", String(micActive));
-
-      await webRTCManager.initialize(sessionCode, userId, role, micActive, camActive, initialStream);
+      await livekitManager.initialize(sessionCode, userId, role, userName, micActive, camActive);
       onJoined?.();
     } catch (err) {
       if (!mountedRef.current) return;
-      let msg;
-      if (err.name === "NotAllowedError") {
-        msg =
-          'Camera/microphone access denied. Click the 🔒 icon in your address bar ' +
-          '→ allow Camera & Microphone → refresh and try again.';
-      } else if (err.name === "SecurityError") {
-        msg =
-          "Session blocked by browser security policy. " +
-          "Ensure the page is on HTTPS and not inside a restricted iframe.";
-      } else {
-        msg = "Failed to start session: " + (err.message || err.name || "Unknown error");
-      }
-      setJoinError(msg);
+      setJoinError(
+        err.name === "NotAllowedError"
+          ? "Camera/mic access denied. Allow in address-bar → refresh."
+          : "Failed to start session: " + (err.message || err.name || "Unknown error")
+      );
       setJoining(false);
     }
-  }, [sessionCode, userId, role, micActive, camActive, onJoined, joining]);
+  }, [sessionCode, userId, role, userName, micActive, camActive, onJoined, joining]);
 
-  // ── Derived ────────────────────────────────────────────────────────────────
-  const minutesLeft = Math.ceil(timeLeft / 60);
-
-  // Status label for device rows
+  const minutesLeft    = Math.ceil(timeLeft / 60);
   const camStatusLabel = camActive ? "Active" : camPermState === "denied" ? "Blocked" : "Off";
   const micStatusLabel = micActive ? "Active" : micPermState === "denied" ? "Blocked" : "Off";
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap');
 
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         .lobby-root {
-          min-height: 100vh;
+           min-height: 100vh;
           background: linear-gradient(145deg, #f0ecff 0%, #e8e2fb 40%, #f5f2ff 100%);
           font-family: 'Sora', 'Segoe UI', sans-serif;
           padding: 72px 24px 40px;
@@ -382,28 +275,34 @@ export default function SessionLobby({
         .lobby-left  { padding: 24px; }
         .lobby-right { padding: 24px; border-left: 1.5px solid #ede8fb; }
 
+        .preview-wrap {
+          border-radius: 12px; overflow: hidden;
+          aspect-ratio: 4/3; position: relative;
+          background: #1a152e;
+          border: 1px solid #ede8fb;
+        }
+        .preview-placeholder {
+          position: absolute; inset: 0;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          gap: 10px; color: rgba(255,255,255,.4);
+          font-size: 13px; font-weight: 500;
+        }
+
         .device-row {
           background: #f7f4fe;
           border: 1.5px solid #e8e2f8;
           border-radius: 10px;
           padding: 9px 14px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
+          display: flex; align-items: center; gap: 10px;
         }
+        .device-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
         .ctrl-toggle {
-          border-radius: 10px;
-          padding: 9px 16px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 13px;
-          font-weight: 600;
-          font-family: inherit;
-          transition: all .16s;
-          border: 1.5px solid transparent;
-          outline: none;
+          border-radius: 10px; padding: 9px 16px;
+          cursor: pointer; display: flex; align-items: center; gap: 7px;
+          font-size: 13px; font-weight: 600; font-family: inherit;
+          transition: all .16s; border: 1.5px solid transparent; outline: none;
         }
         .ctrl-on        { background: #ede8fb; border-color: #c4b0f0; color: #6b3fd4; }
         .ctrl-on:hover  { background: #e2dbf7; }
@@ -413,33 +312,23 @@ export default function SessionLobby({
 
         .join-btn {
           background: linear-gradient(135deg, #6b3fd4, #4a26a0);
-          color: white;
-          border: none;
-          border-radius: 14px;
-          padding: 15px;
-          width: 100%;
-          font-size: 15px;
-          font-weight: 700;
-          cursor: pointer;
-          font-family: inherit;
+          color: white; border: none; border-radius: 14px;
+          padding: 15px; width: 100%;
+          font-size: 15px; font-weight: 700; cursor: pointer;
+          font-family: inherit; letter-spacing: .2px;
           box-shadow: 0 4px 20px rgba(107,63,212,.32);
           transition: opacity .15s, transform .12s;
-          letter-spacing: .2px;
         }
         .join-btn:hover:not(:disabled) { opacity: .92; transform: translateY(-1px); }
         .join-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
         .specialty-tag {
-          border-radius: 20px;
-          padding: 4px 14px;
-          font-size: 12px;
-          font-weight: 600;
+          border-radius: 20px; padding: 4px 14px;
+          font-size: 12px; font-weight: 600;
         }
         .privacy-card {
-          background: #f9f7ff;
-          border: 1.5px solid #ece6fb;
-          border-radius: 14px;
-          padding: 16px;
+          background: #f9f7ff; border: 1.5px solid #ece6fb;
+          border-radius: 14px; padding: 16px;
         }
         .privacy-item {
           display: flex; align-items: center; gap: 9px;
@@ -450,13 +339,17 @@ export default function SessionLobby({
           background: #fef2f2; border: 1px solid #fecaca;
           border-radius: 9px; padding: 8px 12px; line-height: 1.5;
         }
+        .tip-row {
+          font-size: 12px; color: #6b5eaa;
+          margin-bottom: 5px; display: flex; gap: 7px; line-height: 1.6;
+        }
       `}</style>
 
       <div className="lobby-root">
         <div className="lobby-card">
 
           {/* Header */}
-          <div className="lobby-header">
+           <div className="lobby-header">
             <div className="lobby-header-dot" />
             <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>Pre-Session Setup</span>
             <span style={{ marginLeft: "auto", color: "rgba(255,255,255,.7)", fontSize: 13 }}>
@@ -468,53 +361,35 @@ export default function SessionLobby({
 
             {/* LEFT */}
             <div className="lobby-left" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#4a3680", letterSpacing: ".2px" }}>
-                Camera &amp; Audio Settings
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#6b5eaa", letterSpacing: "1px", textTransform: "uppercase" }}>
+                Camera &amp; Audio
               </div>
 
               {/* Video preview */}
-              <div style={{ borderRadius: 14, overflow: "hidden", aspectRatio: "4/3", position: "relative", background: "#1a1030" }}>
-                <video
-                  ref={videoRef} autoPlay muted playsInline
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: camActive ? "block" : "none", transform: "scaleX(-1)" }}
+              <div className="preview-wrap">
+                <div
+                  ref={videoContainerRef}
+                  style={{ width: "100%", height: "100%", display: camActive ? "block" : "none" }}
                 />
                 {!camActive && (
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    background: camError ? "linear-gradient(160deg,#4a1a1a,#2d0f0f)" : "linear-gradient(160deg,#2d1f5e,#1a1030)",
-                    display: "flex", flexDirection: "column", alignItems: "center",
-                    justifyContent: "center", gap: 12, padding: 20, textAlign: "center", borderRadius: 14,
-                  }}>
-                    {camError ? (
-                      <>
-                        <span style={{ fontSize: 28 }}>⚠️</span>
-                        <span style={{ fontSize: 11.5, color: "rgba(255,160,160,.9)", fontWeight: 500, lineHeight: 1.6 }}>{camError}</span>
-                      </>
-                    ) : camPermState === "checking" ? (
-                      <>
-                        <span style={{ fontSize: 24 }}>⏳</span>
-                        <span style={{ fontSize: 13, color: "rgba(255,255,255,.5)", fontWeight: 500 }}>Waiting for permission…</span>
-                      </>
-                    ) : (
-                      <>
-                        <CamIcon off size={36} />
-                        <span style={{ fontSize: 13, color: "rgba(255,255,255,.4)", fontWeight: 500 }}>
-                          Click "Cam On" to preview
-                        </span>
-                      </>
-                    )}
+                  <div className="preview-placeholder">
+                    {camPermState === "checking"
+                      ? <><span style={{ fontSize: 22 }}>⏳</span><span>Requesting permission…</span></>
+                      : camError
+                      ? <><span style={{ fontSize: 22 }}>⚠️</span><span style={{ color: "#f87171", fontSize: 11, textAlign: "center", padding: "0 16px" }}>{camError}</span></>
+                      : <><CamIcon off size={32} /><span>Click "Camera" to preview</span></>
+                    }
                   </div>
                 )}
-
-                {/* Mic indicator */}
+                {/* Mic badge */}
                 <div style={{
                   position: "absolute", bottom: 10, left: 10,
-                  background: micActive ? "rgba(34,197,94,.85)" : "rgba(220,38,38,.85)",
-                  borderRadius: 20, padding: "4px 10px",
+                  background: micActive ? "rgba(34,197,94,.8)" : "rgba(239,68,68,.75)",
+                  borderRadius: 20, padding: "3px 10px",
                   display: "flex", alignItems: "center", gap: 5,
-                  fontSize: 11, color: "white", fontWeight: 600,
+                  fontSize: 11, color: "white", fontWeight: 600, backdropFilter: "blur(6px)",
                 }}>
-                  <MicIcon muted={!micActive} size={10} />
+                  <MicIcon muted={!micActive} size={9} />
                   {micActive ? "Mic On" : "Mic Off"}
                 </div>
               </div>
@@ -539,24 +414,21 @@ export default function SessionLobby({
                 ))}
               </div>
 
-              {/* Controls — ALWAYS clickable, never disabled by permission state */}
+              {/* Controls */}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button
                   className={`ctrl-toggle ${micPermState === "checking" ? "ctrl-checking" : micActive ? "ctrl-on" : "ctrl-off"}`}
-                  onClick={toggleMic}
-                  disabled={micPermState === "checking"}
+                  onClick={toggleMic} disabled={micPermState === "checking"}
                 >
-                  <MicIcon muted={!micActive} size={14} />
-                  {micPermState === "checking" ? "Requesting…" : micActive ? "Mic On" : "Mic Off"}
+                  <MicIcon muted={!micActive} size={13} />
+                  {micPermState === "checking" ? "Requesting…" : micActive ? "Microphone On" : "Microphone Off"}
                 </button>
-
                 <button
                   className={`ctrl-toggle ${camPermState === "checking" ? "ctrl-checking" : camActive ? "ctrl-on" : "ctrl-off"}`}
-                  onClick={toggleCam}
-                  disabled={camPermState === "checking"}
+                  onClick={toggleCam} disabled={camPermState === "checking"}
                 >
-                  <CamIcon off={!camActive} size={14} />
-                  {camPermState === "checking" ? "Requesting…" : camActive ? "Cam On" : "Cam Off"}
+                  <CamIcon off={!camActive} size={13} />
+                  {camPermState === "checking" ? "Requesting…" : camActive ? "Camera On" : "Camera Off"}
                 </button>
               </div>
 
@@ -570,29 +442,26 @@ export default function SessionLobby({
             </div>
 
             {/* RIGHT */}
-            <div className="lobby-right" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="lobby-right" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
               {/* Therapist card */}
-              <div style={{ background: "white", borderRadius: 16, padding: 20, border: "1.5px solid #ece6fb", boxShadow: "0 2px 14px rgba(100,70,200,.06)" }}>
+              <div className="privacy-card" style={{ background: "white" }}>
                 <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 16 }}>
-                  <Avatar size={58} initials={therapist.avatarInitials} />
+                  <Avatar size={56} initials={therapist.avatarInitials} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 17, fontWeight: 700, color: "#2d1f5e" }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: "#2d1f5e" }}>
                       {therapist.name}
-                      {role === "patient" && (
-                        <span style={{ fontWeight: 400, fontSize: 14 }}>, {therapist.credentials}</span>
-                      )}
+                      {role === "patient" && <span style={{ fontWeight: 400, fontSize: 13, color: "#6b5eaa" }}>, {therapist.credentials}</span>}
                     </div>
                     {role === "patient" && (
-                      <div style={{ display: "flex", gap: 7, marginTop: 10, flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                         {therapist.specialties.map((s, i) => (
-                          <span key={s} className="specialty-tag" style={{ background: i === 0 ? "#7c4ddb" : "#ede8fb", color: i === 0 ? "white" : "#5a3db5" }}>{s}</span>
+                          <span key={s} className="specialty-tag" style={{ background: i === 0 ? "#ede8fb" : "#f7f4fe", color: i === 0 ? "#6b3fd4" : "#6b5eaa" }}>{s}</span>
                         ))}
                       </div>
                     )}
                   </div>
                 </div>
-
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                   <div style={{ fontSize: 14, color: "#3d2e70", fontWeight: 500, lineHeight: 2 }}>
                     Duration: {sessionMeta.durationMins} mins<br />
@@ -605,33 +474,25 @@ export default function SessionLobby({
               </div>
 
               {/* Privacy grid */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div className="privacy-card">
-                  <div style={{ fontWeight: 700, fontSize: 13, color: "#2d1f5e", marginBottom: 12 }}>🔐 Secure &amp; Private</div>
-                  {[["🔒", "End-to-end encrypted"], ["🎬", "No recording allowed"], ["👤", "Journal stays private"]].map(([icon, text]) => (
-                    <div key={text} className="privacy-item"><span style={{ fontSize: 15 }}>{icon}</span>{text}</div>
-                  ))}
-                </div>
-                <div className="privacy-card">
-                  <div style={{ fontWeight: 700, fontSize: 13, color: "#2d1f5e", marginBottom: 12 }}>🛡️ Session Rules</div>
-                  {[["🔐", "HIPAA compliant"], ["🤝", "Confidential session"], ["🚷", "No third-party access"]].map(([icon, text]) => (
-                    <div key={text} className="privacy-item"><span style={{ fontSize: 15 }}>{icon}</span>{text}</div>
-                  ))}
-                </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {[
+                  { title: "🔐 Secure & Private", items: [["🔒", "E2E encrypted"], ["🎬", "No recording"], ["👤", "Journal stays private"]] },
+                  { title: "🛡️ Session Rules",    items: [["🔐", "HIPAA compliant"], ["🤝", "Confidential"], ["🚷", "No third-party access"]] },
+                ].map(({ title, items }) => (
+                  <div key={title} className="privacy-card">
+                    <div style={{ fontWeight: 700, fontSize: 12, color: "#6b5eaa", marginBottom: 10 }}>{title}</div>
+                    {items.map(([icon, text]) => (
+                      <div key={text} className="privacy-item"><span style={{ fontSize: 14 }}>{icon}</span>{text}</div>
+                    ))}
+                  </div>
+                ))}
               </div>
 
-              {/* What to expect */}
-              <div style={{ background: "#f0f9ff", border: "1.5px solid #bae6fd", borderRadius: 14, padding: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: "#0369a1", marginBottom: 10 }}>💡 What to expect</div>
-                {[
-                  "Find a quiet, private space",
-                  "Ensure stable internet connection",
-                  "Have water nearby if needed",
-                  "You can chat with your therapist while waiting",
-                ].map(tip => (
-                  <div key={tip} style={{ fontSize: 12.5, color: "#0c4a6e", marginBottom: 6, display: "flex", gap: 7, alignItems: "flex-start" }}>
-                    <span style={{ color: "#38bdf8", fontWeight: 700, lineHeight: 1.5 }}>→</span> {tip}
-                  </div>
+              {/* Tips */}
+              <div style={{ background: "#f9f7ff", border: "1.5px solid #ece6fb", borderRadius: 12, padding: 16 }}>
+                <div style={{ fontWeight: 700, fontSize: 12, color: "#6b3fd4", marginBottom: 10, letterSpacing: ".5px" }}>💡 BEFORE YOU JOIN</div>
+                {["Find a quiet, private space", "Ensure a stable internet connection", "Bluetooth headphones are supported", "Chat with your therapist while waiting"].map(tip => (
+                  <div key={tip} className="tip-row"><span style={{ color: "#6b3fd4", fontWeight: 700, lineHeight: 1.5 }}>→</span>{tip}</div>
                 ))}
               </div>
 
