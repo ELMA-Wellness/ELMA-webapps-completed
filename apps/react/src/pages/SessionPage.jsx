@@ -9,39 +9,46 @@
  */
 import { useState, useEffect, useRef } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
-import SessionLobby   from "./Sessionlobby";
+import SessionLobby from "./Sessionlobby";
 import SessionWaiting from "./Sessionwaiting";
-import SessionLive    from "./SessionLive";
-import SessionEnded   from "./Sessionended";
+import SessionLive from "./SessionLive";
+import SessionEnded from "./Sessionended";
 import SessionExpiredWeb from "./SessionExpired";
 import CompleteSessionConfirmationModal from "../components/modals/CompleteSessionConfirmation";
 import { livekitManager } from "../config/livekitmanager";
-import { updateById }      from "../firebase/firestore";
+import { updateById } from "../firebase/firestore";
 import { isSessionExpired, getInitials } from "../utils/helper";
 import { createAndDownloadPDF } from "../utils/createAndDownLoadPDF";
+import axios from "axios";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 function normalizeRole(value) {
   const role = String(value || "").trim().toLowerCase();
   if (["therapist", "expert", "psych", "psychologist", "doctor", "provider",
-       "counsellor", "counselor", "professional"].includes(role)) return "therapist";
+    "counsellor", "counselor", "professional"].includes(role)) return "therapist";
   return "patient";
 }
 
 export default function App() {
-  const [screen,          setScreen]          = useState("lobby");
+  const [screen, setScreen] = useState("lobby");
   const [sessionDuration, setSessionDuration] = useState(0);
   const sessionStartRef = useRef(null);
-   const [notes, setNotes] = useState("")
+  const [notes, setNotes] = useState("")
+  const [confirmationPopUpOpen, setIsConfirmationPopUpOpen] = useState(false)
+  const [loader, setIsLoader] = useState(false)
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
 
   const [params] = useSearchParams();
 
   // ── URL params ─────────────────────────────────────────────────────────────
   const sessionCode = params.get("sessionCode");
-  const userId      = params.get("userId");
-  const role        = normalizeRole(params.get("role"));
-  const name        = params.get("name");
-  const profession  = params.get("profession");
-  const startTime   = params.get("startTime");
+  const userId = params.get("userId");
+  const role = normalizeRole(params.get("role"));
+  const name = params.get("name");
+  const profession = params.get("profession");
+  const startTime = params.get("startTime");
 
   const skills = (() => {
     try { return JSON.parse(decodeURIComponent(params.get("skills") || "[]")); }
@@ -49,20 +56,23 @@ export default function App() {
   })();
 
   const therapistPhoto = params.get("therapistPhoto");
-  const clientPhoto    = params.get("patientPhoto");
-  const tname          = params.get("therapistName");
-  const cname          = params.get("patientName");
-  const temail         = params.get("therapistEmail");
-  const cemail         = params.get("patientEmail");
+  const clientPhoto = params.get("patientPhoto");
+  const tname = params.get("therapistName");
+  const cname = params.get("patientName");
+  const temail = params.get("therapistEmail");
+  const cemail = params.get("patientEmail");
+  const tid = params.get("therapistId");
+  const[error,setError]=useState(null)
+
 
   // The display name for the current user (used as LiveKit participant name)
   const ownDisplayName = role === "therapist" ? tname : cname;
 
   // ── Config objects ─────────────────────────────────────────────────────────
   const THERAPIST_INFO = {
-    name:           name,
-    credentials:    profession,
-    specialties:    skills,
+    name: name,
+    credentials: profession,
+    specialties: skills,
     avatarInitials: getInitials(name),
   };
 
@@ -73,8 +83,9 @@ export default function App() {
 
   // ── Session ended event from WS ────────────────────────────────────────────
   useEffect(() => {
-    livekitManager.callbacks.onSessionEnded = () => {setScreen("ended")
-     
+    livekitManager.callbacks.onSessionEnded = () => {
+      setIsConfirmationPopUpOpen(true)
+
     };
     return () => { livekitManager.callbacks.onSessionEnded = undefined; };
   }, []);
@@ -110,41 +121,121 @@ export default function App() {
       ? Math.floor((Date.now() - sessionStartRef.current) / 1000)
       : 0;
     setSessionDuration(Math.ceil(secs / 60));
-     if(role==='therapist'){
-      localStorage.setItem("notes",notes)
+    if (role === 'therapist') {
+      localStorage.setItem("notes", notes)
     }
     // SessionLive.handleLeave already called livekitManager.hangup() (which sent
     // the terminal signal + tore down). Don't call it again here.
-    setScreen("ended");
+    setIsConfirmationPopUpOpen(true)
   };
 
   // ── Ended flow ─────────────────────────────────────────────────────────────
-  const handleDone      = () => setScreen("lobby");
+  const handleDone = () => setScreen("lobby");
   const handleBookAgain = () => setScreen("lobby");
 
   const onMarkComplete = async () => {
-    await updateById("bookings", sessionCode, { status: "completed", sessionCompleted: true });
-    setScreen("lobby");
-  };
-  const onSkip = () => setScreen("lobby");
+  setIsLoader(true);
+  setError("");
 
-  const handleDownLoad=async()=>{
+  try {
+    await Promise.all([
+      updateById("bookings", sessionCode, {
+        status: "completed",
+        sessionCompleted: true,
+      }),
+
+      axios.post(
+        "https://asia-south1-elma-react-native-app.cloudfunctions.net/sendSessionCompletionEmail",
+        {
+          name: cname,
+          to: "user",
+          therapistName: tname,
+          userName: cname,
+          therapistEmail: temail,
+          userEmail: cemail,
+        }
+      ),
+
+      axios.post(
+        "https://asia-south1-elma-react-native-app.cloudfunctions.net/sendSessionCompletionEmail",
+        {
+          name: tname,
+          to: "therapist",
+          therapistName: tname,
+          userName: cname,
+          therapistEmail: temail,
+          userEmail: cemail,
+        }
+      ),
+    ]);
+
+    setIsConfirmationPopUpOpen(false);
+    setScreen("ended");
+  } catch (error) {
+    console.error("Session completion failed:", error);
+
+    if (axios.isAxiosError(error)) {
+      if (!error.response) {
+        setError(
+          "Unable to connect to the server. Please check your internet connection and try again."
+        );
+      } else if (error.response.status >= 500) {
+        setError(
+          "A server error occurred while completing the session. Please try again in a few minutes."
+        );
+      } else {
+        setError(
+          error.response.data?.message ||
+            "Unable to complete the session. Please try again."
+        );
+      }
+    } else {
+      setError(
+        "Something went wrong while marking the session as complete. Please try again."
+      );
+    }
+  } finally {
+    setIsLoader(false);
+  }
+};
+  const onSkip = () => {
+    setScreen("lobby")
+    setIsConfirmationPopUpOpen(false)
+  };
+
+
+  const addTherapistRating = async () => {
+    try {
+      await addDoc(collection(db, "therapists", tid, "ratings"), {
+        rating: rating,
+        feedback: feedback,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  const handleDownLoad = async () => {
     await createAndDownloadPDF({
-      therapistName:tname,
-      patientName:cname,
-      
+      therapistName: tname,
+      patientName: cname,
+
       sessionCode,
       notes: localStorage.getItem("notes"),
-      date:startTime,
-      duration:45
+      date: startTime,
+      duration: 45
 
     })
     localStorage.removeItem("notes")
   }
 
   // Patient sees confirmation modal on ended
-  if (role === "patient" && screen === "ended") {
-    return <CompleteSessionConfirmationModal onMarkAsComplete={onMarkComplete} onSkip={onSkip} visible />;
+  if (role === "patient" && confirmationPopUpOpen) {
+    return <CompleteSessionConfirmationModal loader={loader} error={error} onMarkAsComplete={onMarkComplete} onSkip={onSkip} visible />;
   }
 
   return (
@@ -206,6 +297,11 @@ export default function App() {
           onDownLoadNotes={handleDownLoad}
           therapistPhoto={therapistPhoto}
           patientPhoto={clientPhoto}
+          feedback={feedback}
+          rating={rating}
+          setFeedback={setFeedback}
+          setRating={setRating}
+          addRating={addTherapistRating}
         />
       )}
     </>

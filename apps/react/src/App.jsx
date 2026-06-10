@@ -12,6 +12,7 @@ import { LangProvider, SUPPORTED_LANGS } from './contexts/LangContext.jsx'
 import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import SessionExpiredWeb from './pages/SessionExpired.tsx'
 import QRPage from './pages/QRPage.tsx'
+import SessionCompleted from './pages/SessionCompleted.tsx'
 
 const BG_GRADIENTS = [
   'linear-gradient(135deg, #07050f 0%, #1a0a38 45%, #050d1a 100%)',
@@ -137,83 +138,85 @@ function App() {
         const AOS = (await import('aos')).default
         await import('aos/dist/aos.css')
         AOS.init({ duration: 700, once: true })
-      } catch (_) {}
+      } catch (_) { }
     }, 200)
     return () => clearTimeout(timer)
   }, [])
 
   return (
     <HelmetProvider>
-    <LangProvider>
-    <AppErrorBoundary>
-      <motion.div
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: -1,
-          background: BG_GRADIENTS[0],
-          pointerEvents: 'none',
-        }}
-        animate={{ background: BG_GRADIENTS }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-      />
-     
-      <Suspense fallback={null}>
-      <Routes>
+      <LangProvider>
+        <AppErrorBoundary>
+          <motion.div
+            aria-hidden="true"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: -1,
+              background: BG_GRADIENTS[0],
+              pointerEvents: 'none',
+            }}
+            animate={{ background: BG_GRADIENTS }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
-  {/* Without layout */}
-   <Route path="/session" element={<QRPage />} />
-  <Route path="/session/expired" element={<SessionExpiredWeb />} />
-  
+          <Suspense fallback={null}>
+            <Routes>
 
-  {/* Layout */}
-  <Route
-    element={
-      <>
-        <Navbar onToggleMenu={() => setMobileOpen(true)} />
-        <ScrollToTop />
-        <Outlet />
-        <Footer />
+              {/* Without layout */}
+              <Route path="/session" element={<QRPage />} />
+              <Route path="/session/expired" element={<SessionExpiredWeb />} />
+              <Route path="/session/completed" element={<SessionCompleted />} />
 
-        <MobileMenu
-          isOpen={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-        />
-        <LanguageSwitcher />
-      </>
-    }
-  >
-    <Route path="/" element={<RootRedirect />} />
-   
 
-    <Route path="/:lang" element={<LangLayout />}>
-      <Route index element={<Home />} />
-      <Route path="contact" element={<Contact />} />
-      <Route path="privacy" element={<Privacy />} />
-      <Route path="terms" element={<Terms />} />
-      <Route path="cancellation" element={<Cancellation />} />
-      <Route path="qr" element={<AppLanding />} />
-      <Route path="dashboard" element={<AnalyticsDashboard />} />
-      <Route path="session" element={<SessionPage />} />
-      <Route path="elma-experts" element={<ElmaExperts />} />
-      <Route path="about" element={<About />} />
-      <Route path="blog" element={<BlogListPage />} />
-      <Route path="blog/:slug" element={<BlogPostPage />} />
-      <Route path="faq" element={<FAQPage />} />
-    </Route>
 
-    <Route path="/session-join" element={<SessionPage />} />
-    <Route path="*" element={<BarePathRedirect />} />
-  </Route>
+              {/* Layout */}
+              <Route
+                element={
+                  <>
+                    <Navbar onToggleMenu={() => setMobileOpen(true)} />
+                    <ScrollToTop />
+                    <Outlet />
+                    <Footer />
 
-</Routes>
-</Suspense>
-     
-      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-     
-    </AppErrorBoundary>
-    </LangProvider>
+                    <MobileMenu
+                      isOpen={mobileOpen}
+                      onClose={() => setMobileOpen(false)}
+                    />
+                    <LanguageSwitcher />
+                  </>
+                }
+              >
+                <Route path="/" element={<RootRedirect />} />
+
+
+                <Route path="/:lang" element={<LangLayout />}>
+                  <Route index element={<Home />} />
+                  <Route path="contact" element={<Contact />} />
+                  <Route path="privacy" element={<Privacy />} />
+                  <Route path="terms" element={<Terms />} />
+                  <Route path="cancellation" element={<Cancellation />} />
+                  <Route path="qr" element={<AppLanding />} />
+                  <Route path="dashboard" element={<AnalyticsDashboard />} />
+                  <Route path="session" element={<SessionPage />} />
+                  <Route path="elma-experts" element={<ElmaExperts />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="blog" element={<BlogListPage />} />
+                  <Route path="blog/:slug" element={<BlogPostPage />} />
+                  <Route path="faq" element={<FAQPage />} />
+                </Route>
+
+                <Route path="/session-join" element={<SessionPage />} />
+                <Route path="*" element={<BarePathRedirect />} />
+              </Route>
+
+            </Routes>
+          </Suspense>
+
+          <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+
+        </AppErrorBoundary>
+      </LangProvider>
     </HelmetProvider>
   )
 }

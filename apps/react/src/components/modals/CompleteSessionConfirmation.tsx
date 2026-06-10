@@ -7,19 +7,22 @@ type Props = {
   visible?: boolean;
   onMarkAsComplete?: () => void;
   onSkip?: () => void;
+  loader: boolean;
+  error: string;
 };
 
 const CompleteSessionConfirmationModal: React.FC<Props> = ({
   visible = false,
   onMarkAsComplete = () => {},
   onSkip = () => {},
+  loader,
+  error = "",
 }) => {
   if (!visible) return null;
 
   return (
     <div className="session-modal-overlay">
       <div className="session-modal-container">
-
         {/* Header */}
         <div className="session-modal-header">
           <button
@@ -46,16 +49,40 @@ const CompleteSessionConfirmationModal: React.FC<Props> = ({
             Your session has ended successfully. Please confirm completion to
             save session details, update records, and continue smoothly.
           </p>
+
+          {error && (
+            <div className="session-error-message">
+              {error}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="session-modal-footer">
           <button
+            className="session-skip-btn"
+            onClick={onSkip}
+            disabled={loader}
+          >
+            Skip
+          </button>
+
+          <button
             className="session-complete-btn"
             onClick={onMarkAsComplete}
+            disabled={loader}
           >
-            <IoCheckmarkOutline size={18} />
-            <span>Mark As Complete</span>
+            {loader ? (
+              <>
+                <div className="btn-spinner" />
+                <span>Completing...</span>
+              </>
+            ) : (
+              <>
+                <IoCheckmarkOutline size={18} />
+                <span>Mark As Complete</span>
+              </>
+            )}
           </button>
         </div>
       </div>

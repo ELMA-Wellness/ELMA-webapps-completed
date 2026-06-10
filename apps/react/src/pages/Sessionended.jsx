@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getInitials } from "../utils/helper";
 import { FcDownload } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
 
 const StarIcon = ({ filled, size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,18 +28,29 @@ const CheckBadge = ({ size = 22 }) => (
   </svg>
 );
 
-export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,role,professtion,onDownLoadNotes }) {
-  const [rating, setRating]       = useState(0);
+export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,role,professtion,onDownLoadNotes,rating,setRating,feedback,setFeedback,
+  addRating
+ }) {
   const [hovered, setHovered]     = useState(0);
-  const [feedback, setFeedback]   = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const navigate=useNavigate()
+
   const handleRate = (star) => setRating(star);
 
-  const handleFeedbackSubmit = () => {
+  const handleFeedbackSubmit = async() => {
+    await addRating()
     if (feedback.trim()) setSubmitted(true);
+    navigate('/session/completed')
   };
+
+  
+
+  const onSkip=()=>{
+     navigate('/session/completed')
+
+  }
 
   return (
     <>
@@ -331,9 +343,7 @@ export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,r
           
           
           (<div className="se-actions">
-            <button className="btn-rate" onClick={() => handleRate(rating || 5)}>
-              <StarIcon size={15} filled /> Rate
-            </button>
+            
             <button className="btn-outline" onClick={() => setShowFeedback(v => !v)}>
               Leave feedback
             </button>
@@ -361,6 +371,9 @@ export default function SessionEnded({ duration = 45, onDone, onBookAgain,name,r
               />
               <button className="se-feedback-submit" onClick={handleFeedbackSubmit}>
                 Submit Feedback
+              </button>
+               <button style={{marginLeft:10}} className="se-feedback-submit" onClick={onSkip}>
+                Skip
               </button>
             </div>
           )}
