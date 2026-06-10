@@ -293,6 +293,15 @@ export default function SessionLive({
         @keyframes pulse-live   { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,.45); } 50% { box-shadow: 0 0 0 7px rgba(34,197,94,0); } }
         @keyframes blink        { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes rotate-dashed { 
+          from { transform: rotate(0deg); } 
+          to { transform: rotate(360deg); } 
+        }
+        @keyframes pulse-red {
+          0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+          70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
 
         /* ── Root: full-viewport column ─────────────────────────────────── */
         .sl-root {
@@ -328,6 +337,7 @@ export default function SessionLive({
           position: absolute;
           inset: 0;
           background: #0b0f1a;
+          transition: opacity 0.4s ease;
         }
         .sl-remote-container video {
           width: 100%;
@@ -347,6 +357,14 @@ export default function SessionLive({
           gap: 16px;
           background: #0b0f1a;
           z-index: 2;
+          transition: all 0.4s ease;
+        }
+        .peer-offline-ring {
+          position: absolute;
+          inset: -12px;
+          border-radius: 50%;
+          border: 2.5px dashed rgba(239, 68, 68, 0.5);
+          animation: rotate-dashed 10s linear infinite;
         }
 
         /* ── HUD: top gradient bar ─────────────────────────────────────── */
@@ -439,7 +457,7 @@ export default function SessionLive({
         /* ── Peer-left banner ─────────────────────────────────────────────── */
         .peer-left-banner {
           position: absolute;
-          top: 68px; left: 50%; transform: translateX(-50%);
+          top: 88px; left: 50%; transform: translateX(-50%);
           background: rgba(245,158,11,.92);
           color: white; border-radius: 10px;
           padding: 10px 20px; font-size: 13px; font-weight: 600;
@@ -541,37 +559,92 @@ export default function SessionLive({
             style={{ display: showRemotePlaceholder ? "none" : "block" }}
           />
 
+          {/* ── Remote Muted Overlay (when camera is ON) ── */}
+          {!showRemotePlaceholder && remoteMuted && (
+            <div style={{
+              position: "absolute",
+              bottom: 110,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(11, 15, 26, 0.75)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              padding: "8px 18px",
+              borderRadius: "40px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              zIndex: 5,
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+              animation: "fadeInDown 0.4s ease",
+            }}>
+              <div style={{ 
+                background: "#dc2626", borderRadius: "50%", width: 24, height: 24, 
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 2px 8px rgba(220, 38, 38, 0.4)"
+              }}>
+                <MicIcon muted size={12} />
+              </div>
+              <span style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>
+                {remoteParticipantName} is muted
+              </span>
+            </div>
+          )}
+
           {/* ── Remote placeholder ─────────────────────────────────────── */}
           {showRemotePlaceholder && (
             <div className="sl-remote-placeholder">
               <div style={{ position: "relative" }}>
+                {peerLeft && <div className="peer-offline-ring" />}
                 <Avatar
-                  size={96}
+                  size={100}
                   initials={remoteParticipantInitials}
                   image={remoteImage}
-                  extraStyle={{ border: "3px solid rgba(255,255,255,.1)" }}
+                  extraStyle={{ 
+                    border: peerLeft ? "3px solid #ef4444" : "3px solid rgba(255,255,255,.15)",
+                    animation: peerLeft ? "pulse-red 2s infinite" : "none",
+                    transition: "all 0.3s ease"
+                  }}
                 />
-                {remoteMuted && (
+                {remoteMuted && !peerLeft && (
                   <div style={{
                     position: "absolute", bottom: 2, right: 2,
                     background: "#dc2626", borderRadius: "50%",
-                    width: 26, height: 26,
+                    width: 28, height: 28,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     border: "2px solid #0b0f1a",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
                   }}>
                     <MicIcon muted size={12} />
                   </div>
                 )}
               </div>
-              <div style={{ color: "rgba(255,255,255,.5)", fontSize: 14, textAlign: "center", fontWeight: 500, maxWidth: 260, lineHeight: 1.5 }}>
-                {peerLeft
-                  ? "Connection interrupted…"
-                  : remoteCamOff
-                    ? `${remoteParticipantName} turned off their camera`
-                    : `Connecting to ${remoteParticipantName}…`}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+                <div style={{ color: "white", fontSize: 16, fontWeight: 600 }}>
+                  {remoteParticipantName}
+                </div>
+                <div style={{ 
+                  display: "flex", alignItems: "center", gap: 6, 
+                  background: peerLeft ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.06)", 
+                  padding: "4px 12px", borderRadius: 20,
+                  border: peerLeft ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(255,255,255,0.1)",
+                  color: peerLeft ? "#f87171" : "rgba(255,255,255,0.5)",
+                  fontSize: 13, fontWeight: 500
+                }}>
+                  {peerLeft ? (
+                    "Connection interrupted…"
+                  ) : remoteMuted ? (
+                    <><MicIcon muted size={12} /> Muted</>
+                  ) : remoteCamOff ? (
+                    "Camera off"
+                  ) : (
+                    "Connecting…"
+                  )}
+                </div>
               </div>
-              {!peerLeft && !remoteCamOff && (
-                <div style={{ color: "rgba(255,255,255,.2)", fontSize: 12, animation: "blink 1.4s infinite" }}>
+              {!peerLeft && !remoteCamOff && !remoteMuted && (
+                <div style={{ color: "rgba(255,255,255,.2)", fontSize: 11, animation: "blink 1.4s infinite" }}>
                   Please wait
                 </div>
               )}
