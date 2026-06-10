@@ -102,7 +102,7 @@ export const Avatar = ({
       ...extraStyle,
     }}
   >
-    {image ? (
+    {(fixImageUrl(image)) ? (
       <img
         src={fixImageUrl(image)}
         alt="avatar"
