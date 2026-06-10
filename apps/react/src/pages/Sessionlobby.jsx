@@ -233,22 +233,19 @@ export default function SessionLobby({
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         .lobby-root {
-           min-height: 100vh;
+          height: 100vh;
+          height: 100dvh;
           background: linear-gradient(145deg, #f0ecff 0%, #e8e2fb 40%, #f5f2ff 100%);
           font-family: 'Sora', 'Segoe UI', sans-serif;
-          padding: 72px 24px 40px;
-          box-sizing: border-box;
-          display: flex; justify-content: center; align-items: center;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
         .lobby-card {
-          max-width: 1140px;
+          flex: 1;
           width: 100%;
-          margin: 0 auto;
-          background: rgba(255,255,255,0.85);
-          backdrop-filter: blur(20px);
-          border-radius: 24px;
-          border: 1.5px solid rgba(180,160,240,0.3);
-          box-shadow: 0 8px 48px rgba(100,60,200,.12), 0 2px 12px rgba(100,60,200,.06);
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
         }
         .lobby-header {
@@ -257,6 +254,9 @@ export default function SessionLobby({
           display: flex;
           align-items: center;
           gap: 10px;
+          flex-shrink: 0;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          z-index: 5;
         }
         .lobby-header-dot {
           width: 8px; height: 8px; border-radius: 50%;
@@ -269,21 +269,25 @@ export default function SessionLobby({
           50%       { box-shadow: 0 0 0 6px rgba(74,222,128,.1); }
         }
         .lobby-body {
+          flex: 1;
           display: grid;
-          grid-template-columns: 1fr 1.5fr;
+          grid-template-columns: 1fr 1.2fr;
+          min-height: 0;
         }
-        @media (max-width: 760px) {
-          .lobby-body { grid-template-columns: 1fr; }
+        @media (max-width: 900px) {
+          .lobby-body { grid-template-columns: 1fr; overflow-y: auto; }
+          .lobby-root { height: auto; overflow: visible; min-height: 100vh; }
           .lobby-right { border-left: none !important; border-top: 1.5px solid #ede8fb; }
         }
-        .lobby-left  { padding: 32px; }
-        .lobby-right { padding: 32px; border-left: 1.5px solid #ede8fb; }
+        .lobby-left  { padding: clamp(24px, 5vw, 60px); overflow-y: auto; background: rgba(255, 255, 255, 0.4); }
+        .lobby-right { padding: clamp(24px, 5vw, 60px); border-left: 1.5px solid #ede8fb; overflow-y: auto; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
 
         .preview-wrap {
-          border-radius: 12px; overflow: hidden;
+          border-radius: 20px; overflow: hidden;
           aspect-ratio: 4/3; position: relative;
           background: #1a152e;
-          border: 1px solid #ede8fb;
+          border: 2px solid #ede8fb;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.15);
         }
         .preview-placeholder {
           position: absolute; inset: 0;
@@ -307,6 +311,7 @@ export default function SessionLobby({
           cursor: pointer; display: flex; align-items: center; gap: 7px;
           font-size: 13px; font-weight: 600; font-family: inherit;
           transition: all .16s; border: 1.5px solid transparent; outline: none;
+          flex: 1; justify-content: center;
         }
         .ctrl-on        { background: #ede8fb; border-color: #c4b0f0; color: #6b3fd4; }
         .ctrl-on:hover  { background: #e2dbf7; }
@@ -419,7 +424,7 @@ export default function SessionLobby({
               </div>
 
               {/* Controls */}
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <button
                   className={`ctrl-toggle ${micPermState === "checking" ? "ctrl-checking" : micActive ? "ctrl-on" : "ctrl-off"}`}
                   onClick={toggleMic} disabled={micPermState === "checking"}
