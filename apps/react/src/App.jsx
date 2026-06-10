@@ -163,6 +163,7 @@ function App() {
       <Routes>
 
   {/* Without layout */}
+   <Route path="/session" element={<QRPage />} />
   <Route path="/session/expired" element={<SessionExpiredWeb />} />
   
 
@@ -184,7 +185,7 @@ function App() {
     }
   >
     <Route path="/" element={<RootRedirect />} />
-    <Route path="/session" element={<QRPage />} />
+   
 
     <Route path="/:lang" element={<LangLayout />}>
       <Route index element={<Home />} />
@@ -210,7 +211,7 @@ function App() {
 </Suspense>
      
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-      <LanguageSwitcher />
+     
     </AppErrorBoundary>
     </LangProvider>
     </HelmetProvider>

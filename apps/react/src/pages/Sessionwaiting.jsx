@@ -29,8 +29,8 @@ export default function SessionWaiting({
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
 
-  const image=role==='therapist'?therapistPhoto:patientPhoto;
-  const remoteImage=role==='therapist'?patientPhoto:therapistPhoto;
+  const image = role === 'therapist' ? therapistPhoto : patientPhoto;
+  const remoteImage = role === 'therapist' ? patientPhoto : therapistPhoto;
 
 
   const localVideoContainerRef = useRef(null);
@@ -294,19 +294,27 @@ export default function SessionWaiting({
 
         {/* TOP BAR */}
         <div className="sw-topbar">
-          <Avatar image={image} size={42} initials={th.avatarInitials} />
+          <Avatar image={remoteImage} size={42} initials={th.avatarInitials} />
           <div>
             <div style={{ fontWeight: 700, fontSize: 14, color: "rgba(255,255,255,.85)" }}>
-              {th.name}<span style={{ fontWeight: 400, fontSize: 13, color: "rgba(255,255,255,.4)" }}>, {th.credentials}</span>
+              {th.name}<span style={{ fontWeight: 400, fontSize: 13, color: "rgba(255,255,255,.4)" }}>
+              </span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
               <span style={{ color: connColor, fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: connColor, display: "inline-block" }} />
                 {connLabel}
               </span>
-              {th.specialties.map(s => (
-                <span key={s} style={{ background: "rgba(34,211,238,.1)", color: "#22d3ee", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600 }}>{s}</span>
-              ))}
+              {
+                role === 'patient'
+                &&
+                (<>
+                  {th.specialties.map(s => (
+                    <span key={s} style={{ background: "rgba(34,211,238,.1)", color: "#22d3ee", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600 }}>{s}</span>
+                  ))}
+                </>)}
+
+
             </div>
           </div>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
@@ -412,9 +420,9 @@ export default function SessionWaiting({
                       display: "flex", alignItems: "center", gap: 6,
                       alignSelf: m.role === "patient" ? "flex-end" : "flex-start",
                     }}>
-                     
-                        <Avatar image={m.role==='patient' ? patientPhoto : therapistPhoto} size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
-                      
+
+                      <Avatar image={m.role === 'patient' ? patientPhoto : therapistPhoto} size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
+
                       <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m?.senderName}</span>
                       <span style={{ fontSize: 10, color: "#c0b8da" }}>{formatFirebaseTimestamp(m?.createdAt)}</span>
                     </div>
@@ -437,8 +445,18 @@ export default function SessionWaiting({
               <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
                 <Avatar image={remoteImage} size={32} initials={th.avatarInitials} extraStyle={{ border: "none" }} />
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 12, color: "rgba(255,255,255,.7)" }}>{th.name}, {th.credentials}</div>
-                 {role==='patient' && (<div style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>{th.specialties.join(" · ")}</div>)}
+                  {
+                    role === 'patient' ? (
+                      <div style={{ fontWeight: 700, fontSize: 12, color: "rgba(255,255,255,.7)" }}>{th.name}, {th.credentials}</div>
+
+
+                    ) : (
+                      <div style={{ fontWeight: 700, fontSize: 12, color: "rgba(255,255,255,.7)" }}>{th.name}</div>
+
+
+                    )
+                  }
+                  {role === 'patient' && (<div style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>{th.specialties.join(" · ")}</div>)}
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>

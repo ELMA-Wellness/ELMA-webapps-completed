@@ -656,7 +656,7 @@ export default function SessionLive({
             <Avatar
               size={34}
               initials={th.avatarInitials}
-              image={image}
+              image={remoteImage}
               extraStyle={{ border: "2px solid rgba(255,255,255,.18)", flexShrink: 0 }}
             />
             <div>
