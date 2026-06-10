@@ -239,10 +239,10 @@ export default function SessionLobby({
           padding: 72px 24px 40px;
           box-sizing: border-box;
           display: flex; justify-content: center; align-items: center;
-          margin-top:12px;
         }
         .lobby-card {
-          max-width: 960px;
+          max-width: 1140px;
+          width: 100%;
           margin: 0 auto;
           background: rgba(255,255,255,0.85);
           backdrop-filter: blur(20px);
@@ -253,7 +253,7 @@ export default function SessionLobby({
         }
         .lobby-header {
           background: linear-gradient(90deg, #6b3fd4 0%, #8b5cf6 100%);
-          padding: 18px 28px;
+          padding: 22px 32px;
           display: flex;
           align-items: center;
           gap: 10px;
@@ -276,8 +276,8 @@ export default function SessionLobby({
           .lobby-body { grid-template-columns: 1fr; }
           .lobby-right { border-left: none !important; border-top: 1.5px solid #ede8fb; }
         }
-        .lobby-left  { padding: 24px; }
-        .lobby-right { padding: 24px; border-left: 1.5px solid #ede8fb; }
+        .lobby-left  { padding: 32px; }
+        .lobby-right { padding: 32px; border-left: 1.5px solid #ede8fb; }
 
         .preview-wrap {
           border-radius: 12px; overflow: hidden;
@@ -317,8 +317,8 @@ export default function SessionLobby({
         .join-btn {
           background: linear-gradient(135deg, #6b3fd4, #4a26a0);
           color: white; border: none; border-radius: 14px;
-          padding: 15px; width: 100%;
-          font-size: 15px; font-weight: 700; cursor: pointer;
+          padding: 18px; width: 100%;
+          font-size: 16px; font-weight: 700; cursor: pointer;
           font-family: inherit; letter-spacing: .2px;
           box-shadow: 0 4px 20px rgba(107,63,212,.32);
           transition: opacity .15s, transform .12s;
@@ -328,7 +328,7 @@ export default function SessionLobby({
 
         .specialty-tag {
           border-radius: 20px; padding: 4px 14px;
-          font-size: 12px; font-weight: 600;
+          font-size: 13px; font-weight: 600;
         }
         .privacy-card {
           background: #f9f7ff; border: 1.5px solid #ece6fb;
@@ -355,8 +355,8 @@ export default function SessionLobby({
           {/* Header */}
            <div className="lobby-header">
             <div className="lobby-header-dot" />
-            <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>Pre-Session Setup</span>
-            <span style={{ marginLeft: "auto", color: "rgba(255,255,255,.7)", fontSize: 13 }}>
+            <span style={{ color: "white", fontWeight: 700, fontSize: 16 }}>Pre-Session Setup</span>
+            <span style={{ marginLeft: "auto", color: "rgba(255,255,255,.7)", fontSize: 14 }}>
               Session Code: <strong style={{ color: "white" }}>{sessionCode}</strong>
             </span>
           </div>
@@ -364,8 +364,8 @@ export default function SessionLobby({
           <div className="lobby-body">
 
             {/* LEFT */}
-            <div className="lobby-left" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#6b5eaa", letterSpacing: "1px", textTransform: "uppercase" }}>
+            <div className="lobby-left" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#6b5eaa", letterSpacing: "1px", textTransform: "uppercase" }}>
                 Camera &amp; Audio
               </div>
 
@@ -391,24 +391,24 @@ export default function SessionLobby({
                   background: micActive ? "rgba(34,197,94,.8)" : "rgba(239,68,68,.75)",
                   borderRadius: 20, padding: "3px 10px",
                   display: "flex", alignItems: "center", gap: 5,
-                  fontSize: 11, color: "white", fontWeight: 600, backdropFilter: "blur(6px)",
+                  fontSize: 12, color: "white", fontWeight: 600, backdropFilter: "blur(6px)",
                 }}>
-                  <MicIcon muted={!micActive} size={9} />
+                  <MicIcon muted={!micActive} size={11} />
                   {micActive ? "Mic On" : "Mic Off"}
                 </div>
               </div>
 
               {/* Device rows */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {[
                   ["📷", "Camera",     camStatusLabel],
                   ["🎤", "Microphone", micStatusLabel],
                   ["🔊", "Speaker",    "Default"],
                 ].map(([icon, label, val]) => (
                   <div key={label} className="device-row">
-                    <span style={{ fontSize: 14 }}>{icon}</span>
-                    <span style={{ fontSize: 12, color: "#9889c8", minWidth: 78, fontWeight: 500 }}>{label}</span>
-                    <span style={{ fontSize: 13, color: val === "Blocked" ? "#dc2626" : "#2d1f5e", fontWeight: 600, flex: 1 }}>{val}</span>
+                    <span style={{ fontSize: 16 }}>{icon}</span>
+                    <span style={{ fontSize: 13, color: "#9889c8", minWidth: 90, fontWeight: 500 }}>{label}</span>
+                    <span style={{ fontSize: 14, color: val === "Blocked" ? "#dc2626" : "#2d1f5e", fontWeight: 600, flex: 1 }}>{val}</span>
                     <span style={{
                       width: 8, height: 8, borderRadius: "50%",
                       background: val === "Active" ? "#22c55e" : val === "Blocked" ? "#dc2626" : "#d1d5db",
@@ -424,14 +424,14 @@ export default function SessionLobby({
                   className={`ctrl-toggle ${micPermState === "checking" ? "ctrl-checking" : micActive ? "ctrl-on" : "ctrl-off"}`}
                   onClick={toggleMic} disabled={micPermState === "checking"}
                 >
-                  <MicIcon muted={!micActive} size={13} />
+                  <MicIcon muted={!micActive} size={16} />
                   {micPermState === "checking" ? "Requesting…" : micActive ? "Microphone On" : "Microphone Off"}
                 </button>
                 <button
                   className={`ctrl-toggle ${camPermState === "checking" ? "ctrl-checking" : camActive ? "ctrl-on" : "ctrl-off"}`}
                   onClick={toggleCam} disabled={camPermState === "checking"}
                 >
-                  <CamIcon off={!camActive} size={13} />
+                  <CamIcon off={!camActive} size={16} />
                   {camPermState === "checking" ? "Requesting…" : camActive ? "Camera On" : "Camera Off"}
                 </button>
               </div>
@@ -446,19 +446,19 @@ export default function SessionLobby({
             </div>
 
             {/* RIGHT */}
-            <div className="lobby-right" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="lobby-right" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
               {/* Therapist card */}
               <div className="privacy-card" style={{ background: "white" }}>
                 <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 16 }}>
-                  <Avatar image={role==='patient'?therapistPhoto:patientPhoto} size={56} initials={therapist.avatarInitials} />
+                  <Avatar image={role==='patient'?therapistPhoto:patientPhoto} size={64} initials={therapist.avatarInitials} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#2d1f5e" }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: "#2d1f5e" }}>
                       {therapist.name}
                       {role === "patient" && <span style={{ fontWeight: 400, fontSize: 13, color: "#6b5eaa" }}>, {therapist.credentials}</span>}
                     </div>
                     {role === "patient" && (
-                      <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
                         {therapist.specialties.map((s, i) => (
                           <span key={s} className="specialty-tag" style={{ background: i === 0 ? "#ede8fb" : "#f7f4fe", color: i === 0 ? "#6b3fd4" : "#6b5eaa" }}>{s}</span>
                         ))}
@@ -467,11 +467,11 @@ export default function SessionLobby({
                   </div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                  <div style={{ fontSize: 14, color: "#3d2e70", fontWeight: 500, lineHeight: 2 }}>
+                  <div style={{ fontSize: 15, color: "#3d2e70", fontWeight: 500, lineHeight: 2 }}>
                     Duration: {sessionMeta.durationMins} mins<br />
                     Starts in <CountdownTimer seconds={timeLeft} />
                   </div>
-                  <div style={{ background: "linear-gradient(135deg, #7c4ddb, #9b6bf5)", color: "white", borderRadius: 12, padding: "10px 18px", fontSize: 14, fontWeight: 700, whiteSpace: "nowrap", boxShadow: "0 3px 12px rgba(124,77,219,.3)" }}>
+                  <div style={{ background: "linear-gradient(135deg, #7c4ddb, #9b6bf5)", color: "white", borderRadius: 12, padding: "12px 22px", fontSize: 15, fontWeight: 700, whiteSpace: "nowrap", boxShadow: "0 3px 12px rgba(124,77,219,.3)" }}>
                     ⏱ <CountdownTimer seconds={timeLeft} />
                   </div>
                 </div>
