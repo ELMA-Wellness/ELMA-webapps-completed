@@ -158,6 +158,8 @@ export default function App() {
           therapist={THERAPIST_INFO}
           sessionMeta={SESSION_META}
           onJoined={handleLobbyJoined}
+          therapistPhoto={therapistPhoto}
+          patientPhoto={clientPhoto}
         />
       )}
 
@@ -171,6 +173,8 @@ export default function App() {
           name={name}
           therapistNameInitial={getInitials(tname)}
           patientNameInitial={getInitials(cname)}
+          therapistPhoto={therapistPhoto}
+          patientPhoto={clientPhoto}
         />
       )}
 
@@ -185,6 +189,8 @@ export default function App() {
           patientName={cname}
           notes={notes}
           setNotes={setNotes}
+          therapistPhoto={therapistPhoto}
+          patientPhoto={clientPhoto}
         />
       )}
 
@@ -198,6 +204,8 @@ export default function App() {
           role={role}
           profession={profession}
           onDownLoadNotes={handleDownLoad}
+          therapistPhoto={therapistPhoto}
+          patientPhoto={clientPhoto}
         />
       )}
     </>

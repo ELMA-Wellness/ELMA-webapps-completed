@@ -59,6 +59,8 @@ export default function SessionLobby({
   therapist   = { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" },
   sessionMeta = { durationMins: 50, startTime: new Date(Date.now() + 5 * 60 * 1000).toISOString() },
   onJoined,
+  therapistPhoto,
+  patientPhoto
 }) {
   // ── Countdown ──────────────────────────────────────────────────────────────
   const targetTime     = new Date(sessionMeta.startTime).getTime();
@@ -449,7 +451,7 @@ export default function SessionLobby({
               {/* Therapist card */}
               <div className="privacy-card" style={{ background: "white" }}>
                 <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 16 }}>
-                  <Avatar size={56} initials={therapist.avatarInitials} />
+                  <Avatar image={role==='patient'?therapistPhoto:patientPhoto} size={56} initials={therapist.avatarInitials} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: "#2d1f5e" }}>
                       {therapist.name}

@@ -1,3 +1,5 @@
+import { fixImageUrl } from "../utils/helper";
+
 export const MicIcon = ({ muted = false, size = 18 }) =>
   muted ? (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -76,16 +78,43 @@ export const ExpandIcon = ({ size = 14 }) => (
   </svg>
 );
 
-export const Avatar = ({ size = 48, initials = "SM", extraStyle = {} }) => (
-  <div style={{
-    width: size, height: size, borderRadius: "50%",
-    background: "linear-gradient(135deg, #c4b5f0, #7c4ddb)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    color: "white", fontSize: size * 0.33, fontWeight: 700,
-    flexShrink: 0, border: "2px solid rgba(255,255,255,0.6)",
-    ...extraStyle,
-  }}>
-    {initials}
+export const Avatar = ({
+  size = 48,
+  initials = "SM",
+  extraStyle = {},
+  image="",
+}) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: "50%",
+      overflow: "hidden",
+      background: "linear-gradient(135deg, #c4b5f0, #7c4ddb)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "white",
+      fontSize: size * 0.33,
+      fontWeight: 700,
+      flexShrink: 0,
+      border: "2px solid rgba(255,255,255,0.6)",
+      ...extraStyle,
+    }}
+  >
+    {image ? (
+      <img
+        src={fixImageUrl(image)}
+        alt="avatar"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
+    ) : (
+      initials
+    )}
   </div>
 );
 

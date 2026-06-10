@@ -33,6 +33,8 @@ export default function SessionLive({
   therapistName,
   notes,
   setNotes,
+  therapistPhoto,
+  patientPhoto
 }) {
   const th = therapist || {
     name: "Dr. Sarah Mitchell",
@@ -41,6 +43,10 @@ export default function SessionLive({
     avatarInitials: "SM",
   };
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
+  const image=role==='therapist'?therapistPhoto:patientPhoto;
+
+  const remoteImage=role==='therapist'?patientPhoto:therapistPhoto;
+
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const remoteVideoContainerRef = useRef(null);
@@ -542,6 +548,7 @@ export default function SessionLive({
                 <Avatar
                   size={96}
                   initials={remoteParticipantInitials}
+                  image={remoteImage}
                   extraStyle={{ border: "3px solid rgba(255,255,255,.1)" }}
                 />
                 {remoteMuted && (
@@ -576,6 +583,7 @@ export default function SessionLive({
             <Avatar
               size={34}
               initials={th.avatarInitials}
+              image={image}
               extraStyle={{ border: "2px solid rgba(255,255,255,.18)", flexShrink: 0 }}
             />
             <div>
@@ -670,6 +678,7 @@ export default function SessionLive({
                 <Avatar
                   size={pipExpanded ? 60 : 40}
                   initials={selfInitials}
+                  image={image}
                   extraStyle={{ border: "2px solid rgba(255,255,255,.14)" }}
                 />
               </div>
@@ -730,7 +739,7 @@ export default function SessionLive({
           {/* ── Peer-left banner ─────────────────────────────────────────── */}
           {peerLeft && (
             <div className="peer-left-banner">
-              ⚠️ {th.name.split(" ").pop()} disconnected — waiting to reconnect…
+              ⚠️ {remoteParticipantName} disconnected — waiting to reconnect…
             </div>
           )}
 
@@ -747,6 +756,7 @@ export default function SessionLive({
                 padding: "15px 14px 12px",
                 borderBottom: "1px solid rgba(255,255,255,.06)",
                 display: "flex", alignItems: "center", gap: 8,
+                marginTop:20
               }}>
                 <ChatIcon size={13} />
                 <span style={{ fontWeight: 700, fontSize: 14, color: "rgba(255,255,255,.7)", flex: 1 }}>
@@ -777,9 +787,9 @@ export default function SessionLive({
                       display: "flex", alignItems: "center", gap: 6,
                       alignSelf: m.role === "patient" ? "flex-end" : "flex-start",
                     }}>
-                      {m.role === "therapist" && (
-                        <Avatar size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
-                      )}
+                     
+                        <Avatar image={m.role==='patient' ? patientPhoto : therapistPhoto} size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
+                      
                       <span style={{ fontWeight: 600, fontSize: 11, color: "#9b80e8" }}>{m?.senderName}</span>
                       <span style={{ fontSize: 10, color: "rgba(255,255,255,.28)" }}>
                         {formatFirebaseTimestamp(m?.createdAt)}
@@ -814,10 +824,13 @@ export default function SessionLive({
                 background: "rgba(255,255,255,.02)",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <Avatar size={30} initials={th.avatarInitials} extraStyle={{ border: "none" }} />
+                  <Avatar image={remoteImage} size={30} initials={th.avatarInitials} extraStyle={{ border: "none" }} />
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,.55)" }}>{th.name}</div>
-                    <div style={{ fontSize: 10, color: "rgba(255,255,255,.28)" }}>{th.specialties.join(" · ")}</div>
+                    {
+                      role==='patient' &&
+                    
+                    (<div style={{ fontSize: 10, color: "rgba(255,255,255,.28)" }}>{th.specialties.join(" · ")}</div>)}
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>

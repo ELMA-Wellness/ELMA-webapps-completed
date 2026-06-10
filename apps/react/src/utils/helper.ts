@@ -33,3 +33,26 @@ export const isSessionExpired = (startTime: string | number | Date) => {
 
   return new Date() > expiry;
 };
+
+
+ export const fixImageUrl = (url?: string) => {
+    if (!url || url === "undefined") return "";
+
+    // only modify Firebase URLs
+    if (!url.includes("firebasestorage.googleapis.com")) {
+      return encodeURI(url);
+    }
+
+    const [base, query] = url.split("?");
+    const parts = base.split("/o/");
+
+    if (parts.length !== 2) return encodeURI(url);
+
+    const encodedPath = encodeURIComponent(
+      decodeURIComponent(parts[1])
+    );
+
+    return `${parts[0]}/o/${encodedPath}${
+      query ? `?${query}` : ""
+    }`;
+  };

@@ -23,9 +23,15 @@ export default function SessionWaiting({
   name,
   therapistNameInitial,
   patientNameInitial,
+  therapistPhoto,
+  patientPhoto
 }) {
   const th = therapist || { name: "Dr. Sarah Mitchell", credentials: "PhD", specialties: ["Anxiety", "Relationships"], avatarInitials: "SM" };
   const sm = sessionMeta || { durationMins: 50, startTime: "10:00 AM" };
+
+  const image=role==='therapist'?therapistPhoto:patientPhoto;
+  const remoteImage=role==='therapist'?patientPhoto:therapistPhoto;
+
 
   const localVideoContainerRef = useRef(null);
   const movedToLiveRef = useRef(false);
@@ -288,7 +294,7 @@ export default function SessionWaiting({
 
         {/* TOP BAR */}
         <div className="sw-topbar">
-          <Avatar size={42} initials={th.avatarInitials} />
+          <Avatar image={image} size={42} initials={th.avatarInitials} />
           <div>
             <div style={{ fontWeight: 700, fontSize: 14, color: "rgba(255,255,255,.85)" }}>
               {th.name}<span style={{ fontWeight: 400, fontSize: 13, color: "rgba(255,255,255,.4)" }}>, {th.credentials}</span>
@@ -325,7 +331,7 @@ export default function SessionWaiting({
             <div style={{ position: "relative", marginBottom: 24 }}>
               <div style={{ position: "absolute", inset: -14, borderRadius: "50%", border: "1.5px dashed rgba(34,211,238,.3)", animation: "spin 14s linear infinite" }} />
               <div style={{ position: "absolute", inset: -26, borderRadius: "50%", border: "1px dotted rgba(255,255,255,.1)" }} />
-              <Avatar size={88} initials={th.avatarInitials} extraStyle={{ border: "3px solid rgba(34,211,238,.3)", animation: "pulse-ring 2.5s infinite" }} />
+              <Avatar image={remoteImage} size={88} initials={th.avatarInitials} extraStyle={{ border: "3px solid rgba(34,211,238,.3)", animation: "pulse-ring 2.5s infinite" }} />
             </div>
 
             <div style={{ fontSize: 17, color: "rgba(255,255,255,.8)", marginBottom: 8, textAlign: "center", lineHeight: 1.4, fontWeight: 600 }}>
@@ -380,7 +386,7 @@ export default function SessionWaiting({
               {camActive
                 ? <div ref={localVideoContainerRef} style={{ width: "100%", height: "100%" }} />
                 : <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#111827" }}>
-                  <Avatar size={48} initials={role === "therapist" ? therapistNameInitial : patientNameInitial} extraStyle={{ border: "2px solid rgba(255,255,255,.12)" }} />
+                  <Avatar image={image} size={48} initials={role === "therapist" ? therapistNameInitial : patientNameInitial} extraStyle={{ border: "2px solid rgba(255,255,255,.12)" }} />
                 </div>
               }
               <div style={{ position: "absolute", top: 5, right: 6, background: "rgba(0,0,0,.6)", color: "white", fontSize: 9, borderRadius: 4, padding: "2px 6px", fontWeight: 600 }}>You</div>
@@ -406,9 +412,9 @@ export default function SessionWaiting({
                       display: "flex", alignItems: "center", gap: 6,
                       alignSelf: m.role === "patient" ? "flex-end" : "flex-start",
                     }}>
-                      {m.role === "therapist" && (
-                        <Avatar size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
-                      )}
+                     
+                        <Avatar image={m.role==='patient' ? patientPhoto : therapistPhoto} size={20} initials={getInitials(m?.senderName)} extraStyle={{ border: "none" }} />
+                      
                       <span style={{ fontWeight: 600, fontSize: 11, color: "#7c6aaa" }}>{m?.senderName}</span>
                       <span style={{ fontSize: 10, color: "#c0b8da" }}>{formatFirebaseTimestamp(m?.createdAt)}</span>
                     </div>
@@ -429,10 +435,10 @@ export default function SessionWaiting({
             <div className="info-section">
               <div style={{ fontWeight: 700, fontSize: 12, color: "rgba(255,255,255,.5)", marginBottom: 10 }}>Session Info</div>
               <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
-                <Avatar size={32} initials={th.avatarInitials} extraStyle={{ border: "none" }} />
+                <Avatar image={remoteImage} size={32} initials={th.avatarInitials} extraStyle={{ border: "none" }} />
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 12, color: "rgba(255,255,255,.7)" }}>{th.name}, {th.credentials}</div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>{th.specialties.join(" · ")}</div>
+                 {role==='patient' && (<div style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>{th.specialties.join(" · ")}</div>)}
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
