@@ -97,8 +97,10 @@ export default function App() {
   };
 
   // ── Leave from Waiting ─────────────────────────────────────────────────────
+  // SessionWaiting already performed a non-terminal leaveSession() teardown, so
+  // we only navigate here — no second hangup (which would send a terminal
+  // signal and defeat the rejoinable-session behaviour).
   const handleLeaveWaiting = () => {
-    livekitManager.hangup();
     setScreen("lobby");
   };
 
@@ -111,8 +113,8 @@ export default function App() {
      if(role==='therapist'){
       localStorage.setItem("notes",notes)
     }
-    livekitManager.hangup()
-    // livekitManager.hangup() was already called inside SessionLive
+    // SessionLive.handleLeave already called livekitManager.hangup() (which sent
+    // the terminal signal + tore down). Don't call it again here.
     setScreen("ended");
   };
 

@@ -101,8 +101,11 @@ export default function SessionWaiting({
       },
 
       onRemoteMediaState: () => {
-        // Remote media state arriving → peer is present
-        moveToLive();
+        // A media-state update advances us to live ONLY when a peer is actually
+        // present. Without this guard the replay-on-mount default (no peer yet,
+        // mic/cam = false) would fire moveToLive() immediately and skip the
+        // waiting screen entirely.
+        if (livekitManager.peerReady) moveToLive();
       },
     };
 
@@ -165,7 +168,10 @@ export default function SessionWaiting({
     } finally { setBusy(false); }
   };
 
-  const handleLeave = () => { livekitManager.hangup(); onLeave?.(); };
+  // Back from the waiting room is a NON-terminal leave: full teardown, but no
+  // end/leave signal — so the peer is informed only via LiveKit presence
+  // ("waiting to reconnect…") and the session stays rejoinable for both parties.
+  const handleLeave = () => { livekitManager.leaveSession(); onLeave?.(); };
 
   const sendMsg = () => {
     if (!chatMsg.trim()) return;

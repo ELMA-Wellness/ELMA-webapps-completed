@@ -142,10 +142,17 @@ export default function SessionLive({
       onMessages:        (msgs)   => setMessages(msgs),
       onConnectionStatus:(status) => setConnState(status),
 
+      onPeerJoined: () => {
+        // Peer reconnected — drop the "disconnected" banner immediately so the
+        // rejoin is seamless instead of lingering for the timeout.
+        clearTimeout(peerLeftTimer.current);
+        setPeerLeft(false);
+      },
+
       onPeerLeft: () => {
         setPeerLeft(true);
         clearTimeout(peerLeftTimer.current);
-        peerLeftTimer.current = setTimeout(() => setPeerLeft(false), 8000);
+       // peerLeftTimer.current = setTimeout(() => setPeerLeft(false), 8000);
       },
     };
 
@@ -155,6 +162,7 @@ export default function SessionLive({
       livekitManager.callbacks.onRemoteMediaState  = undefined;
       livekitManager.callbacks.onMessages          = undefined;
       livekitManager.callbacks.onConnectionStatus  = undefined;
+      livekitManager.callbacks.onPeerJoined        = undefined;
       livekitManager.callbacks.onPeerLeft          = undefined;
       clearTimeout(peerLeftTimer.current);
     };
