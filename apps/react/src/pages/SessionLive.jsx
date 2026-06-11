@@ -22,6 +22,7 @@ import { getInitials, formatFirebaseTimestamp } from "../utils/helper";
 import SessionNotesModal from "../components/modals/SessionNotesModal";
 import { CgNotes } from "react-icons/cg";
 import { FcEndCall } from "react-icons/fc";
+import { playSessionEndMusic, playSessionStartSoundOnce, stopSessionEndMusic } from "../utils/audio";
 
 export default function SessionLive({
   therapist,
@@ -148,21 +149,23 @@ export default function SessionLive({
       onMessages:        (msgs)   => setMessages(msgs),
       onConnectionStatus:(status) => setConnState(status),
 
-      onPeerJoined: () => {
+      onPeerJoined: async() => {
         // Peer reconnected — drop the "disconnected" banner immediately so the
         // rejoin is seamless instead of lingering for the timeout.
         clearTimeout(peerLeftTimer.current);
         setPeerLeft(false);
+        await Promise.all([playSessionStartSoundOnce(),stopSessionEndMusic()])
       },
 
-      onPeerLeft: () => {
+      onPeerLeft: async() => {
         setPeerLeft(true);
         clearTimeout(peerLeftTimer.current);
+        await playSessionEndMusic()
        // peerLeftTimer.current = setTimeout(() => setPeerLeft(false), 8000);
       },
     };
 
-    return () => {
+    return async() => {
       livekitManager.callbacks.onRemoteMedia       = undefined;
       livekitManager.callbacks.onLocalVideoTrack   = undefined;
       livekitManager.callbacks.onRemoteMediaState  = undefined;
@@ -171,6 +174,7 @@ export default function SessionLive({
       livekitManager.callbacks.onPeerJoined        = undefined;
       livekitManager.callbacks.onPeerLeft          = undefined;
       clearTimeout(peerLeftTimer.current);
+      await stopSessionEndMusic()
     };
   }, [attachRemoteVideo, attachLocalVideo, initCam, camOff]);
 
