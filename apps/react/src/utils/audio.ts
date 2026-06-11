@@ -21,7 +21,7 @@ export const playSessionStartSoundOnce = async (
       sessionStartAudio = null;
     }
 
-    sessionStartAudio = new Audio(SESSION_START_URL);
+    sessionStartAudio = new Audio("/audio/call_start.mp3");
 
     sessionStartAudio.loop = false;
     sessionStartAudio.volume = 0.6;
@@ -60,7 +60,7 @@ export const playSessionEndMusic = async () => {
   if (splashSound) return;
 
   try {
-    splashSound = new Audio(SESSION_END_URL);
+    splashSound = new Audio("/audio/call_end.mp3");
 
     splashSound.loop = true;
     splashSound.volume = 0.5;
