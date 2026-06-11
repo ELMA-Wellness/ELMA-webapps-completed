@@ -126,7 +126,13 @@ export default function App() {
     }
     // SessionLive.handleLeave already called livekitManager.hangup() (which sent
     // the terminal signal + tore down). Don't call it again here.
+    if(role==='patient'){
     setIsConfirmationPopUpOpen(true)
+    }
+    else if(role==='therapist'){
+      setScreen("ended")
+    }
+
   };
 
   // ── Ended flow ─────────────────────────────────────────────────────────────
