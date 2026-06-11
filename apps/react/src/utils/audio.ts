@@ -4,7 +4,7 @@ let sessionStartAudio: HTMLAudioElement | null = null;
 let hasPlayed = false;
 
 const SESSION_START_URL =
-  "https://firebasestorage.googleapis.com/v0/b/elma-react-native-app.firebasestorage.app/o/app-sounds%2Fcall_start.mp3?alt=media&token=020e5286-650c-4987-9f7b-bb0201a8d821";
+  "https://res.cloudinary.com/dnzy9hf2x/video/upload/v1781151964/app-sounds_2Fcall_start_psmzhm.mp3";
 
 export const playSessionStartSoundOnce = async (
   needPlayAgain = false
@@ -54,7 +54,7 @@ export const resetCelebrationSound = () => {
 let splashSound: HTMLAudioElement | null = null;
 
 const SESSION_END_URL =
-  "https://firebasestorage.googleapis.com/v0/b/elma-react-native-app.firebasestorage.app/o/app-sounds%2Fcall_end.mp3?alt=media&token=3447793a-48a7-4746-9282-eb91abccdd69";
+  "https://res.cloudinary.com/dnzy9hf2x/video/upload/v1781152035/app-sounds_2Fcall_end_o26xod.mp3";
 
 export const playSessionEndMusic = async () => {
   if (splashSound) return;
