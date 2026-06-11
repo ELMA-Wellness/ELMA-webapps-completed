@@ -13,6 +13,7 @@ import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import SessionExpiredWeb from './pages/SessionExpired.tsx'
 import QRPage from './pages/QRPage.tsx'
 import SessionCompleted from './pages/SessionCompleted.tsx'
+import TestPage from './pages/TestPage.tsx'
 
 const BG_GRADIENTS = [
   'linear-gradient(135deg, #07050f 0%, #1a0a38 45%, #050d1a 100%)',
@@ -167,6 +168,7 @@ function App() {
               <Route path="/session" element={<QRPage />} />
               <Route path="/session/expired" element={<SessionExpiredWeb />} />
               <Route path="/session/completed" element={<SessionCompleted />} />
+               <Route path="/test" element={<TestPage />} />
 
 
 
