@@ -344,6 +344,15 @@ class LiveKitManager {
         }
     }
 
+    requestHistory(){
+        this._sendWS({
+            type: 'get_chat_history',
+            sessionCode: this.sessionCode,
+            userId: this.userId,
+            role: this.role,
+        });
+    }
+
     /**
      * Attach the local video track to a container element (mirror self-view).
      */
@@ -845,6 +854,8 @@ class LiveKitManager {
             this._wsReconnectAttempts = 0;
             this._sendWS({ type: 'join_session', sessionCode: this.sessionCode, userId: this.userId, role: this.role });
             this._broadcastMediaState();
+            this.requestHistory()
+
         };
 
         this.ws.onmessage = (event) => {
