@@ -23,6 +23,7 @@ import SessionNotesModal from "../components/modals/SessionNotesModal";
 import { CgNotes } from "react-icons/cg";
 import { FcEndCall } from "react-icons/fc";
 import { playSessionEndMusic, playSessionStartSoundOnce, stopSessionEndMusic } from "../utils/audio";
+import DeviceSwitch from "../components/modals/SwitchDevice";
 
 export default function SessionLive({
   therapist,
@@ -35,7 +36,10 @@ export default function SessionLive({
   notes,
   setNotes,
   therapistPhoto,
-  patientPhoto
+  patientPhoto,
+  isDeviceSwitched,
+  onCloseDeviceSwitch,
+  setIsDeviceSwitched,
 }) {
   const th = therapist || {
     name: "Dr. Sarah Mitchell",
@@ -163,6 +167,10 @@ export default function SessionLive({
         await playSessionEndMusic()
        // peerLeftTimer.current = setTimeout(() => setPeerLeft(false), 8000);
       },
+
+      onDeviceSwitched:()=>{
+        setIsDeviceSwitched(true)
+      }
     };
 
     return async() => {
@@ -937,6 +945,12 @@ export default function SessionLive({
           setNotesText={setNotes}
         />
       </div>
+      <DeviceSwitch
+        visible={isDeviceSwitched}
+        onContinue={onCloseDeviceSwitch}
+        toDevice="mobile"
+        onClose={()=>{setIsDeviceSwitched(false)}}
+      />
     </>
   );
 }

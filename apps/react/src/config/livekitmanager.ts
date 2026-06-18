@@ -54,7 +54,7 @@ import {
     RemoteTrackPublication,
 } from 'livekit-client';
 import {
-  AudioPresets,
+    AudioPresets,
 } from 'livekit-client';
 import { fetchLiveKitToken } from './livekit-token';
 
@@ -117,6 +117,7 @@ export interface LiveKitManagerCallbacks {
     onPeerLeft?: () => void;
     onSessionEnded?: () => void;
     onError?: (err: Error) => void;
+    onDeviceSwitched?: () => void;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -344,7 +345,7 @@ class LiveKitManager {
         }
     }
 
-    requestHistory(){
+    requestHistory() {
         this._sendWS({
             type: 'get_chat_history',
             sessionCode: this.sessionCode,
@@ -852,7 +853,7 @@ class LiveKitManager {
         this.ws.onopen = () => {
             log('WS', 'connected');
             this._wsReconnectAttempts = 0;
-            this._sendWS({ type: 'join_session', sessionCode: this.sessionCode, userId: this.userId, role: this.role });
+            this._sendWS({ type: 'join_session', sessionCode: this.sessionCode, userId: this.userId, role: this.role, deviceType: "web" });
             this._broadcastMediaState();
             this.requestHistory()
 
@@ -962,6 +963,14 @@ class LiveKitManager {
             case 'session_ended': {
                 this._callbacks.onSessionEnded?.();
                 break;
+            }
+
+            case "device_switched": {
+                if (msg.toDevice === 'mobile' && msg.fromDevice === 'web') {
+                    this.callbacks.onDeviceSwitched?.();
+                }
+                break;
+
             }
 
             default:

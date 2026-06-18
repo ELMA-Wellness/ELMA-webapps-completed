@@ -62,7 +62,11 @@ export default function App() {
   const temail = params.get("therapistEmail");
   const cemail = params.get("patientEmail");
   const tid = params.get("therapistId");
-  const[error,setError]=useState(null)
+  const cid = params.get("clientId");
+
+  const [error, setError] = useState(null)
+    const[deviceSwitched,setIsDeviceSwitched]=useState(false)
+
 
 
   // The display name for the current user (used as LiveKit participant name)
@@ -84,16 +88,27 @@ export default function App() {
   // ── Session ended event from WS ────────────────────────────────────────────
   useEffect(() => {
     livekitManager.callbacks.onSessionEnded = () => {
-      setIsConfirmationPopUpOpen(true)
+      handleLeaveCall()
 
     };
+
+    
+    
     return () => { livekitManager.callbacks.onSessionEnded = undefined; };
   }, []);
+
+
+  const onCloseDeviceSwitch=()=>{
+    setIsDeviceSwitched(false)
+    setScreen('lobby')
+  }
 
   // ── Guard: expired session ─────────────────────────────────────────────────
   if (isSessionExpired(startTime)) {
     return <Navigate to="/session/expired" />;
   }
+
+  
 
   // ── Lobby → Waiting ────────────────────────────────────────────────────────
   const handleLobbyJoined = () => {
@@ -116,21 +131,34 @@ export default function App() {
   };
 
   // ── Leave from Live ────────────────────────────────────────────────────────
-  const handleLeaveCall = () => {
+  const handleLeaveCall = async () => {
     const secs = sessionStartRef.current
       ? Math.floor((Date.now() - sessionStartRef.current) / 1000)
       : 0;
     setSessionDuration(Math.ceil(secs / 60));
-    if (role === 'therapist') {
-      localStorage.setItem("notes", notes)
-    }
+
     // SessionLive.handleLeave already called livekitManager.hangup() (which sent
     // the terminal signal + tore down). Don't call it again here.
-    if(role==='patient'){
-    setIsConfirmationPopUpOpen(true)
+    if (role === 'patient') {
+      setIsConfirmationPopUpOpen(true)
     }
-    else if(role==='therapist'){
+    else if (role === 'therapist') {
       setScreen("ended")
+      localStorage.setItem("notes", notes)
+      await createAndDownloadPDF({
+        therapistName: tname,
+        patientName: cname,
+        sessionCode,
+        notes: localStorage.getItem("notes"),
+        date: startTime,
+        duration: 45,
+        clientId: cid
+
+      }, true)
+
+
+
+
     }
 
   };
@@ -140,70 +168,70 @@ export default function App() {
   const handleBookAgain = () => setScreen("lobby");
 
   const onMarkComplete = async () => {
-  setIsLoader(true);
-  setError("");
+    setIsLoader(true);
+    setError("");
 
-  try {
-    await Promise.all([
-      updateById("bookings", sessionCode, {
-        status: "completed",
-        sessionCompleted: true,
-      }),
+    try {
+      await Promise.all([
+        updateById("bookings", sessionCode, {
+          status: "completed",
+          sessionCompleted: true,
+        }),
 
-      axios.post(
-        "https://asia-south1-elma-react-native-app.cloudfunctions.net/sendSessionCompletionEmail",
-        {
-          name: cname,
-          to: "user",
-          therapistName: tname,
-          userName: cname,
-          therapistEmail: temail,
-          userEmail: cemail,
+        axios.post(
+          "https://asia-south1-elma-react-native-app.cloudfunctions.net/sendSessionCompletionEmail",
+          {
+            name: cname,
+            to: "user",
+            therapistName: tname,
+            userName: cname,
+            therapistEmail: temail,
+            userEmail: cemail,
+          }
+        ),
+
+        axios.post(
+          "https://asia-south1-elma-react-native-app.cloudfunctions.net/sendSessionCompletionEmail",
+          {
+            name: tname,
+            to: "therapist",
+            therapistName: tname,
+            userName: cname,
+            therapistEmail: temail,
+            userEmail: cemail,
+          }
+        ),
+      ]);
+
+      setIsConfirmationPopUpOpen(false);
+      setScreen("ended");
+    } catch (error) {
+      console.error("Session completion failed:", error);
+
+      if (axios.isAxiosError(error)) {
+        if (!error.response) {
+          setError(
+            "Unable to connect to the server. Please check your internet connection and try again."
+          );
+        } else if (error.response.status >= 500) {
+          setError(
+            "A server error occurred while completing the session. Please try again in a few minutes."
+          );
+        } else {
+          setError(
+            error.response.data?.message ||
+            "Unable to complete the session. Please try again."
+          );
         }
-      ),
-
-      axios.post(
-        "https://asia-south1-elma-react-native-app.cloudfunctions.net/sendSessionCompletionEmail",
-        {
-          name: tname,
-          to: "therapist",
-          therapistName: tname,
-          userName: cname,
-          therapistEmail: temail,
-          userEmail: cemail,
-        }
-      ),
-    ]);
-
-    setIsConfirmationPopUpOpen(false);
-    setScreen("ended");
-  } catch (error) {
-    console.error("Session completion failed:", error);
-
-    if (axios.isAxiosError(error)) {
-      if (!error.response) {
-        setError(
-          "Unable to connect to the server. Please check your internet connection and try again."
-        );
-      } else if (error.response.status >= 500) {
-        setError(
-          "A server error occurred while completing the session. Please try again in a few minutes."
-        );
       } else {
         setError(
-          error.response.data?.message ||
-            "Unable to complete the session. Please try again."
+          "Something went wrong while marking the session as complete. Please try again."
         );
       }
-    } else {
-      setError(
-        "Something went wrong while marking the session as complete. Please try again."
-      );
+    } finally {
+      setIsLoader(false);
     }
-  } finally {
-    setIsLoader(false);
-  }
-};
+  };
   const onSkip = () => {
     setScreen("lobby")
     setIsConfirmationPopUpOpen(false)
@@ -212,12 +240,12 @@ export default function App() {
 
   const addTherapistRating = async () => {
     try {
-      await addDoc(collection(db, "therapists", tid, "ratings"), {
+      await Promise.all[(addDoc(collection(db, "therapists", tid, "ratings"), {
         rating: rating,
         feedback: feedback,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      })),updateById('bookings',sessionCode,{status:"completed",sessionCompleted:true,})]
 
       return { success: true };
     } catch (e) {
@@ -233,7 +261,8 @@ export default function App() {
       sessionCode,
       notes: localStorage.getItem("notes"),
       date: startTime,
-      duration: 45
+      duration: 45,
+      clientId: cid
 
     })
     localStorage.removeItem("notes")
@@ -288,6 +317,9 @@ export default function App() {
           setNotes={setNotes}
           therapistPhoto={therapistPhoto}
           patientPhoto={clientPhoto}
+          isDeviceSwitched={deviceSwitched}
+          onCloseDeviceSwitch={onCloseDeviceSwitch}
+          setIsDeviceSwitched={setIsDeviceSwitched}
         />
       )}
 

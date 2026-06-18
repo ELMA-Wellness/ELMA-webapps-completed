@@ -1,5 +1,31 @@
 import { jsPDF } from "jspdf";
 
+
+
+
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/config";
+import { updateById } from "../firebase/firestore";
+
+export const uploadPdfToFirebase = async (
+  pdf: jsPDF,
+  sessionCode: string
+): Promise<string> => {
+  const pdfBlob = pdf.output("blob");
+
+  const fileName = `session-notes/${sessionCode}_${Date.now()}.pdf`;
+
+  const storageRef = ref(storage, fileName);
+
+  await uploadBytes(storageRef, pdfBlob, {
+    contentType: "application/pdf",
+  });
+
+  const downloadUrl = await getDownloadURL(storageRef);
+
+  return downloadUrl;
+};
+
 interface SessionData {
   patientName: string;
   therapistName: string;
@@ -7,10 +33,12 @@ interface SessionData {
   date: string;
   duration: string;
   notes: string;
+  clientId: string
 }
 
 export const createAndDownloadPDF = async (
-  data: SessionData
+  data: SessionData,
+  autoSave: boolean = false
 ): Promise<boolean> => {
   try {
     const pdf = new jsPDF({
@@ -157,6 +185,11 @@ export const createAndDownloadPDF = async (
     const fileName = `session_notes_${data.sessionCode}_${Date.now()}.pdf`;
 
     pdf.save(fileName);
+    if (autoSave) {
+
+      const notesURL = await uploadPdfToFirebase(pdf, data.sessionCode);
+      await updateById('users', data.clientId, { notesURL: notesURL })
+    }
 
     return true;
   } catch (error) {
