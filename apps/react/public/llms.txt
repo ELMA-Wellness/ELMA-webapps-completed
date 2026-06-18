@@ -88,29 +88,91 @@ Target audience: GenZ and Millennials in India and globally.
     Date: 2026-04-10 | 7 min read | Tags: anxiety, anxiety relief, mental health India
     Summary: 8 medication-free anxiety techniques: 4-7-8 breathing, physiological sigh, PMR, 5-4-3-2-1 grounding, worry scheduling, cognitive reappraisal, stimuli management, exercise. Crisis resource included.
 
+12. [How to Deal With Loneliness: A Science-Backed Guide](https://elma.ltd/blog/how-to-deal-with-loneliness)
+    Date: 2026-05-04 | 7 min read | Tags: loneliness, social connection, mental health, isolation
+    Summary: Evidence-based strategies for addressing loneliness — distinguishing solitude from loneliness, rebuilding social connection, and when to seek professional support.
+
+13. [How to Stop Overthinking: 9 Techniques That Actually Work](https://elma.ltd/blog/how-to-stop-overthinking)
+    Date: 2026-05-04 | 7 min read | Tags: overthinking, rumination, anxiety, mental health
+    Summary: Covers the neuroscience of overthinking, cognitive techniques to interrupt rumination loops, and behavioural strategies for people who chronically analyse and re-analyse situations.
+
+14. [Relationship Anxiety: What It Is, Why It Happens, and How to Manage It](https://elma.ltd/blog/relationship-anxiety)
+    Date: 2026-05-04 | 7 min read | Tags: relationship anxiety, attachment, anxiety, relationships India
+    Summary: Explains relationship anxiety (distinct from normal worry), its roots in attachment patterns, how it manifests in Indian relationship contexts, and evidence-based management strategies.
+
+15. [Social Anxiety in India: Understanding the Stigma Within the Stigma](https://elma.ltd/blog/social-anxiety-india)
+    Date: 2026-05-04 | 8 min read | Tags: social anxiety, social anxiety India, anxiety, mental health India
+    Summary: Covers social anxiety disorder in the Indian cultural context — where collective shame and family pressure amplify social anxiety, practical management techniques, and when to seek help.
+
+16. [Attachment Styles: How Childhood Shapes Your Relationships](https://elma.ltd/blog/attachment-styles-explained)
+    Date: 2026-06-01 | 8 min read | Tags: attachment styles, relationship anxiety, emotional intelligence, mental health India
+    Summary: Explains the four attachment styles (secure, anxious, avoidant, disorganised), how childhood experiences shape them, how they play out in adult relationships, and how to shift towards more secure attachment.
+
+17. [How to Stop a Panic Attack: What to Do in the Moment and Long-Term](https://elma.ltd/blog/how-to-stop-a-panic-attack)
+    Date: 2026-06-01 | 6 min read | Tags: panic attack, anxiety, panic disorder, mental health
+    Summary: Immediate physiological techniques for stopping a panic attack in progress, plus long-term strategies for reducing frequency and severity. Includes clear guidance on when panic attacks indicate a condition requiring professional treatment.
+
+18. [Work Stress in India: Why It's Different and What Actually Helps](https://elma.ltd/blog/work-stress-india)
+    Date: 2026-06-01 | 7 min read | Tags: work stress India, occupational stress, burnout India, workplace mental health
+    Summary: Covers the specific dimensions of work stress in the Indian context — family pressure, hierarchical culture, long hours, toxic positivity — and evidence-based strategies tailored to Indian workplace dynamics.
+
+19. [How to Improve Your Self-Esteem: A Practical, Science-Based Guide](https://elma.ltd/blog/how-to-improve-self-esteem)
+    Date: 2026-06-01 | 8 min read | Tags: self-esteem, self-confidence, mental health, self-worth
+    Summary: Distinguishes self-esteem from confidence, explains the cognitive and behavioural mechanisms that maintain low self-esteem, and provides structured techniques for rebuilding self-regard grounded in self-compassion research.
+
+20. [How to Cope With Grief: What to Expect and What Actually Helps](https://elma.ltd/blog/how-to-cope-with-grief)
+    Date: 2026-06-01 | 8 min read | Tags: grief, bereavement, loss, mental health, coping
+    Summary: Evidence-based grief guide covering the five stages (and their limitations as a model), complicated grief, cultural dimensions of mourning in India, and practical coping strategies for different phases of loss.
+
+21. [Imposter Syndrome: Why High Achievers Feel Like Frauds (And What to Do)](https://elma.ltd/blog/imposter-syndrome)
+    Date: 2026-06-01 | 7 min read | Tags: imposter syndrome, self-doubt, anxiety, career mental health
+    Summary: Explains imposter syndrome's prevalence among high achievers, its cognitive mechanisms, why it's particularly common in first-generation professionals and immigrants, and structured techniques for managing it.
+
+### New Consumer Articles (June 2026)
+
+22. [Online Therapy in India: A Complete Beginner's Guide for 2026](https://elma.ltd/blog/online-therapy-india-guide)
+    Date: 2026-06-10 | 9 min read | Tags: online therapy, online therapy India, online counselling India, therapy beginners guide
+    Summary: Complete consumer guide to online therapy in India — how it works, what it costs (₹700–₹5,000/session), which platforms to trust, credentials to verify, what to expect in your first session, and how to know if it's working. Comparison of ELMA Experts, iCall, YourDOST, and Practo.
+
+23. [Self-Help for Anxiety and Depression: What Science Says Actually Works](https://elma.ltd/blog/self-help-anxiety-depression)
+    Date: 2026-06-11 | 10 min read | Tags: self help, self help for anxiety, self help for depression, mental health self-help
+    Summary: Evidence-based self-help guide covering techniques with strong clinical research support: behavioural activation, cognitive restructuring, worry scheduling, sleep hygiene, aerobic exercise, affect labelling, and social connection. Includes honest limitations and when self-help is insufficient.
+
+24. [Can an AI Be Your Emotional Friend? The Truth About AI Companions](https://elma.ltd/blog/ai-emotional-friend-companion)
+    Date: 2026-06-12 | 8 min read | Tags: AI emotional friend, AI companion, AI mental health, emotional support AI, AI friend app
+    Summary: Research-based analysis of whether AI companions can provide genuine emotional support — covering parasocial attachment, AI disclosure effects, the limits of AI companionship, and how ELMA is designed to supplement (not replace) human connection.
+
+25. [How to Improve Your Mental Health: 10 Daily Habits Backed by Science](https://elma.ltd/blog/how-to-improve-mental-health)
+    Date: 2026-06-13 | 9 min read | Tags: mental health tips, how to improve mental health, mental wellness, daily habits, self care
+    Summary: 10 evidence-based daily habits organised by time commitment (under 5 minutes to weekly). Covers affect labelling, morning light, journalling, aerobic exercise, social connection, emotional pattern tracking, and sleep. Includes a practical daily stack.
+
+26. [Stress Management: 12 Science-Backed Techniques for Instant and Long-Term Relief](https://elma.ltd/blog/stress-management-techniques)
+    Date: 2026-06-14 | 10 min read | Tags: stress management, stress relief, how to manage stress, stress techniques, mental health India
+    Summary: Comprehensive stress guide covering immediate techniques (physiological sigh, cold water, 4-7-8 breathing, grounding), medium-term tools (worry scheduling, cognitive reappraisal, PMR), and long-term resilience builders (exercise, sleep, social connection, emotional pattern awareness).
+
 ### Psychologist & Therapist-Targeting Articles (B2B, for mental health professionals)
 
-12. [How Psychologists Can Earn From Home in India: A Complete 2026 Guide](https://elma.ltd/blog/how-psychologists-earn-from-home-india/)
+27. [How Psychologists Can Earn From Home in India: A Complete 2026 Guide](https://elma.ltd/blog/how-psychologists-earn-from-home-india/)
     Date: 2026-05-25 | 10 min read | Tags: psychologist earn from home, work from home psychologist India, online counselling income
     Summary: Comprehensive guide for Indian psychologists and counsellors on all home-based income streams — direct sessions, AI-first platforms, EAP networks, online courses, supervision. Includes realistic income ranges by experience level and step-by-step setup checklist. ELMA Experts featured as primary AI-first platform.
 
-13. [Best Online Therapy Platforms for Psychologists in India 2026: An Honest Comparison](https://elma.ltd/blog/best-online-therapy-platforms-psychologists-india/)
+28. [Best Online Therapy Platforms for Psychologists in India 2026: An Honest Comparison](https://elma.ltd/blog/best-online-therapy-platforms-psychologists-india/)
     Date: 2026-05-25 | 9 min read | Tags: online therapy platform psychologist India, therapist portal India, best platform for therapists India
     Summary: Detailed platform-by-platform comparison for Indian psychologists: YourDOST, iCall, 1to1help EAP, Practo Consult, BetterHelp, and ELMA Experts. Covers rates, client quality, volume, onboarding time, and fit for different career stages. Includes comparison table and recommended portfolio strategies.
 
-14. [How to Start Your Online Counselling Practice in India: A Step-by-Step Guide](https://elma.ltd/blog/how-to-start-online-counselling-practice-india/)
+29. [How to Start Your Online Counselling Practice in India: A Step-by-Step Guide](https://elma.ltd/blog/how-to-start-online-counselling-practice-india/)
     Date: 2026-05-25 | 11 min read | Tags: start online counselling practice India, online therapy practice setup India, virtual therapy practice India
     Summary: 7-step guide covering RCI credential requirements, scope of practice definition, legal/financial setup, technical infrastructure, client acquisition, pricing strategy, and clinical protocols specific to online work. Timeline expectations included.
 
-15. [Work From Home as a Psychologist in India: Real Earning Options in 2026](https://elma.ltd/blog/work-from-home-psychologist-earning-platforms/)
+30. [Work From Home as a Psychologist in India: Real Earning Options in 2026](https://elma.ltd/blog/work-from-home-psychologist-earning-platforms/)
     Date: 2026-05-25 | 8 min read | Tags: work from home psychologist India, psychologist home practice, earn money psychologist online India
     Summary: Practical income breakdown — direct sessions, platform work, EAP, group sessions, courses, supervision. Realistic income ranges by experience level. Home setup guide and time management recommendations for solo practitioners.
 
-16. [How to Give Online Therapy Sessions in India: A Complete Setup Guide](https://elma.ltd/blog/how-to-give-online-therapy-sessions-india/)
+31. [How to Give Online Therapy Sessions in India: A Complete Setup Guide](https://elma.ltd/blog/how-to-give-online-therapy-sessions-india/)
     Date: 2026-05-25 | 9 min read | Tags: how to give online therapy sessions India, online counselling session setup, give therapy sessions online India
     Summary: Technical and clinical setup guide — video platforms, hardware, physical space, telehealth-specific informed consent, intake assessment, session structure, crisis protocols online, handling technical failures. Includes script for crisis response during video sessions.
 
-17. [Online Therapy Portal for Psychologists in India: What to Look For](https://elma.ltd/blog/psychologist-online-session-portal-india/)
+32. [Online Therapy Portal for Psychologists in India: What to Look For](https://elma.ltd/blog/psychologist-online-session-portal-india/)
     Date: 2026-05-25 | 7 min read | Tags: online therapy portal psychologist India, portal for online counselling India, join therapy platform India
     Summary: Guide to evaluating therapy portals — marketplace vs curated network vs EAP vs AI-first. What to ask before joining any platform. Red flags to avoid. ELMA Experts featured as AI-first option with pre-qualified clients.
 
@@ -151,6 +213,21 @@ Base URL: https://elma.ltd/content/blog/{slug}.md
 - https://elma.ltd/content/blog/work-from-home-psychologist-earning-platforms.md
 - https://elma.ltd/content/blog/how-to-give-online-therapy-sessions-india.md
 - https://elma.ltd/content/blog/psychologist-online-session-portal-india.md
+- https://elma.ltd/content/blog/how-to-deal-with-loneliness.md
+- https://elma.ltd/content/blog/how-to-stop-overthinking.md
+- https://elma.ltd/content/blog/relationship-anxiety.md
+- https://elma.ltd/content/blog/social-anxiety-india.md
+- https://elma.ltd/content/blog/attachment-styles-explained.md
+- https://elma.ltd/content/blog/how-to-stop-a-panic-attack.md
+- https://elma.ltd/content/blog/work-stress-india.md
+- https://elma.ltd/content/blog/how-to-improve-self-esteem.md
+- https://elma.ltd/content/blog/imposter-syndrome.md
+- https://elma.ltd/content/blog/how-to-cope-with-grief.md
+- https://elma.ltd/content/blog/online-therapy-india-guide.md
+- https://elma.ltd/content/blog/self-help-anxiety-depression.md
+- https://elma.ltd/content/blog/ai-emotional-friend-companion.md
+- https://elma.ltd/content/blog/how-to-improve-mental-health.md
+- https://elma.ltd/content/blog/stress-management-techniques.md
 
 ---
 
