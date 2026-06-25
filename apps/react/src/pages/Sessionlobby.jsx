@@ -10,6 +10,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createLocalAudioTrack, createLocalVideoTrack } from "livekit-client";
 import { MicIcon, CamIcon, Avatar } from "./Icons";
 import { livekitManager } from "../config/livekitmanager";
+import { setFirebaseAuth } from "../firebase/config";
 
 // ── Permission helpers ────────────────────────────────────────────────────────
 
@@ -208,7 +209,13 @@ export default function SessionLobby({
     localStorage.setItem("micActive", String(micActive));
 
     try {
-      await livekitManager.initialize(sessionCode, userId, role, userName, micActive, camActive);
+
+      await Promise.all([
+        setFirebaseAuth(),
+        livekitManager.initialize(sessionCode, userId, role, userName, micActive, camActive)
+
+      ])
+      
       onJoined?.();
     } catch (err) {
       if (!mountedRef.current) return;

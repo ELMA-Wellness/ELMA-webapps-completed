@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, browserLocalPersistence, setPersistence } from "firebase/auth";
+import { getAuth, browserLocalPersistence, setPersistence, signInAnonymously } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -30,5 +30,11 @@ setPersistence(auth, browserLocalPersistence);
 
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+
+export const setFirebaseAuth=async()=>{
+  await signInAnonymously(auth)
+
+}
 
 export default app;
