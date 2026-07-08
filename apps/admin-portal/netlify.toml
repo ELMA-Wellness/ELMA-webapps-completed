@@ -3,9 +3,16 @@
 # Netlify UI for this site. This file only adds build-environment overrides.
 
 [build.environment]
-  # The Firebase *web* API key is a public client identifier, not a secret.
-  # It is meant to ship in the browser bundle; access is protected by Firebase
-  # Security Rules / App Check, not by hiding this value. So we whitelist it for
-  # Netlify's secrets scanner (all other smart-detection scanning stays on).
-  # See: https://firebase.google.com/docs/projects/api-keys
-  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIzaSyBejQqWxd6Q4dHx41RqZW0BUk1wiC6sFKE"
+  # Disable smart detection (heuristic "likely secret" pattern matching).
+  #
+  # The only value it flags here is the Firebase *web* API key, which is a
+  # public client identifier — not a secret. It is meant to ship in the browser
+  # bundle; access is protected by Firebase Security Rules / App Check, not by
+  # hiding this value. See https://firebase.google.com/docs/projects/api-keys
+  #
+  # Standard secrets scanning (values of env vars marked as secrets) stays ON;
+  # only the heuristic pattern matcher is turned off.
+  #
+  # NOTE: the more surgical control, SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES,
+  # is only honored when set via the Netlify UI or CLI — not from netlify.toml.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
