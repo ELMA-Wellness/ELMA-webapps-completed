@@ -20,7 +20,46 @@ body{
   background:white;
   border-radius:12px;
   box-shadow:0 8px 20px rgba(0,0,0,0.08);
-  overflow:hidden;
+  overflow-x:auto;
+}
+
+.analytics-table td, .analytics-table th{
+  white-space:nowrap;
+}
+
+.section-title{
+  font-size:18px;
+  font-weight:700;
+  color:#3A116D;
+  margin:34px 0 12px;
+}
+
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:14px;
+}
+
+.stat-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+  text-align:center;
+}
+
+.stat-card .label{ font-size:13px; color:#666; font-weight:500; }
+.stat-card .value{ font-size:24px; font-weight:800; color:#3A116D; margin-top:6px; }
+.stat-card .hint{ font-size:11px; color:#8a8a8a; margin-top:4px; }
+
+.note{
+  background:#FFF6E5;
+  border:1px solid #FFE1A6;
+  color:#8a6d1f;
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:13px;
+  margin-top:10px;
 }
 
 .analytics-table{

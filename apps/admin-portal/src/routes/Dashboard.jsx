@@ -175,6 +175,8 @@ export default function Dashboard() {
       fourGameFinshedUsers:0,
       fiveGameFinshedUsers:0,
       sixGameFinshedUsers:0,
+      totalBookings:0,
+      bookingsInitiated:0
   };
 
   const [dashData, setDashData] = useState(initialDashboardState);
@@ -267,6 +269,18 @@ export default function Dashboard() {
           value={dashData?.total_users ?? "—"}
           color="#EDE4FF"
           onCardClick={()=>{onCardClick(filters[0])}}
+        />
+         <StatCard
+          label="Total Bookings"
+          value={dashData?.totalBookings ?? "—"}
+          color="#EDE4FF"
+          onCardClick={()=>{}}
+        />
+        <StatCard
+          label="Initiated Bookings"
+          value={dashData?.bookingsInitiated ?? "—"}
+          color="#EDE4FF"
+          onCardClick={()=>{}}
         />
         <StatCard
           label="DAU (Today)"

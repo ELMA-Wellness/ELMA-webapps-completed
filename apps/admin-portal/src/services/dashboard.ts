@@ -68,11 +68,14 @@ export const getDashBoardData = async () => {
     // ─────────────────────────────
     // USERS & THERAPISTS
     // ─────────────────────────────
-    const [usersSnap, therapistSnap,moodLogsSnap,journalSnap] = await Promise.all([
+    const [usersSnap, therapistSnap,moodLogsSnap,journalSnap,allBookings,initiatedbookings] = await Promise.all([
       getDocs(collection(db, "users")),
       getDocs(collection(db, "therapists")),
       getDocs(collection(db, "moodLogs")),
       getDocs(collection(db, "journals")),
+      getDocs(collection(db,'bookings')),
+       getDocs(collection(db,'initiatedBookings')),
+
 
     ]);
 
@@ -267,6 +270,9 @@ export const getDashBoardData = async () => {
       fourGameFinshedUsers,
       fiveGameFinshedUsers,
       sixGameFinshedUsers,
+      completedBookings,
+      totalBookings:allBookings.docs.length,
+      bookingsInitiated : initiatedbookings.docs.length
 
     };
   } catch (err: any) {
