@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useAdminGuard } from "../lib/guards";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
-import Section from "shared-ui/Section";
-import StatCard from "shared-ui/StatCard";
-import { inr } from "shared-core/money";
-import { getMonthKey } from "shared-core/dates";
-import { sumSessionsRevenueMonth, countCompletedSessions } from "shared-core/metrics";
+import Section from "@shared-ui/Section";
+import StatCard from "@shared-ui/StatCard";
+import { inr } from "@shared-core/money";
+import { getMonthKey } from "@shared-core/dates";
+import { sumSessionsRevenueMonth, countCompletedSessions } from "@shared-core/metrics";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 async function getAverageSessionPrice() {

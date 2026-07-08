@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAdminGuard } from "../lib/guards";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
-import Section from "shared-ui/Section";
-import Button from "shared-ui/Button";
-import { signOut, changePassword } from "shared-core/auth";
+import Section from "@shared-ui/Section";
+import Button from "@shared-ui/Button";
+import { signOut, changePassword } from "@shared-core/auth";
 import { doc, updateDoc } from "firebase/firestore";
-import { db, auth } from "shared-core/firebase";
+import { db, auth } from "@shared-core/firebase";
 
 export default function Settings() {
   const { loading: authLoading, user } = useAdminGuard();

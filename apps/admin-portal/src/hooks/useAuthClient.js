@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { listen, getClaims } from "shared-core/auth";
-import { auth } from "shared-core/firebase";
+import { listen, getClaims } from "@shared-core/auth";
+import { auth } from "@shared-core/firebase";
 
 export default function useAuthClient() {
   const [user, setUser] = useState(auth.currentUser);

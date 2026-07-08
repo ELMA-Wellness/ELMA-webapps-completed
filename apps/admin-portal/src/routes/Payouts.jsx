@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
-import Section from "shared-ui/Section";
+import Section from "@shared-ui/Section";
 import {
   Table,
   TableHeader,

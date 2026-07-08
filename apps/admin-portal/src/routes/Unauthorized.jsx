@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { signOut } from "shared-core/auth";
-import Button from "shared-ui/Button";
+import { signOut } from "@shared-core/auth";
+import Button from "@shared-ui/Button";
 
 export default function Unauthorized() {
   const navigate = useNavigate();

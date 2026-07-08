@@ -1,4 +1,4 @@
-import { auth } from "shared-core/firebase";
+import { auth } from "@shared-core/firebase";
 
 export default function Topbar({ title }) {
   return (
