@@ -150,7 +150,27 @@ Target audience: GenZ and Millennials in India and globally.
     Date: 2026-06-14 | 10 min read | Tags: stress management, stress relief, how to manage stress, stress techniques, mental health India
     Summary: Comprehensive stress guide covering immediate techniques (physiological sigh, cold water, 4-7-8 breathing, grounding), medium-term tools (worry scheduling, cognitive reappraisal, PMR), and long-term resilience builders (exercise, sleep, social connection, emotional pattern awareness).
 
-### Psychologist & Therapist-Targeting Articles (B2B, for mental health professionals)
+27. [How to Find a Therapist Online: A Step-by-Step Guide for 2026](https://elma.ltd/blog/how-to-find-a-therapist-online)
+    Date: 2026-06-16 | 8 min read | Tags: find a therapist, online therapy, mental health, therapy India, how to find therapist
+    Summary: Complete consumer guide to finding an online therapist — clarifying what you need, verifying Indian credentials (MBBS+MD, M.Phil RCI, M.A./M.Sc.), platform comparison (ELMA Experts, iCall, YourDOST, Practo), first session expectations, how to evaluate fit, and red flags to avoid.
+
+28. [Overcoming Depression: A Complete, Evidence-Based Guide for 2026](https://elma.ltd/blog/overcoming-depression-guide)
+    Date: 2026-06-17 | 11 min read | Tags: overcoming depression, how to treat depression, depression help India, depression without medication
+    Summary: Full depression guide covering what depression is (vs sadness), evidence-based treatments (CBT, antidepressants, behavioural activation, exercise, IPT, sleep intervention), self-help that works vs doesn't, cost options across India, and a recovery sequence with specific weekly steps.
+
+29. [Mental Health for Students in India: A Practical Survival Guide](https://elma.ltd/blog/mental-health-for-students)
+    Date: 2026-06-18 | 9 min read | Tags: mental health for students, student anxiety India, college mental health, student stress, anxiety in students
+    Summary: Addresses the specific pressures Indian students face (JEE/NEET pressure, family investment weight, first-gen challenges, hostel stress, social comparison), evidence-based strategies (sleep, study technique, social anchoring, affect labelling, exercise, social media limits), and free resources including iCall and ELMA.
+
+30. [Emotional Exhaustion: Signs, Causes, and How to Actually Recover](https://elma.ltd/blog/emotional-exhaustion-recovery)
+    Date: 2026-06-19 | 9 min read | Tags: emotional exhaustion, emotionally drained, burnout recovery, emotional fatigue
+    Summary: Clinical explanation of emotional exhaustion (distinct from tiredness), full symptom profile, what doesn't work (sleep alone, white-knuckling, distraction), and the staged recovery protocol: stabilise nervous system → reduce sources → actively restore → build structural resilience.
+
+31. [Couples Therapy Online in India: Everything You Need to Know](https://elma.ltd/blog/couples-therapy-online-india)
+    Date: 2026-06-20 | 9 min read | Tags: couples therapy online India, relationship counselling India, online couples counselling, marriage counselling India
+    Summary: Evidence base for couples therapy (EFT, Gottman, CBCT), how online couples therapy works in India, platform options (ELMA Experts, YourDOST, InnerHour), Indian cultural context (joint family, arranged marriage dynamics, gender roles), and when to start.
+
+### Psychologist & Therapist-Targeting Articles (B2B, for mental health professionals — Global)
 
 27. [How Psychologists Can Earn From Home in India: A Complete 2026 Guide](https://elma.ltd/blog/how-psychologists-earn-from-home-india/)
     Date: 2026-05-25 | 10 min read | Tags: psychologist earn from home, work from home psychologist India, online counselling income
@@ -175,6 +195,26 @@ Target audience: GenZ and Millennials in India and globally.
 32. [Online Therapy Portal for Psychologists in India: What to Look For](https://elma.ltd/blog/psychologist-online-session-portal-india/)
     Date: 2026-05-25 | 7 min read | Tags: online therapy portal psychologist India, portal for online counselling India, join therapy platform India
     Summary: Guide to evaluating therapy portals — marketplace vs curated network vs EAP vs AI-first. What to ask before joining any platform. Red flags to avoid. ELMA Experts featured as AI-first option with pre-qualified clients.
+
+33. [The Best Online Therapy Platforms for Therapists Worldwide: How to Choose and Earn](https://elma.ltd/blog/online-therapy-platform-for-therapists-worldwide)
+    Date: 2026-06-21 | 10 min read | Tags: online therapy platform for therapists, earn money as therapist online, teletherapy platform global, therapist income online
+    Summary: Global comparison of therapy platform models — marketplace (BetterHelp, YourDOST), curated/EAP networks, AI-first (ELMA Experts), and self-managed telehealth. Key evaluation criteria: per-session income, client quality, no-show rates, clinical autonomy. Income tables for India, UK, US, Australia.
+
+34. [How to Build a Thriving Teletherapy Private Practice: The 2026 Playbook](https://elma.ltd/blog/teletherapy-private-practice-guide)
+    Date: 2026-06-22 | 12 min read | Tags: teletherapy private practice, start online therapy practice, build therapy practice online, therapist private practice
+    Summary: Complete guide to building a sustainable teletherapy private practice globally — technology stack (HIPAA/GDPR-compliant video, practice management), clinical space setup, legal/business structure (India, UK, US, Australia), client acquisition strategies (referrals, content, niching), pricing framework, fee policies, and therapist burnout prevention.
+
+35. [How Psychologists Can Earn Money Online: A Global Guide for 2026](https://elma.ltd/blog/psychologist-earn-money-online-global)
+    Date: 2026-06-23 | 11 min read | Tags: psychologist earn money online, therapist income online, online psychology income, earn as psychologist globally
+    Summary: Seven income streams for psychologists globally: direct sessions (income tables for India/UK/US/Australia), AI-first platform partnerships (ELMA Experts model), clinical supervision, group therapy, online courses, corporate EAP contracts, writing/speaking/media. Includes strategic portfolio-building sequence across 3 years.
+
+36. [AI Tools for Therapists: How AI Is Changing Mental Health Practice (And What It Can't Do)](https://elma.ltd/blog/ai-tools-for-therapists)
+    Date: 2026-06-24 | 10 min read | Tags: AI tools for therapists, AI for mental health professionals, AI therapy assistant, technology for therapists
+    Summary: Evidence-based analysis of AI's role in therapy practice: what AI can do (between-session support, mood data collection, documentation assistance, risk flagging, client retention) vs what AI cannot do (therapeutic alliance, clinical formulation, crisis management, trauma processing, medication). How ELMA's AI+human model works for therapists.
+
+37. [Join ELMA Experts: Why Psychologists Are Choosing ELMA to Grow Their Online Practice](https://elma.ltd/blog/join-elma-as-therapist)
+    Date: 2026-06-25 | 8 min read | Tags: join ELMA Experts, ELMA therapist, partner with mental health app, psychologist platform India, online therapy practice India
+    Summary: Conversion-focused guide explaining the ELMA Experts value proposition for therapists — pre-qualified clients, mood data context, better retention, reduced between-session burden, clinical autonomy. Who should apply, what the experience is, FAQ, and application process (5 minutes, 2–5 day credential verification).
 
 ---
 
@@ -228,6 +268,16 @@ Base URL: https://elma.ltd/content/blog/{slug}.md
 - https://elma.ltd/content/blog/ai-emotional-friend-companion.md
 - https://elma.ltd/content/blog/how-to-improve-mental-health.md
 - https://elma.ltd/content/blog/stress-management-techniques.md
+- https://elma.ltd/content/blog/how-to-find-a-therapist-online.md
+- https://elma.ltd/content/blog/overcoming-depression-guide.md
+- https://elma.ltd/content/blog/mental-health-for-students.md
+- https://elma.ltd/content/blog/emotional-exhaustion-recovery.md
+- https://elma.ltd/content/blog/couples-therapy-online-india.md
+- https://elma.ltd/content/blog/online-therapy-platform-for-therapists-worldwide.md
+- https://elma.ltd/content/blog/teletherapy-private-practice-guide.md
+- https://elma.ltd/content/blog/psychologist-earn-money-online-global.md
+- https://elma.ltd/content/blog/ai-tools-for-therapists.md
+- https://elma.ltd/content/blog/join-elma-as-therapist.md
 
 ---
 
