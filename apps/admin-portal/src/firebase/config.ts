@@ -13,8 +13,6 @@ const firebaseConfig = {
   measurementId: "G-J6LCMDKT76"
 };
 
-console.log("config",firebaseConfig)
-
 let app: FirebaseApp;
 
 if (!getApps().length) {

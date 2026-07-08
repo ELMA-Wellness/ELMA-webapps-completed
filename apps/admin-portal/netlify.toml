@@ -1,0 +1,11 @@
+# ELMA admin-portal — Netlify config
+# Base directory, build command, publish dir, and headers are configured in the
+# Netlify UI for this site. This file only adds build-environment overrides.
+
+[build.environment]
+  # The Firebase *web* API key is a public client identifier, not a secret.
+  # It is meant to ship in the browser bundle; access is protected by Firebase
+  # Security Rules / App Check, not by hiding this value. So we whitelist it for
+  # Netlify's secrets scanner (all other smart-detection scanning stays on).
+  # See: https://firebase.google.com/docs/projects/api-keys
+  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIzaSyBejQqWxd6Q4dHx41RqZW0BUk1wiC6sFKE"
