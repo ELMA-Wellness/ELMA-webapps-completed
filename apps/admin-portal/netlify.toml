@@ -1,18 +1,12 @@
 # ELMA admin-portal — Netlify config
-# Base directory, build command, publish dir, and headers are configured in the
-# Netlify UI for this site. This file only adds build-environment overrides.
-
-[build.environment]
-  # Disable smart detection (heuristic "likely secret" pattern matching).
-  #
-  # The only value it flags here is the Firebase *web* API key, which is a
-  # public client identifier — not a secret. It is meant to ship in the browser
-  # bundle; access is protected by Firebase Security Rules / App Check, not by
-  # hiding this value. See https://firebase.google.com/docs/projects/api-keys
-  #
-  # Standard secrets scanning (values of env vars marked as secrets) stays ON;
-  # only the heuristic pattern matcher is turned off.
-  #
-  # NOTE: the more surgical control, SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES,
-  # is only honored when set via the Netlify UI or CLI — not from netlify.toml.
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+#
+# Build settings (base = apps/admin-portal, command, publish, headers) are
+# configured in the Netlify UI for the "admin-elma" site.
+#
+# Secrets scanning: the Firebase *web* API key in src/firebase/config.ts is a
+# public client identifier, not a secret (access is protected by Firebase
+# Security Rules / App Check — see https://firebase.google.com/docs/projects/api-keys).
+# It is safelisted for Netlify's smart-detection scanner via the site env var
+#     SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES
+# which MUST be set in the Netlify UI/CLI/API — these scanning controls are NOT
+# read from this netlify.toml. Do not re-add them here; it has no effect.
